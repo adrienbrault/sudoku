@@ -33,14 +33,14 @@
 - [x] Opponent disconnect: status indicator, grace period, claim win
 - [x] Error states: network banner, room not found, room full, expired
 - [x] Keyboard support for desktop
+- [x] Rematch flow in solo (new puzzle, same difficulty)
+- [x] Daily challenge / seeded puzzles
+- [x] Stats history (localStorage)
 
 ## In Progress
 
 ## Backlog (prioritized)
 
 ### P3 — Nice to have
-- [ ] Rematch flow in solo (new puzzle, same difficulty)
-- [ ] Daily challenge / seeded puzzles
-- [ ] Stats history (localStorage)
 - [ ] Sound effects toggle
 - [ ] Spectator mode
