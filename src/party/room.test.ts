@@ -44,19 +44,17 @@ describe("GameRoom", () => {
 			expect(messages[0].target).toBe("all");
 		});
 
-		it("rejects third player when room is full", () => {
+		it("third player joins as spectator when room is full", () => {
 			const room = new GameRoom("room-1");
 			room.handleJoin("p1", "Alice");
 			room.handleJoin("p2", "Bob");
 			const messages = room.handleJoin("p3", "Charlie");
 
 			expect(room.state.players).toHaveLength(2);
+			expect(room.spectators).toHaveLength(1);
 			expect(messages).toHaveLength(1);
 			expect(messages[0].target).toBe("sender");
-			expect(messages[0].message).toMatchObject({
-				type: "error",
-				message: "Room is full",
-			});
+			expect(messages[0].message.type).toBe("room_state");
 		});
 
 		it("allows reconnecting player to rejoin", () => {
@@ -243,6 +241,37 @@ describe("GameRoom", () => {
 			});
 			expect(room.state.status).toBe("finished");
 			expect(completeMsgs.length).toBeGreaterThan(0);
+		});
+	});
+
+	describe("spectator", () => {
+		it("third player joins as spectator when room is full", () => {
+			const room = new GameRoom("room-1");
+			room.handleJoin("p1", "Alice");
+			room.handleJoin("p2", "Bob");
+			const messages = room.handleSpectate("s1", "Charlie");
+
+			expect(room.spectators).toHaveLength(1);
+			expect(room.spectators[0]).toMatchObject({
+				id: "s1",
+				name: "Charlie",
+			});
+			expect(messages).toHaveLength(1);
+			expect(messages[0].target).toBe("sender");
+			expect(messages[0].message.type).toBe("room_state");
+		});
+
+		it("spectators receive progress updates via broadcast", () => {
+			const room = new GameRoom("room-1");
+			room.handleJoin("p1", "Alice");
+			room.handleJoin("p2", "Bob");
+			room.handleStartGame("p1", "easy");
+
+			// Progress sends to opponent only, but game_over goes to all (including spectators via broadcast)
+			const messages = room.handleComplete("p1", room.solution!);
+			const gameOver = messages.find((m) => m.message.type === "game_over");
+			expect(gameOver).toBeDefined();
+			expect(gameOver!.target).toBe("all");
 		});
 	});
 });

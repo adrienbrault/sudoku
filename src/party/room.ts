@@ -19,9 +19,15 @@ export type OutgoingMessage = {
 	message: ServerMessage;
 };
 
+type Spectator = {
+	id: string;
+	name: string;
+};
+
 export class GameRoom {
 	state: RoomState;
 	solution: string | null = null;
+	spectators: Spectator[] = [];
 
 	constructor(roomId: string) {
 		this.state = {
@@ -46,14 +52,9 @@ export class GameRoom {
 			];
 		}
 
-		// Room full
+		// Room full — join as spectator
 		if (this.state.players.length >= 2) {
-			return [
-				{
-					target: "sender",
-					message: { type: "error", message: "Room is full" },
-				},
-			];
+			return this.handleSpectate(playerId, name);
 		}
 
 		const player: Player = {
@@ -198,6 +199,16 @@ export class GameRoom {
 			default:
 				return [];
 		}
+	}
+
+	handleSpectate(spectatorId: string, name: string): OutgoingMessage[] {
+		this.spectators.push({ id: spectatorId, name });
+		return [
+			{
+				target: "sender",
+				message: { type: "room_state", state: this.state },
+			},
+		];
 	}
 
 	handleDisconnect(playerId: string): OutgoingMessage[] {
