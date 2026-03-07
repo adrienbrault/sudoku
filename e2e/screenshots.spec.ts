@@ -31,6 +31,38 @@ test("solo game", async ({ page }, testInfo) => {
 	});
 });
 
+test("solo game - numpad left", async ({ page }, testInfo) => {
+	await page.goto("/");
+	await page.evaluate(() =>
+		localStorage.setItem("sudoku-numpad-position", "left"),
+	);
+	await page.goto("/");
+	await page.waitForLoadState("networkidle");
+	await page.getByText("Start Solo").click();
+	await page.getByText("Easy").click();
+	await page.waitForTimeout(800);
+	await page.screenshot({
+		fullPage: true,
+		path: screenshotPath("solo-numpad-left", testInfo.project.name),
+	});
+});
+
+test("solo game - numpad right", async ({ page }, testInfo) => {
+	await page.goto("/");
+	await page.evaluate(() =>
+		localStorage.setItem("sudoku-numpad-position", "right"),
+	);
+	await page.goto("/");
+	await page.waitForLoadState("networkidle");
+	await page.getByText("Start Solo").click();
+	await page.getByText("Easy").click();
+	await page.waitForTimeout(800);
+	await page.screenshot({
+		fullPage: true,
+		path: screenshotPath("solo-numpad-right", testInfo.project.name),
+	});
+});
+
 test("difficulty picker", async ({ page }, testInfo) => {
 	await page.goto("/");
 	await page.waitForLoadState("networkidle");
