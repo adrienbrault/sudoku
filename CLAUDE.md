@@ -23,9 +23,22 @@ See `spec.md` for full product specification.
 
 ## Git Workflow — MANDATORY
 
-### Atomic Conventional Commits
+### What "Atomic" Means
 
-Every commit is atomic and follows [Conventional Commits](https://www.conventionalcommits.org/):
+A commit is atomic when it contains **one logical change**. Ask yourself: "Can I describe this commit in one sentence without using 'and'?" If not, split it.
+
+**One commit = one reason to change.** A bug fix is not a refactor. A refactor is not a performance improvement. A new utility extraction is not a test fix. Even if you discover all of these while working on the same file, they are separate commits.
+
+Concrete rules:
+- **One bug fix per commit.** If you find 3 bugs, that's 3 commits, each with its own `fix(<scope>)`.
+- **One refactor per commit.** Extracting a utility is one commit. Memoizing a component is another. Changing a data structure is another.
+- **Performance changes are `perf`, not `refactor`.** They have different motivations and risk profiles.
+- **Never combine fix + refactor + perf.** Even if they touch the same file, they are separate commits with separate types.
+- **Config/tooling changes are their own commits.** Changing hooks, linter config, or CI settings is `chore(<scope>)`, not a fixup of whatever feature they support.
+
+### Conventional Commits Format
+
+Every commit follows [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 <type>(<scope>): <short summary>
@@ -35,34 +48,58 @@ Every commit is atomic and follows [Conventional Commits](https://www.convention
 ```
 
 The **subject line** says what changed. The **body** says why.
-Every commit MUST have a body unless it is a trivial fixup. The body explains the reasoning, not a restatement of the diff.
+Every commit MUST have a body. The body explains the reasoning, not a restatement of the diff.
 
-Types: `feat`, `fix`, `test`, `refactor`, `chore`, `docs`, `style`, `ci`
+Types: `feat`, `fix`, `test`, `refactor`, `perf`, `chore`, `docs`, `style`, `ci`
 
 Scopes: `engine`, `board`, `numpad`, `controls`, `solo`, `multiplayer`, `lobby`, `ui`, `hooks`, `server`, `types`
 
-Examples:
-```
-test(engine): add puzzle generation and solving tests
+### Anti-Patterns — NEVER Do These
 
-Validates that generated puzzles have correct clue counts per
-difficulty, solutions preserve given clues, and every row/column
-contains digits 1-9. These tests define the contract for the
-sudoku engine before implementation.
-```
-```
-feat(engine): implement puzzle generation and solving
+**The kitchen-sink commit.** "refactor: fix bugs and improve code quality across codebase" is not a commit message — it's a confession that you batched unrelated changes. If the summary needs "and" or covers multiple categories, split the commit.
 
-Uses the `sudoku` npm package (0-8 based) and maps to our 1-9
-format. Difficulty controls clue count by randomly removing
-givens from the generated puzzle. Conflict detection scans
-row/col/box for duplicate values.
-```
-```
-fixup! feat(engine): implement puzzle generation and solving
+**The fake fixup.** `fixup!` means "this change is part of the parent commit and should be squashed into it." It does NOT mean "this is a follow-up change in the same area." A fixup must pass this test: if you squashed it into the parent commit right now, would the parent's commit message still accurately describe the result? If not, it's a new commit, not a fixup.
 
-Fix off-by-one in difficulty clue range — expert was generating
-puzzles with too many clues.
+Examples of real fixups:
+- Typo in code introduced by the parent commit
+- Lint fix for code introduced by the parent commit
+- Missing edge case in a function introduced by the parent commit
+
+Examples of things that are NOT fixups (make them standalone commits):
+- Adding new CI hooks or tooling config → `chore(hooks): ...`
+- Updating CLAUDE.md workflow instructions → `docs: ...` or `chore: ...`
+- Changing behavior that was already working → `fix(...)` or `refactor(...)`
+- Performance optimization of existing code → `perf(...)`
+
+**The over-scoped refactor.** A commit that touches 13 files across components, hooks, lib, and tests is almost certainly not atomic. Refactors should be narrow: one extraction, one structural change, one migration pattern.
+
+### Good Examples
+
+```
+fix(solo): replace setTimeout-during-render with useEffect
+
+The old code fired a new setTimeout on every re-render while
+status was "completed", queueing multiple state updates.
+useEffect runs once when status transitions.
+```
+```
+perf(hooks): derive conflicts via useMemo instead of reducer state
+
+Eliminates sync burden across 4 reducer actions. Conflicts are
+now computed from board state, removing the possibility of
+stale conflict data.
+```
+```
+refactor(ui): extract formatTime utility from Timer and SoloGame
+
+Both components had identical duration formatting logic.
+Shared utility in src/lib/format.ts.
+```
+```
+chore(hooks): add biome auto-format on file save
+
+PostToolUse hook runs biome check --write on the edited file,
+keeping formatting consistent without manual steps.
 ```
 
 ### Commit Cadence — Automatic, After Every Completed Step
@@ -77,14 +114,15 @@ If the refactor step has no changes, skip that commit. The point is: every passi
 
 **Never batch multiple tests before implementing.** See `.claude/skills/tdd/SKILL.md` for the full TDD workflow.
 
+Outside of TDD, the same principle applies: **commit after each logical change**, not after a batch of changes. If you fix a bug, commit. If you then extract a helper, commit again. If you then optimize a hot path, commit again.
+
 ### Fixup Commits
 
-When a change logically belongs to a previous commit (typo, rename, lint fix, missed edge case):
+Fixup commits are ONLY for changes that logically belong to a previous commit — where the parent commit's message would still be accurate after squashing.
 
-- Use `git commit --fixup=<sha>` to create a fixup commit
+- Use `git commit --fixup=<sha>` only when the change corrects or completes the parent commit
 - Fixup commits still get a description body explaining *why* the fixup is needed
-- This keeps history clean and allows `git rebase --autosquash` later
-- For renames, style fixes, import reordering — always fixup the originating commit
+- **When in doubt, make it a standalone commit.** A standalone commit with the right type is always better than a wrong fixup.
 - Never amend published commits; always append fixup commits
 
 ### Commit Hygiene
