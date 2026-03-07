@@ -55,6 +55,7 @@ export const Cell = memo(function Cell({
 				transition-colors duration-100
 				select-none touch-manipulation
 				outline-none focus-visible:ring-2 focus-visible:ring-accent
+				${isSelected ? "cell-selected-glow" : ""}
 			`}
 			onClick={() => onSelect(row, col)}
 			aria-label={`Cell row ${row + 1} column ${col + 1}${cell.value ? `, value ${cell.value}` : ", empty"}`}
