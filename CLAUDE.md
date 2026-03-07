@@ -65,9 +65,9 @@ Fix off-by-one in difficulty clue range — expert was generating
 puzzles with too many clues.
 ```
 
-### Commit Cadence — After Every TDD Cycle
+### Commit Cadence — Automatic, After Every Completed Step
 
-Commit **immediately** after each vertical slice (RED→GREEN→REFACTOR) completes:
+**Always commit automatically** — do not wait for the user to ask. Commit **immediately** after each vertical slice (RED→GREEN→REFACTOR) completes:
 
 1. **RED** → write ONE failing test → commit: `test(<scope>): <what is being tested>`
 2. **GREEN** → write minimum passing code → commit: `feat(<scope>): <what was implemented>`
