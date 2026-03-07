@@ -27,6 +27,14 @@ export function MultiplayerGame({
 }: MultiplayerGameProps) {
 	const mp = useMultiplayer({ socket, playerId, playerName });
 
+	if (!mp.connected && !mp.roomState) {
+		return (
+			<div className="flex min-h-dvh items-center justify-center bg-white dark:bg-gray-950">
+				<p className="text-gray-500 dark:text-gray-400">Connecting...</p>
+			</div>
+		);
+	}
+
 	if (!mp.roomState) {
 		return (
 			<div className="flex min-h-dvh items-center justify-center bg-white dark:bg-gray-950">
@@ -50,16 +58,31 @@ export function MultiplayerGame({
 
 	if (mp.puzzle) {
 		return (
-			<MultiplayerBoard
-				puzzle={mp.puzzle}
-				playerId={playerId}
-				opponentProgress={mp.opponentProgress}
-				gameOver={mp.gameOver}
-				onProgress={mp.sendProgress}
-				onComplete={mp.sendComplete}
-				onRematch={mp.sendRematch}
-				onBack={onBack}
-			/>
+			<>
+				<MultiplayerBoard
+					puzzle={mp.puzzle}
+					playerId={playerId}
+					opponentProgress={mp.opponentProgress}
+					opponentDisconnected={mp.opponentDisconnected}
+					gameOver={mp.gameOver}
+					onProgress={mp.sendProgress}
+					onComplete={mp.sendComplete}
+					onRematch={mp.sendRematch}
+					onBack={onBack}
+				/>
+				{!mp.connected && (
+					<div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+						<div className="bg-white dark:bg-gray-900 rounded-2xl px-8 py-6 shadow-2xl text-center">
+							<p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+								Reconnecting...
+							</p>
+							<p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+								Please wait
+							</p>
+						</div>
+					</div>
+				)}
+			</>
 		);
 	}
 
@@ -73,6 +96,7 @@ type MultiplayerBoardProps = {
 		cellsRemaining: number;
 		completionPercent: number;
 	} | null;
+	opponentDisconnected: boolean;
 	gameOver: { winnerId: string; winnerName: string } | null;
 	onProgress: (cellsRemaining: number, completionPercent: number) => void;
 	onComplete: (board: string) => void;
@@ -84,6 +108,7 @@ function MultiplayerBoard({
 	puzzle,
 	playerId,
 	opponentProgress,
+	opponentDisconnected,
 	gameOver,
 	onProgress,
 	onComplete,
@@ -161,7 +186,12 @@ function MultiplayerBoard({
 			{opponentProgress && (
 				<div className="w-full max-w-[min(100vw-2rem,28rem)] mb-3">
 					<div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
-						<span>Opponent</span>
+						<span>
+							Opponent
+							{opponentDisconnected && (
+								<span className="ml-1 text-yellow-500">(reconnecting...)</span>
+							)}
+						</span>
 						<span>{opponentProgress.completionPercent}%</span>
 					</div>
 					<div className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">

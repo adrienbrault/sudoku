@@ -29,6 +29,7 @@ export function useMultiplayer({
 		useState<OpponentProgress | null>(null);
 	const [gameOver, setGameOver] = useState<GameOverInfo | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const [opponentDisconnected, setOpponentDisconnected] = useState(false);
 	const socketRef = useRef(socket);
 	socketRef.current = socket;
 
@@ -65,6 +66,12 @@ export function useMultiplayer({
 					setPuzzle(msg.puzzle);
 					setGameOver(null);
 					setOpponentProgress(null);
+					break;
+				case "opponent_disconnected":
+					setOpponentDisconnected(true);
+					break;
+				case "opponent_reconnected":
+					setOpponentDisconnected(false);
 					break;
 				case "error":
 					setError(msg.message);
@@ -118,6 +125,7 @@ export function useMultiplayer({
 		roomState,
 		puzzle,
 		opponentProgress,
+		opponentDisconnected,
 		gameOver,
 		error,
 		sendStartGame,
