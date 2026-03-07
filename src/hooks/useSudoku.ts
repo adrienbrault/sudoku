@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useReducer } from "react";
+import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
+import { haptics } from "../lib/haptics.ts";
 import {
 	cellKey,
 	getConflicts,
@@ -187,23 +188,41 @@ export function useSudoku(puzzle: string, _solution: string) {
 		return { remainingCounts: counts, cellsRemaining: empty };
 	}, [state.board]);
 
+	// Haptic feedback for conflicts and completion
+	const prevConflictSize = useRef(conflicts.size);
+	useEffect(() => {
+		if (conflicts.size > prevConflictSize.current) {
+			haptics.conflict();
+		}
+		prevConflictSize.current = conflicts.size;
+	}, [conflicts]);
+
+	useEffect(() => {
+		if (state.status === "completed") {
+			haptics.success();
+		}
+	}, [state.status]);
+
 	const selectCell = useCallback(
 		(row: number, col: number) => dispatch({ type: "SELECT_CELL", row, col }),
 		[],
 	);
 
-	const placeNumber = useCallback(
-		(value: number) => dispatch({ type: "PLACE_NUMBER", value }),
-		[],
-	);
+	const placeNumber = useCallback((value: number) => {
+		haptics.tap();
+		dispatch({ type: "PLACE_NUMBER", value });
+	}, []);
 
-	const erase = useCallback(() => dispatch({ type: "ERASE" }), []);
+	const erase = useCallback(() => {
+		haptics.tap();
+		dispatch({ type: "ERASE" });
+	}, []);
 	const undo = useCallback(() => dispatch({ type: "UNDO" }), []);
 
-	const toggleNotesMode = useCallback(
-		() => dispatch({ type: "TOGGLE_NOTES" }),
-		[],
-	);
+	const toggleNotesMode = useCallback(() => {
+		haptics.light();
+		dispatch({ type: "TOGGLE_NOTES" });
+	}, []);
 
 	const setActiveNumber = useCallback(
 		(value: number) => dispatch({ type: "SET_ACTIVE_NUMBER", value }),
