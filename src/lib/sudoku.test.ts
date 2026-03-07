@@ -9,6 +9,12 @@ import {
 } from "./sudoku.ts";
 import type { Board } from "./types.ts";
 
+// A known valid puzzle and its solution — avoids calling generatePuzzle in every test
+const KNOWN_PUZZLE =
+	"..4.7...2....89...8...6.9....6...54.7.....3..1............974...2..18.....3..5.6.";
+const KNOWN_SOLUTION =
+	"594173682267589134831462957386721549742956318159834276618397425425618793973245861";
+
 describe("generatePuzzle", () => {
 	it("returns an 81-character string", () => {
 		const puzzle = generatePuzzle("medium");
@@ -37,15 +43,13 @@ describe("generatePuzzle", () => {
 
 describe("solvePuzzle", () => {
 	it("returns a valid 81-character solution", () => {
-		const puzzle = generatePuzzle("medium");
-		const solution = solvePuzzle(puzzle);
+		const solution = solvePuzzle(KNOWN_PUZZLE);
 		expect(solution).toHaveLength(81);
 		expect(solution).toMatch(/^[1-9]{81}$/);
 	});
 
 	it("solution contains all digits 1-9 in each row", () => {
-		const puzzle = generatePuzzle("easy");
-		const solution = solvePuzzle(puzzle);
+		const solution = solvePuzzle(KNOWN_PUZZLE);
 		for (let row = 0; row < 9; row++) {
 			const digits = solution.slice(row * 9, row * 9 + 9).split("");
 			expect(new Set(digits).size).toBe(9);
@@ -53,8 +57,7 @@ describe("solvePuzzle", () => {
 	});
 
 	it("solution contains all digits 1-9 in each column", () => {
-		const puzzle = generatePuzzle("easy");
-		const solution = solvePuzzle(puzzle);
+		const solution = solvePuzzle(KNOWN_PUZZLE);
 		for (let col = 0; col < 9; col++) {
 			const digits: string[] = [];
 			for (let row = 0; row < 9; row++) {
@@ -65,11 +68,10 @@ describe("solvePuzzle", () => {
 	});
 
 	it("preserves given clues from the puzzle", () => {
-		const puzzle = generatePuzzle("easy");
-		const solution = solvePuzzle(puzzle);
+		const solution = solvePuzzle(KNOWN_PUZZLE);
 		for (let i = 0; i < 81; i++) {
-			if (puzzle[i] !== ".") {
-				expect(solution[i]).toBe(puzzle[i]);
+			if (KNOWN_PUZZLE[i] !== ".") {
+				expect(solution[i]).toBe(KNOWN_PUZZLE[i]);
 			}
 		}
 	});
@@ -77,8 +79,7 @@ describe("solvePuzzle", () => {
 
 describe("parsePuzzle", () => {
 	it("returns a 9x9 board", () => {
-		const puzzle = generatePuzzle("easy");
-		const board = parsePuzzle(puzzle);
+		const board = parsePuzzle(KNOWN_PUZZLE);
 		expect(board).toHaveLength(9);
 		for (const row of board) {
 			expect(row).toHaveLength(9);
@@ -86,11 +87,10 @@ describe("parsePuzzle", () => {
 	});
 
 	it("marks given cells correctly", () => {
-		const puzzle = generatePuzzle("easy");
-		const board = parsePuzzle(puzzle);
+		const board = parsePuzzle(KNOWN_PUZZLE);
 		for (let row = 0; row < 9; row++) {
 			for (let col = 0; col < 9; col++) {
-				const char = puzzle[row * 9 + col];
+				const char = KNOWN_PUZZLE[row * 9 + col];
 				if (char !== ".") {
 					expect(board[row][col].isGiven).toBe(true);
 					expect(board[row][col].value).toBe(Number(char));
@@ -103,8 +103,7 @@ describe("parsePuzzle", () => {
 	});
 
 	it("initializes empty notes for all cells", () => {
-		const puzzle = generatePuzzle("easy");
-		const board = parsePuzzle(puzzle);
+		const board = parsePuzzle(KNOWN_PUZZLE);
 		for (const row of board) {
 			for (const cell of row) {
 				expect(cell.notes).toBeInstanceOf(Set);
@@ -116,9 +115,7 @@ describe("parsePuzzle", () => {
 
 describe("getConflicts", () => {
 	it("returns empty set when no conflicts", () => {
-		const puzzle = generatePuzzle("easy");
-		const solution = solvePuzzle(puzzle);
-		const board = parsePuzzle(solution); // fully solved = no conflicts
+		const board = parsePuzzle(KNOWN_SOLUTION);
 		const conflicts = getConflicts(board);
 		expect(conflicts.size).toBe(0);
 	});
@@ -162,21 +159,17 @@ describe("getConflicts", () => {
 
 describe("isBoardComplete", () => {
 	it("returns true for a fully solved board", () => {
-		const puzzle = generatePuzzle("easy");
-		const solution = solvePuzzle(puzzle);
-		const board = parsePuzzle(solution);
+		const board = parsePuzzle(KNOWN_SOLUTION);
 		expect(isBoardComplete(board)).toBe(true);
 	});
 
 	it("returns false when cells are empty", () => {
-		const puzzle = generatePuzzle("easy");
-		const board = parsePuzzle(puzzle);
+		const board = parsePuzzle(KNOWN_PUZZLE);
 		expect(isBoardComplete(board)).toBe(false);
 	});
 
 	it("returns false when there are conflicts even if all filled", () => {
 		const board = makeEmptyBoard();
-		// Fill all cells with 1 — lots of conflicts
 		for (let r = 0; r < 9; r++) {
 			for (let c = 0; c < 9; c++) {
 				board[r][c].value = 1;
