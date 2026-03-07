@@ -118,6 +118,55 @@ export class GameRoom {
 		];
 	}
 
+	handleProgress(
+		playerId: string,
+		cellsRemaining: number,
+		completionPercent: number,
+	): OutgoingMessage[] {
+		const player = this.state.players.find((p) => p.id === playerId);
+		if (!player) return [];
+		player.cellsRemaining = cellsRemaining;
+		player.completionPercent = completionPercent;
+		return [
+			{
+				target: "opponent",
+				message: {
+					type: "opponent_progress",
+					cellsRemaining,
+					completionPercent,
+				},
+			},
+		];
+	}
+
+	handleComplete(playerId: string, board: string): OutgoingMessage[] {
+		if (board !== this.solution) {
+			return [
+				{
+					target: "sender",
+					message: { type: "error", message: "Solution is incorrect" },
+				},
+			];
+		}
+
+		const player = this.state.players.find((p) => p.id === playerId);
+		if (!player) return [];
+
+		this.state.status = "finished";
+		this.state.winnerId = playerId;
+
+		return [
+			{
+				target: "all",
+				message: {
+					type: "game_over",
+					winnerId: playerId,
+					winnerName: player.name,
+				},
+			},
+		];
+	}
+
 	handleDisconnect(playerId: string): OutgoingMessage[] {
 		const player = this.state.players.find((p) => p.id === playerId);
 		if (!player) return [];

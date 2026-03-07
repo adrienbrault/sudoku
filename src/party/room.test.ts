@@ -123,4 +123,64 @@ describe("GameRoom", () => {
 			});
 		});
 	});
+
+	describe("progress", () => {
+		it("forwards progress to opponent", () => {
+			const room = new GameRoom("room-1");
+			room.handleJoin("p1", "Alice");
+			room.handleJoin("p2", "Bob");
+			room.handleStartGame("p1", "easy");
+
+			const messages = room.handleProgress("p1", 30, 63);
+
+			expect(room.state.players[0].cellsRemaining).toBe(30);
+			expect(room.state.players[0].completionPercent).toBe(63);
+			expect(messages).toHaveLength(1);
+			expect(messages[0].target).toBe("opponent");
+			expect(messages[0].message).toMatchObject({
+				type: "opponent_progress",
+				cellsRemaining: 30,
+				completionPercent: 63,
+			});
+		});
+	});
+
+	describe("completion", () => {
+		it("accepts correct solution and declares winner", () => {
+			const room = new GameRoom("room-1");
+			room.handleJoin("p1", "Alice");
+			room.handleJoin("p2", "Bob");
+			room.handleStartGame("p1", "easy");
+
+			const messages = room.handleComplete("p1", room.solution!);
+
+			expect(room.state.status).toBe("finished");
+			expect(room.state.winnerId).toBe("p1");
+			const gameOver = messages.find((m) => m.message.type === "game_over");
+			expect(gameOver).toBeDefined();
+			expect(gameOver!.target).toBe("all");
+			expect(gameOver!.message).toMatchObject({
+				type: "game_over",
+				winnerId: "p1",
+				winnerName: "Alice",
+			});
+		});
+
+		it("rejects incorrect solution", () => {
+			const room = new GameRoom("room-1");
+			room.handleJoin("p1", "Alice");
+			room.handleJoin("p2", "Bob");
+			room.handleStartGame("p1", "easy");
+
+			const wrongBoard = "1".repeat(81);
+			const messages = room.handleComplete("p1", wrongBoard);
+
+			expect(room.state.status).toBe("playing");
+			expect(room.state.winnerId).toBeNull();
+			expect(messages[0].message).toMatchObject({
+				type: "error",
+				message: "Solution is incorrect",
+			});
+		});
+	});
 });
