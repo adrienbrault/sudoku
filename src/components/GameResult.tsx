@@ -12,8 +12,8 @@ export function GameResult({
 	onNewGame,
 }: GameResultProps) {
 	return (
-		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-6">
-			<div className="flex flex-col items-center gap-6 bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl max-w-sm w-full">
+		<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-6 animate-modal-backdrop">
+			<div className="flex flex-col items-center gap-6 bg-white dark:bg-gray-900 rounded-2xl p-8 shadow-2xl max-w-sm w-full animate-modal-content">
 				<div className="flex flex-col items-center gap-2">
 					<span className="text-4xl">{isWinner ? "🎉" : "👏"}</span>
 					<h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">

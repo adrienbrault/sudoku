@@ -80,8 +80,8 @@ export function MultiplayerGame({
 					onBack={onBack}
 				/>
 				{!mp.connected && (
-					<div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-						<div className="bg-white dark:bg-gray-900 rounded-2xl px-8 py-6 shadow-2xl text-center">
+					<div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-modal-backdrop">
+						<div className="bg-white dark:bg-gray-900 rounded-2xl px-8 py-6 shadow-2xl text-center animate-modal-content">
 							<p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
 								Reconnecting...
 							</p>
