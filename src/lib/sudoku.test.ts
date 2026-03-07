@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+	cellKey,
 	generatePuzzle,
 	getConflicts,
 	isBoardComplete,
@@ -127,8 +128,8 @@ describe("getConflicts", () => {
 		board[0][0].value = 5;
 		board[0][4].value = 5;
 		const conflicts = getConflicts(board);
-		expect(conflicts.has("0,0")).toBe(true);
-		expect(conflicts.has("0,4")).toBe(true);
+		expect(conflicts.has(cellKey(0, 0))).toBe(true);
+		expect(conflicts.has(cellKey(0, 4))).toBe(true);
 	});
 
 	it("detects column conflict", () => {
@@ -136,8 +137,8 @@ describe("getConflicts", () => {
 		board[0][0].value = 3;
 		board[5][0].value = 3;
 		const conflicts = getConflicts(board);
-		expect(conflicts.has("0,0")).toBe(true);
-		expect(conflicts.has("5,0")).toBe(true);
+		expect(conflicts.has(cellKey(0, 0))).toBe(true);
+		expect(conflicts.has(cellKey(5, 0))).toBe(true);
 	});
 
 	it("detects box conflict", () => {
@@ -145,8 +146,8 @@ describe("getConflicts", () => {
 		board[0][0].value = 7;
 		board[2][2].value = 7;
 		const conflicts = getConflicts(board);
-		expect(conflicts.has("0,0")).toBe(true);
-		expect(conflicts.has("2,2")).toBe(true);
+		expect(conflicts.has(cellKey(0, 0))).toBe(true);
+		expect(conflicts.has(cellKey(2, 2))).toBe(true);
 	});
 
 	it("does not flag non-conflicting cells", () => {

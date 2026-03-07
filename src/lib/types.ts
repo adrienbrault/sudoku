@@ -44,7 +44,7 @@ export type GameState = {
 	notesMode: boolean;
 	timer: number; // seconds elapsed
 	history: MoveAction[];
-	conflicts: Set<string>; // "row,col" strings
+	conflicts: Set<number>; // row*9+col keys
 };
 
 // --- Numpad ---

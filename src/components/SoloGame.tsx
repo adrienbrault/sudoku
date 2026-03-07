@@ -1,6 +1,7 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
 import { useSudoku } from "../hooks/useSudoku.ts";
+import { formatTime } from "../lib/format.ts";
 import { generatePuzzle, solvePuzzle } from "../lib/sudoku.ts";
 import type { Difficulty } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
@@ -27,29 +28,18 @@ export function SoloGame({ difficulty, onBack }: SoloGameProps) {
 	const timerSecondsRef = useRef(0);
 	const [showResult, setShowResult] = useState(false);
 
-	const handleNumber = (n: number) => {
-		if (game.activeNumber === n) {
-			game.setActiveNumber(n); // toggle off
-		} else {
-			game.setActiveNumber(n);
-		}
+	useEffect(() => {
+		if (game.status !== "completed") return;
+		const id = setTimeout(() => setShowResult(true), 300);
+		return () => clearTimeout(id);
+	}, [game.status]);
 
+	const handleNumber = (n: number) => {
+		game.setActiveNumber(n);
 		if (game.selectedCell) {
 			game.placeNumber(n);
 		}
 	};
-
-	const formatTime = (s: number) => {
-		const mins = Math.floor(s / 60);
-		const secs = s % 60;
-		return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
-	};
-
-	// Show result modal when completed
-	if (game.status === "completed" && !showResult) {
-		// Use setTimeout to avoid setState during render
-		setTimeout(() => setShowResult(true), 300);
-	}
 
 	const numPad = (
 		<NumPad

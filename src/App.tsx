@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { DifficultyPicker } from "./components/DifficultyPicker.tsx";
 import { Landing } from "./components/Landing.tsx";
 import { SoloGame } from "./components/SoloGame.tsx";
@@ -8,12 +8,13 @@ import "./index.css";
 type Screen =
 	| { name: "landing" }
 	| { name: "difficulty"; mode: "solo" | "create" }
-	| { name: "solo"; difficulty: Difficulty }
+	| { name: "solo"; difficulty: Difficulty; gameId: number }
 	| { name: "create"; difficulty: Difficulty }
 	| { name: "join" };
 
 function App() {
 	const [screen, setScreen] = useState<Screen>({ name: "landing" });
+	const gameIdRef = useRef(0);
 
 	switch (screen.name) {
 		case "landing":
@@ -33,7 +34,12 @@ function App() {
 					<DifficultyPicker
 						onSelect={(difficulty) => {
 							if (screen.mode === "solo") {
-								setScreen({ name: "solo", difficulty });
+								gameIdRef.current++;
+								setScreen({
+									name: "solo",
+									difficulty,
+									gameId: gameIdRef.current,
+								});
 							} else {
 								setScreen({ name: "create", difficulty });
 							}
@@ -46,7 +52,7 @@ function App() {
 		case "solo":
 			return (
 				<SoloGame
-					key={`${screen.difficulty}-${Date.now()}`}
+					key={screen.gameId}
 					difficulty={screen.difficulty}
 					onBack={() => setScreen({ name: "landing" })}
 				/>

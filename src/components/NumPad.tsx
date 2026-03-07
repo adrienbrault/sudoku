@@ -1,3 +1,4 @@
+import { DIGITS } from "../lib/constants.ts";
 import type { NumPadPosition } from "../lib/types.ts";
 
 type NumPadProps = {
@@ -25,7 +26,7 @@ export function NumPad({
 			role="group"
 			aria-label="Number pad"
 		>
-			{[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => {
+			{DIGITS.map((n) => {
 				const isActive = activeNumber === n;
 				const remaining = remainingCounts[n];
 				const isComplete = remaining === 0;

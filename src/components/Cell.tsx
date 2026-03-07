@@ -1,3 +1,5 @@
+import { memo } from "react";
+import { DIGITS } from "../lib/constants.ts";
 import type { Cell as CellType } from "../lib/types.ts";
 
 type CellProps = {
@@ -11,7 +13,7 @@ type CellProps = {
 	onSelect: (row: number, col: number) => void;
 };
 
-export function Cell({
+export const Cell = memo(function Cell({
 	cell,
 	row,
 	col,
@@ -37,7 +39,6 @@ export function Cell({
 			? "text-cell-conflict font-semibold"
 			: "text-cell-user font-semibold";
 
-	// Border logic for 3x3 box separation
 	const borderRight =
 		col === 2 || col === 5 ? "border-r-2 border-r-board-border" : "";
 	const borderBottom =
@@ -66,7 +67,7 @@ export function Cell({
 				</span>
 			) : cell.notes.size > 0 ? (
 				<div className="grid grid-cols-3 grid-rows-3 w-full h-full p-[1px]">
-					{[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+					{DIGITS.map((n) => (
 						<span
 							key={n}
 							className="flex items-center justify-center text-[clamp(0.4rem,1.5vw,0.625rem)] text-gray-400 dark:text-gray-500 leading-none"
@@ -78,4 +79,4 @@ export function Cell({
 			) : null}
 		</button>
 	);
-}
+});

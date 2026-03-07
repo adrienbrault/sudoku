@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { generatePuzzle, solvePuzzle } from "../lib/sudoku.ts";
+import { cellKey, generatePuzzle, solvePuzzle } from "../lib/sudoku.ts";
 import { useSudoku } from "./useSudoku.ts";
 
 function setupHook(difficulty: "easy" | "medium" = "easy") {
@@ -178,8 +178,12 @@ describe("useSudoku", () => {
 		act(() => result.current.selectCell(pos2.row, pos2.col));
 		act(() => result.current.placeNumber(9));
 
-		expect(result.current.conflicts.has(`${pos1.row},${pos1.col}`)).toBe(true);
-		expect(result.current.conflicts.has(`${pos2.row},${pos2.col}`)).toBe(true);
+		expect(result.current.conflicts.has(cellKey(pos1.row, pos1.col))).toBe(
+			true,
+		);
+		expect(result.current.conflicts.has(cellKey(pos2.row, pos2.col))).toBe(
+			true,
+		);
 	});
 
 	it("detects completion when board is fully and correctly solved", () => {

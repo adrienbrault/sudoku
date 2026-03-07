@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { formatTime } from "../lib/format.ts";
 
 type TimerProps = {
 	running: boolean;
@@ -22,12 +23,9 @@ export function Timer({ running, onTick }: TimerProps) {
 		return () => clearInterval(interval);
 	}, [running]);
 
-	const mins = Math.floor(seconds / 60);
-	const secs = seconds % 60;
-
 	return (
 		<span className="font-mono text-sm text-gray-500 dark:text-gray-400 tabular-nums">
-			{String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
+			{formatTime(seconds)}
 		</span>
 	);
 }

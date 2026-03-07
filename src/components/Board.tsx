@@ -1,10 +1,11 @@
+import { cellKey } from "../lib/sudoku.ts";
 import type { Board as BoardType, Position } from "../lib/types.ts";
 import { Cell } from "./Cell.tsx";
 
 type BoardProps = {
 	board: BoardType;
 	selectedCell: Position | null;
-	conflicts: Set<string>;
+	conflicts: Set<number>;
 	onSelectCell: (row: number, col: number) => void;
 };
 
@@ -40,11 +41,11 @@ export function Board({
 						selectedValue !== null &&
 						cell.value !== null &&
 						cell.value === selectedValue;
-					const isConflict = conflicts.has(`${rowIdx},${colIdx}`);
+					const isConflict = conflicts.has(cellKey(rowIdx, colIdx));
 
 					return (
 						<Cell
-							key={`${rowIdx}-${colIdx}`}
+							key={cellKey(rowIdx, colIdx)}
 							cell={cell}
 							row={rowIdx}
 							col={colIdx}

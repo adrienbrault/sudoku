@@ -1,16 +1,19 @@
 import { useCallback, useMemo, useReducer } from "react";
-import { getConflicts, isBoardComplete, parsePuzzle } from "../lib/sudoku.ts";
+import {
+	cellKey,
+	getConflicts,
+	isBoardComplete,
+	parsePuzzle,
+} from "../lib/sudoku.ts";
 import type { Board, GameStatus, MoveAction, Position } from "../lib/types.ts";
 
 type State = {
 	board: Board;
-	solution: string;
 	status: GameStatus;
 	selectedCell: Position | null;
 	activeNumber: number | null;
 	notesMode: boolean;
 	history: MoveAction[];
-	conflicts: Set<string>;
 };
 
 type Action =
@@ -73,12 +76,11 @@ function reducer(state: State, action: Action): State {
 			board[row][col].value = action.value;
 			board[row][col].notes = new Set();
 			const conflicts = getConflicts(board);
-			const complete = isBoardComplete(board);
+			const complete = isBoardComplete(board, conflicts);
 
 			return {
 				...state,
 				board,
-				conflicts,
 				status: complete ? "completed" : state.status,
 				history: [...state.history, moveAction],
 			};
@@ -99,12 +101,10 @@ function reducer(state: State, action: Action): State {
 			};
 			board[row][col].value = null;
 			board[row][col].notes = new Set();
-			const conflicts = getConflicts(board);
 
 			return {
 				...state,
 				board,
-				conflicts,
 				history: [...state.history, moveAction],
 			};
 		}
@@ -135,8 +135,7 @@ function reducer(state: State, action: Action): State {
 				}
 			}
 
-			const conflicts = getConflicts(board);
-			return { ...state, board, conflicts, history };
+			return { ...state, board, history };
 		}
 
 		case "TOGGLE_NOTES": {
@@ -155,26 +154,38 @@ function reducer(state: State, action: Action): State {
 	}
 }
 
-function initState(puzzle: string, solution: string): State {
+function initState(puzzle: string): State {
 	const board = parsePuzzle(puzzle);
 	return {
 		board,
-		solution,
 		status: "playing",
 		selectedCell: null,
 		activeNumber: null,
 		notesMode: false,
 		history: [],
-		conflicts: new Set(),
 	};
 }
 
-export function useSudoku(puzzle: string, solution: string) {
-	const [state, dispatch] = useReducer(
-		reducer,
-		{ puzzle, solution },
-		({ puzzle, solution }) => initState(puzzle, solution),
-	);
+export function useSudoku(puzzle: string, _solution: string) {
+	const [state, dispatch] = useReducer(reducer, puzzle, initState);
+
+	const conflicts = useMemo(() => getConflicts(state.board), [state.board]);
+
+	const { remainingCounts, cellsRemaining } = useMemo(() => {
+		const counts: Record<number, number> = {};
+		for (let d = 1; d <= 9; d++) counts[d] = 9;
+		let empty = 0;
+		for (const row of state.board) {
+			for (const cell of row) {
+				if (cell.value !== null && cell.value >= 1 && cell.value <= 9) {
+					counts[cell.value]--;
+				} else {
+					empty++;
+				}
+			}
+		}
+		return { remainingCounts: counts, cellsRemaining: empty };
+	}, [state.board]);
 
 	const selectCell = useCallback(
 		(row: number, col: number) => dispatch({ type: "SELECT_CELL", row, col }),
@@ -187,7 +198,6 @@ export function useSudoku(puzzle: string, solution: string) {
 	);
 
 	const erase = useCallback(() => dispatch({ type: "ERASE" }), []);
-
 	const undo = useCallback(() => dispatch({ type: "UNDO" }), []);
 
 	const toggleNotesMode = useCallback(
@@ -200,38 +210,16 @@ export function useSudoku(puzzle: string, solution: string) {
 		[],
 	);
 
-	const remainingCounts = useMemo(() => {
-		const counts: Record<number, number> = {};
-		for (let d = 1; d <= 9; d++) counts[d] = 9;
-		for (const row of state.board) {
-			for (const cell of row) {
-				if (cell.value !== null && cell.value >= 1 && cell.value <= 9) {
-					counts[cell.value]--;
-				}
-			}
-		}
-		return counts;
-	}, [state.board]);
-
-	const cellsRemaining = useMemo(() => {
-		let count = 0;
-		for (const row of state.board) {
-			for (const cell of row) {
-				if (cell.value === null) count++;
-			}
-		}
-		return count;
-	}, [state.board]);
-
 	return {
 		board: state.board,
 		status: state.status,
 		selectedCell: state.selectedCell,
 		activeNumber: state.activeNumber,
 		notesMode: state.notesMode,
-		conflicts: state.conflicts,
+		conflicts,
 		remainingCounts,
 		cellsRemaining,
+		cellKey,
 		selectCell,
 		placeNumber,
 		erase,
