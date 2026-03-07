@@ -15,9 +15,10 @@ import { Timer } from "./Timer.tsx";
 type SoloGameProps = {
 	difficulty: Difficulty;
 	onBack: () => void;
+	onRematch?: () => void;
 };
 
-export function SoloGame({ difficulty, onBack }: SoloGameProps) {
+export function SoloGame({ difficulty, onBack, onRematch }: SoloGameProps) {
 	const { puzzle, solution } = useMemo(() => {
 		const p = generatePuzzle(difficulty);
 		const s = solvePuzzle(p);
@@ -118,6 +119,7 @@ export function SoloGame({ difficulty, onBack }: SoloGameProps) {
 					isWinner={true}
 					time={formatTime(timerSecondsRef.current)}
 					onNewGame={onBack}
+					onRematch={onRematch}
 				/>
 			)}
 		</div>

@@ -96,6 +96,14 @@ function App() {
 					key={screen.gameId}
 					difficulty={screen.difficulty}
 					onBack={() => setScreen({ name: "landing" })}
+					onRematch={() => {
+						gameIdRef.current++;
+						setScreen({
+							name: "solo",
+							difficulty: screen.difficulty,
+							gameId: gameIdRef.current,
+						});
+					}}
 				/>
 			);
 
