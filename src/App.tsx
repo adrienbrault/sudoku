@@ -1,9 +1,11 @@
 import PartySocket from "partysocket";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { DarkModeToggle } from "./components/DarkModeToggle.tsx";
 import { DifficultyPicker } from "./components/DifficultyPicker.tsx";
 import { Landing } from "./components/Landing.tsx";
 import { MultiplayerGame } from "./components/MultiplayerGame.tsx";
 import { SoloGame } from "./components/SoloGame.tsx";
+import { useDarkMode } from "./hooks/useDarkMode.ts";
 import type { Difficulty } from "./lib/types.ts";
 import "./index.css";
 
@@ -45,11 +47,18 @@ function App() {
 		return { name: "landing" };
 	});
 	const gameIdRef = useRef(0);
+	const darkMode = useDarkMode();
 
 	switch (screen.name) {
 		case "landing":
 			return (
-				<div className="flex min-h-dvh items-center justify-center bg-white dark:bg-gray-950">
+				<div className="flex min-h-dvh items-center justify-center bg-white dark:bg-gray-950 relative">
+					<div className="absolute top-4 right-4">
+						<DarkModeToggle
+							isDark={darkMode.isDark}
+							onToggle={darkMode.toggle}
+						/>
+					</div>
 					<Landing
 						onSolo={() => setScreen({ name: "difficulty", mode: "solo" })}
 						onCreate={() => setScreen({ name: "difficulty", mode: "create" })}
