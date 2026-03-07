@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { haptics } from "../lib/haptics.ts";
+import { sounds } from "../lib/sounds.ts";
 import {
 	cellKey,
 	getConflicts,
@@ -188,11 +189,12 @@ export function useSudoku(puzzle: string, _solution: string) {
 		return { remainingCounts: counts, cellsRemaining: empty };
 	}, [state.board]);
 
-	// Haptic feedback for conflicts and completion
+	// Haptic + sound feedback for conflicts and completion
 	const prevConflictSize = useRef(conflicts.size);
 	useEffect(() => {
 		if (conflicts.size > prevConflictSize.current) {
 			haptics.conflict();
+			sounds.conflict();
 		}
 		prevConflictSize.current = conflicts.size;
 	}, [conflicts]);
@@ -200,6 +202,7 @@ export function useSudoku(puzzle: string, _solution: string) {
 	useEffect(() => {
 		if (state.status === "completed") {
 			haptics.success();
+			sounds.complete();
 		}
 	}, [state.status]);
 
@@ -210,17 +213,20 @@ export function useSudoku(puzzle: string, _solution: string) {
 
 	const placeNumber = useCallback((value: number) => {
 		haptics.tap();
+		sounds.place();
 		dispatch({ type: "PLACE_NUMBER", value });
 	}, []);
 
 	const erase = useCallback(() => {
 		haptics.tap();
+		sounds.erase();
 		dispatch({ type: "ERASE" });
 	}, []);
 	const undo = useCallback(() => dispatch({ type: "UNDO" }), []);
 
 	const toggleNotesMode = useCallback(() => {
 		haptics.light();
+		sounds.note();
 		dispatch({ type: "TOGGLE_NOTES" });
 	}, []);
 

@@ -5,8 +5,10 @@ import { DifficultyPicker } from "./components/DifficultyPicker.tsx";
 import { Landing } from "./components/Landing.tsx";
 import { MultiplayerGame } from "./components/MultiplayerGame.tsx";
 import { SoloGame } from "./components/SoloGame.tsx";
+import { SoundToggle } from "./components/SoundToggle.tsx";
 import { useDarkMode } from "./hooks/useDarkMode.ts";
 import { getDailyPuzzle } from "./lib/daily.ts";
+import { getSoundEnabled, setSoundEnabled } from "./lib/sounds.ts";
 import type { Difficulty } from "./lib/types.ts";
 import "./index.css";
 
@@ -50,12 +52,21 @@ function App() {
 	});
 	const gameIdRef = useRef(0);
 	const darkMode = useDarkMode();
+	const [soundOn, setSoundOn] = useState(getSoundEnabled);
 
 	switch (screen.name) {
 		case "landing":
 			return (
 				<div className="flex min-h-dvh items-center justify-center bg-white dark:bg-gray-950 relative">
-					<div className="absolute top-4 right-4">
+					<div className="absolute top-4 right-4 flex gap-1">
+						<SoundToggle
+							enabled={soundOn}
+							onToggle={() => {
+								const next = !soundOn;
+								setSoundOn(next);
+								setSoundEnabled(next);
+							}}
+						/>
 						<DarkModeToggle
 							isDark={darkMode.isDark}
 							onToggle={darkMode.toggle}
