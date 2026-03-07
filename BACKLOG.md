@@ -36,11 +36,11 @@
 - [x] Rematch flow in solo (new puzzle, same difficulty)
 - [x] Daily challenge / seeded puzzles
 - [x] Stats history (localStorage)
+- [x] Sound effects toggle
 
 ## In Progress
 
 ## Backlog (prioritized)
 
 ### P3 — Nice to have
-- [ ] Sound effects toggle
 - [ ] Spectator mode
