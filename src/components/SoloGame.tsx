@@ -3,6 +3,7 @@ import { useKeyboard } from "../hooks/useKeyboard.ts";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
 import { useSudoku } from "../hooks/useSudoku.ts";
 import { formatTime } from "../lib/format.ts";
+import { saveGameResult } from "../lib/stats.ts";
 import { generatePuzzle, solvePuzzle } from "../lib/sudoku.ts";
 import type { Difficulty } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
@@ -32,9 +33,10 @@ export function SoloGame({ difficulty, onBack, onRematch }: SoloGameProps) {
 
 	useEffect(() => {
 		if (game.status !== "completed") return;
+		saveGameResult(difficulty, timerSecondsRef.current, true);
 		const id = setTimeout(() => setShowResult(true), 300);
 		return () => clearTimeout(id);
-	}, [game.status]);
+	}, [game.status, difficulty]);
 
 	const handleNumber = (n: number) => {
 		game.setActiveNumber(n);
