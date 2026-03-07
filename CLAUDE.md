@@ -102,19 +102,19 @@ PostToolUse hook runs biome check --write on the edited file,
 keeping formatting consistent without manual steps.
 ```
 
-### Commit Cadence — Automatic, After Every Completed Step
+### Commit Cadence — Automatic, After Every Completed Change
 
-**Always commit automatically** — do not wait for the user to ask. Commit **immediately** after each vertical slice (RED→GREEN→REFACTOR) completes:
+**Always commit automatically** — do not wait for the user to ask. This applies to ALL work, not just TDD cycles. Any time you complete a logical change and the project is in a passing state, commit immediately.
+
+**During TDD cycles:**
 
 1. **RED** → write ONE failing test → commit: `test(<scope>): <what is being tested>`
 2. **GREEN** → write minimum passing code → commit: `feat(<scope>): <what was implemented>`
 3. **REFACTOR** → clean up → commit: `refactor(<scope>): <what was improved>`
 
-If the refactor step has no changes, skip that commit. The point is: every passing state gets committed.
-
 **Never batch multiple tests before implementing.** See `.claude/skills/tdd/SKILL.md` for the full TDD workflow.
 
-Outside of TDD, the same principle applies: **commit after each logical change**, not after a batch of changes. If you fix a bug, commit. If you then extract a helper, commit again. If you then optimize a hot path, commit again.
+**Outside TDD — same rule applies.** Editing docs? Commit. Updating config? Commit. Fixing a bug? Commit. Extracting a helper? Commit. Every completed logical change gets its own commit immediately — no waiting for the user to say "commit", no batching "while you're at it" changes.
 
 ### Fixup Commits
 
