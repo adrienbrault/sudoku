@@ -6,6 +6,7 @@ import { Landing } from "./components/Landing.tsx";
 import { MultiplayerGame } from "./components/MultiplayerGame.tsx";
 import { SoloGame } from "./components/SoloGame.tsx";
 import { useDarkMode } from "./hooks/useDarkMode.ts";
+import { getDailyPuzzle } from "./lib/daily.ts";
 import type { Difficulty } from "./lib/types.ts";
 import "./index.css";
 
@@ -35,6 +36,7 @@ type Screen =
 	| { name: "landing" }
 	| { name: "difficulty"; mode: "solo" | "create" }
 	| { name: "solo"; difficulty: Difficulty; gameId: number }
+	| { name: "daily" }
 	| { name: "multiplayer"; roomId: string }
 	| { name: "join" };
 
@@ -61,6 +63,7 @@ function App() {
 					</div>
 					<Landing
 						onSolo={() => setScreen({ name: "difficulty", mode: "solo" })}
+						onDaily={() => setScreen({ name: "daily" })}
 						onCreate={() => setScreen({ name: "difficulty", mode: "create" })}
 						onJoin={() => setScreen({ name: "join" })}
 					/>
@@ -106,6 +109,9 @@ function App() {
 					}}
 				/>
 			);
+
+		case "daily":
+			return <DailyGame onBack={() => setScreen({ name: "landing" })} />;
 
 		case "multiplayer":
 			return (
@@ -213,6 +219,26 @@ function JoinScreen({
 					Back
 				</button>
 			</div>
+		</div>
+	);
+}
+
+function DailyGame({ onBack }: { onBack: () => void }) {
+	const { puzzle, solution, date } = useMemo(() => getDailyPuzzle(), []);
+
+	return (
+		<div>
+			<div className="text-center pt-4 pb-0">
+				<p className="text-xs text-gray-400 dark:text-gray-500">
+					Daily Challenge — {date}
+				</p>
+			</div>
+			<SoloGame
+				difficulty="medium"
+				initialPuzzle={puzzle}
+				initialSolution={solution}
+				onBack={onBack}
+			/>
 		</div>
 	);
 }

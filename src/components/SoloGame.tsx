@@ -15,16 +15,27 @@ import { Timer } from "./Timer.tsx";
 
 type SoloGameProps = {
 	difficulty: Difficulty;
+	initialPuzzle?: string;
+	initialSolution?: string;
 	onBack: () => void;
 	onRematch?: () => void;
 };
 
-export function SoloGame({ difficulty, onBack, onRematch }: SoloGameProps) {
+export function SoloGame({
+	difficulty,
+	initialPuzzle,
+	initialSolution,
+	onBack,
+	onRematch,
+}: SoloGameProps) {
 	const { puzzle, solution } = useMemo(() => {
+		if (initialPuzzle && initialSolution) {
+			return { puzzle: initialPuzzle, solution: initialSolution };
+		}
 		const p = generatePuzzle(difficulty);
 		const s = solvePuzzle(p);
 		return { puzzle: p, solution: s };
-	}, [difficulty]);
+	}, [difficulty, initialPuzzle, initialSolution]);
 
 	const game = useSudoku(puzzle, solution);
 	const { position, setPosition } = useNumPadPosition();
@@ -94,7 +105,9 @@ export function SoloGame({ difficulty, onBack, onRematch }: SoloGameProps) {
 				`}
 			>
 				{position !== "bottom" && numPad}
-				<div className={game.status === "completed" ? "animate-celebration" : ""}>
+				<div
+					className={game.status === "completed" ? "animate-celebration" : ""}
+				>
 					<Board
 						board={game.board}
 						selectedCell={game.selectedCell}

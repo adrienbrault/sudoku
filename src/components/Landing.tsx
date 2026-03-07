@@ -1,10 +1,11 @@
 type LandingProps = {
 	onSolo: () => void;
+	onDaily: () => void;
 	onCreate: () => void;
 	onJoin: () => void;
 };
 
-export function Landing({ onSolo, onCreate, onJoin }: LandingProps) {
+export function Landing({ onSolo, onDaily, onCreate, onJoin }: LandingProps) {
 	return (
 		<div className="flex flex-col items-center gap-10 w-full max-w-sm px-6">
 			<div className="flex flex-col items-center gap-2">
@@ -17,6 +18,7 @@ export function Landing({ onSolo, onCreate, onJoin }: LandingProps) {
 			</div>
 			<div className="flex flex-col gap-3 w-full">
 				<ActionButton label="Start Solo" onClick={onSolo} primary />
+				<ActionButton label="Daily Challenge" onClick={onDaily} />
 				<ActionButton label="Create Game" onClick={onCreate} />
 				<ActionButton label="Join Game" onClick={onJoin} />
 			</div>
