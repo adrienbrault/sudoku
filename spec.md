@@ -16,10 +16,11 @@ Premium, mobile-first web app for solo and real-time 1v1 sudoku. No accounts req
 ## User Flows
 
 ### Landing Page
-Three primary actions, always visible:
+Four primary actions, always visible:
 1. **Start Solo** — immediately pick difficulty, start playing
-2. **Create Game** — create a 1v1 room, get a share link
-3. **Join Game** — join from invite link (or manual room code)
+2. **Daily Challenge** — same puzzle for everyone, every day (seeded RNG)
+3. **Create Game** — create a 1v1 room, get a share link
+4. **Join Game** — join from invite link (or manual room code)
 
 ### Difficulty Selection
 Available before every game (solo or multiplayer):
@@ -28,11 +29,19 @@ Available before every game (solo or multiplayer):
 - Hard (~28 clues)
 - Expert (~22 clues)
 
+Optional **show conflicts** toggle — when off, conflict highlighting is disabled for a harder experience.
+
 ### Solo Game
 - Standard sudoku with timer
 - Notes mode, erase, undo
-- Soft validation: conflicts shown, not blocked
+- Soft validation: conflicts shown, not blocked (can be toggled off)
 - Completion when all cells filled and valid
+- Per-difficulty stats tracking (best time, average, games played) in localStorage
+
+### Daily Challenge
+- Same puzzle for everyone, every day
+- Deterministic generation via seeded RNG — same date produces same board on any device
+- Medium difficulty
 
 ### Create Game Flow
 1. User taps "Create Game"
@@ -98,9 +107,9 @@ One-sentence explanation: "Share your filled cells as hints for both players."
 ## Real-time Multiplayer
 
 ### Architecture
-- Room-based sessions via PartyKit (Cloudflare Durable Objects)
-- Server-authoritative: server holds solution, validates completion
-- Client never sees solution until game ends
+- Peer-to-peer via Yjs CRDTs + y-webrtc — no server needed
+- Public WebRTC signaling servers used only for peer discovery
+- Game state syncs directly between players via CRDTs
 
 ### Opponent Visibility
 - Nickname + assigned color
@@ -110,7 +119,7 @@ One-sentence explanation: "Share your filled cells as hints for both players."
 
 ### Reconnect Handling
 - sessionStorage stores playerId + roomId
-- On reconnect, server sends full current state
+- On reconnect, Yjs CRDT state merges automatically
 - "Reconnecting..." overlay during reconnect
 - Opponent sees "Opponent reconnecting..." status
 
@@ -142,6 +151,7 @@ One-sentence explanation: "Share your filled cells as hints for both players."
 - Large touch targets (minimum 44px)
 - Safe area support (iPhone notch/home indicator)
 - Haptic feedback where supported (number place, erase, note toggle, conflict, completion)
+- Synthesized sound effects via Web Audio API (toggleable)
 
 ### Color Palette
 - Neutral backgrounds
@@ -153,8 +163,8 @@ One-sentence explanation: "Share your filled cells as hints for both players."
 
 - Bun runtime
 - Vite + React 19 + Tailwind CSS 4
-- PartyKit for real-time
-- Deploy to Cloudflare Workers
+- Yjs + y-webrtc for peer-to-peer multiplayer
+- Deploy to Cloudflare Pages
 - Biome for lint/format
 - Vitest for testing
 - Strict TDD: every feature gets tests first
