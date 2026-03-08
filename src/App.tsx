@@ -160,7 +160,7 @@ function MultiplayerScreen({
 	const socket = useMemo(() => {
 		const protocol = PARTY_HOST.startsWith("localhost") ? "ws" : "wss";
 		return new WebSocket(
-			`${protocol}://${PARTY_HOST}/parties/sudoku/${roomId}`,
+			`${protocol}://${PARTY_HOST}/agents/sudoku-agent/${roomId}`,
 		);
 	}, [roomId]);
 

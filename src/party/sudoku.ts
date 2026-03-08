@@ -1,4 +1,4 @@
-import { Agent, type Connection } from "agents";
+import { Agent, type Connection, routeAgentRequest } from "agents";
 import type { ClientMessage } from "../lib/types.ts";
 import type { OutgoingMessage } from "./room.ts";
 import { GameRoom } from "./room.ts";
@@ -88,24 +88,11 @@ export class SudokuAgent extends Agent {
 	}
 }
 
-type Env = {
-	// biome-ignore lint/suspicious/noExplicitAny: Cloudflare Workers DurableObjectNamespace type
-	SudokuAgent: any;
-};
-
 export default {
-	async fetch(request: Request, env: Env) {
-		const url = new URL(request.url);
-
-		// Extract room ID from path: /parties/sudoku/:roomId
-		const match = url.pathname.match(/^\/parties\/sudoku\/(.+)$/);
-		if (!match) {
-			return new Response("Not found", { status: 404 });
-		}
-
-		const roomId = match[1];
-		const id = env.SudokuAgent.idFromName(roomId);
-		const stub = env.SudokuAgent.get(id);
-		return stub.fetch(request);
+	async fetch(request: Request, env: unknown, ctx: ExecutionContext) {
+		return (
+			(await routeAgentRequest(request, env)) ??
+			new Response("Not found", { status: 404 })
+		);
 	},
 };
