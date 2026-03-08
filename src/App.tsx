@@ -5,6 +5,7 @@ import { Landing } from "./components/Landing.tsx";
 import { MultiplayerGame } from "./components/MultiplayerGame.tsx";
 import { SoloGame } from "./components/SoloGame.tsx";
 import { SoundToggle } from "./components/SoundToggle.tsx";
+import { Stats } from "./components/Stats.tsx";
 import { useDarkMode } from "./hooks/useDarkMode.ts";
 import { getDailyPuzzle } from "./lib/daily.ts";
 import { recordDailyCompletion } from "./lib/daily-streak.ts";
@@ -66,7 +67,8 @@ type Screen =
       difficulty: Difficulty;
       showConflicts: boolean;
     }
-  | { name: "join" };
+  | { name: "join" }
+  | { name: "stats" };
 
 const VALID_DIFFICULTIES = new Set<string>([
   "easy",
@@ -86,6 +88,8 @@ function screenToPath(screen: Screen): string {
       return "/daily";
     case "join":
       return "/join";
+    case "stats":
+      return "/stats";
     case "multiplayer":
       return `/${screen.roomId}`;
   }
@@ -97,6 +101,7 @@ function pathToScreen(pathname: string): Screen {
   if (path === "") return { name: "landing" };
   if (path === "daily") return { name: "daily" };
   if (path === "join") return { name: "join" };
+  if (path === "stats") return { name: "stats" };
 
   if (path.startsWith("solo/")) {
     const parts = path.slice(5).split("/");
@@ -176,6 +181,7 @@ function App() {
             onDaily={() => navigate({ name: "daily" })}
             onCreate={() => navigate({ name: "difficulty", mode: "create" })}
             onJoin={() => navigate({ name: "join" })}
+            onStats={() => navigate({ name: "stats" })}
             onContinue={(gameKey, difficulty) => {
               gameIdRef.current++;
               navigate({
@@ -255,6 +261,9 @@ function App() {
           onBack={() => navigate({ name: "landing" })}
         />
       );
+
+    case "stats":
+      return <Stats onBack={() => navigate({ name: "landing" })} />;
 
     case "join":
       return (
@@ -364,20 +373,90 @@ function JoinScreen({
   );
 }
 
+const DAILY_DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard", "expert"];
+const DAILY_DIFF_LABELS: Record<Difficulty, string> = {
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+  expert: "Expert",
+};
+
 function DailyGame({ onBack }: { onBack: () => void }) {
-  const { puzzle, date } = useMemo(() => getDailyPuzzle(), []);
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
+  const date = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  if (!difficulty) {
+    return (
+      <div className="screen">
+        <div className="screen-content gap-8">
+          <div className="flex flex-col items-center gap-1">
+            <h2 className="heading">Daily Challenge</h2>
+            <p className="text-sm text-text-muted">{formatShortDate(date)}</p>
+            <p className="text-xs text-text-muted">
+              Same puzzle for everyone, every day
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 w-full">
+            {DAILY_DIFFICULTIES.map((d) => (
+              <button
+                key={d}
+                type="button"
+                className="btn btn-lg btn-secondary w-full"
+                onClick={() => setDifficulty(d)}
+              >
+                {DAILY_DIFF_LABELS[d]}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="btn-ghost touch-manipulation"
+            onClick={onBack}
+          >
+            ← Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return <DailyPuzzle difficulty={difficulty} date={date} onBack={onBack} />;
+}
+
+function DailyPuzzle({
+  difficulty,
+  date,
+  onBack,
+}: {
+  difficulty: Difficulty;
+  date: string;
+  onBack: () => void;
+}) {
+  const { puzzle } = useMemo(
+    () => getDailyPuzzle(date, difficulty),
+    [date, difficulty],
+  );
+  const [streakInfo, setStreakInfo] = useState<{
+    currentStreak: number;
+    longestStreak: number;
+  }>();
   const handleComplete = useCallback(() => {
-    recordDailyCompletion(date);
+    const streak = recordDailyCompletion(date);
+    setStreakInfo({
+      currentStreak: streak.currentStreak,
+      longestStreak: streak.longestStreak,
+    });
   }, [date]);
 
   return (
     <SoloGame
-      difficulty="medium"
-      gameKey={`daily-${date}`}
+      difficulty={difficulty}
+      gameKey={`daily-${date}-${difficulty}`}
       initialPuzzle={puzzle}
-      title={`Daily — ${formatShortDate(date)}`}
+      title={`Daily ${DAILY_DIFF_LABELS[difficulty]} — ${formatShortDate(date)}`}
       onBack={onBack}
       onComplete={handleComplete}
+      streakInfo={streakInfo}
     />
   );
 }

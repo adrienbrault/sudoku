@@ -27,6 +27,9 @@ type GameResultProps = {
   onNewGame: () => void;
   stats?: { gamesPlayed: number; bestTime: number; averageTime: number } | null;
   isNewPB?: boolean | undefined;
+  streakInfo?: { currentStreak: number; longestStreak: number } | undefined;
+  tip?: string | undefined;
+  onDismissTip?: (() => void) | undefined;
 };
 
 export function GameResult({
@@ -38,6 +41,9 @@ export function GameResult({
   onNewGame,
   stats,
   isNewPB,
+  streakInfo,
+  tip,
+  onDismissTip,
 }: GameResultProps) {
   const [copied, setCopied] = useState(false);
 
@@ -46,7 +52,7 @@ export function GameResult({
     if (difficulty) lines[0] += ` ${DIFFICULTY_LABELS[difficulty]}`;
     lines.push(`Time: ${time}`);
     if (isNewPB) lines.push("New Personal Best!");
-    lines.push("https://sudoku.brage.fr");
+    lines.push("https://dokuel.com");
     navigator.clipboard.writeText(lines.join("\n"));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -118,6 +124,18 @@ export function GameResult({
           </div>
         )}
 
+        {streakInfo && streakInfo.currentStreak > 0 && (
+          <div className="flex items-center justify-center gap-2 text-sm text-accent font-semibold">
+            <span>{streakInfo.currentStreak}-day streak!</span>
+            {streakInfo.currentStreak >= streakInfo.longestStreak &&
+              streakInfo.currentStreak > 1 && (
+                <span className="text-xs font-normal text-text-muted">
+                  New record!
+                </span>
+              )}
+          </div>
+        )}
+
         <div className="flex flex-col gap-3 w-full">
           {onRematch && (
             <button
@@ -145,6 +163,15 @@ export function GameResult({
             </button>
           )}
         </div>
+        {tip && (
+          <button
+            type="button"
+            className="text-xs text-text-muted text-center leading-relaxed hover:text-text-secondary transition-colors"
+            onClick={onDismissTip}
+          >
+            {tip} <span className="underline">Dismiss</span>
+          </button>
+        )}
       </div>
     </div>
   );

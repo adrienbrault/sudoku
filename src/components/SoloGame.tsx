@@ -42,6 +42,7 @@ type SoloGameProps = {
   onBack: () => void;
   onRematch?: (() => void) | undefined;
   onComplete?: ((time: number) => void) | undefined;
+  streakInfo?: { currentStreak: number; longestStreak: number } | undefined;
 };
 
 export function SoloGame({
@@ -53,6 +54,7 @@ export function SoloGame({
   onBack,
   onRematch,
   onComplete,
+  streakInfo,
 }: SoloGameProps) {
   const saved = useMemo(() => (gameKey ? loadGame(gameKey) : null), [gameKey]);
 
@@ -76,6 +78,9 @@ export function SoloGame({
   const [revealed, setRevealed] = useState(false);
   const [showConflicts, setShowConflicts] = useState(initialShowConflicts);
   const [paused, setPaused] = useState(false);
+  const [tipDismissed, setTipDismissed] = useState(
+    () => localStorage.getItem("sudoku_numpad_tip_dismissed") === "1",
+  );
 
   // Capture PB before this game's result is saved
   const priorStats = useMemo(
@@ -128,6 +133,18 @@ export function SoloGame({
     }
     onBack();
   };
+
+  // Auto-pause when tab loses visibility
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden && game.status === "playing") {
+        setPaused(true);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibility);
+  }, [game.status]);
 
   useKeyboard({
     selectedCell: game.selectedCell,
@@ -244,6 +261,16 @@ export function SoloGame({
               game.hintsUsed === 0 &&
               (personalBest === null || timerSecondsRef.current < personalBest)
             }
+            streakInfo={streakInfo}
+            tip={
+              !tipDismissed && position === "bottom"
+                ? "Tip: Move the numpad to the side for faster two-finger play! Open settings (gear icon) to try it."
+                : undefined
+            }
+            onDismissTip={() => {
+              setTipDismissed(true);
+              localStorage.setItem("sudoku_numpad_tip_dismissed", "1");
+            }}
           />
         ) : undefined
       }
