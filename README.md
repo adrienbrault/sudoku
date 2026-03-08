@@ -2,6 +2,8 @@
 
 1v1 sudoku duel — real-time, peer-to-peer, no account needed.
 
+**[Play now at dokuel.com](https://dokuel.com)**
+
 ## Features
 
 ### Solo Play
