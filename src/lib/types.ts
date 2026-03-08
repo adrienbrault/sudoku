@@ -56,6 +56,18 @@ export type MoveAction =
       clearedNotes: ClearedNote[];
     };
 
+// --- Hint Explanation ---
+
+export type HintTechnique = "naked-single" | "hidden-single";
+
+export type ActiveHint = {
+  position: Position;
+  value: number;
+  technique: HintTechnique;
+  explanation: string;
+  relatedCells: Position[];
+};
+
 export type GameStatus = "idle" | "playing" | "completed";
 
 export type GameState = {
