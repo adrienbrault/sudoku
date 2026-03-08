@@ -119,10 +119,10 @@ body {
 @keyframes cell-glow-pulse {
   0%,
   100% {
-    box-shadow: inset 0 0 0 2px oklch(0.55 0.15 250 / 0.4);
+    box-shadow: inset 0 0 0 2px oklch(0.52 0.12 168 / 0.4);
   }
   50% {
-    box-shadow: inset 0 0 0 2px oklch(0.55 0.15 250 / 0.7);
+    box-shadow: inset 0 0 0 2px oklch(0.52 0.12 168 / 0.7);
   }
 }
 .cell-selected-glow {
@@ -252,43 +252,43 @@ body {
 }
 .confetti-container span:nth-child(1) {
   left: 10%;
-  background: oklch(0.7 0.25 30);
+  background: oklch(0.7 0.15 168);
   animation-duration: 2.2s;
   animation-delay: 0s;
 }
 .confetti-container span:nth-child(2) {
   left: 25%;
-  background: oklch(0.7 0.2 250);
+  background: oklch(0.75 0.15 80);
   animation-duration: 2.5s;
   animation-delay: 0.1s;
 }
 .confetti-container span:nth-child(3) {
   left: 40%;
-  background: oklch(0.75 0.2 150);
+  background: oklch(0.7 0.18 155);
   animation-duration: 2s;
   animation-delay: 0.05s;
 }
 .confetti-container span:nth-child(4) {
   left: 55%;
-  background: oklch(0.7 0.25 60);
+  background: oklch(0.75 0.18 65);
   animation-duration: 2.8s;
   animation-delay: 0.15s;
 }
 .confetti-container span:nth-child(5) {
   left: 70%;
-  background: oklch(0.65 0.25 330);
+  background: oklch(0.65 0.15 25);
   animation-duration: 2.1s;
   animation-delay: 0.08s;
 }
 .confetti-container span:nth-child(6) {
   left: 85%;
-  background: oklch(0.7 0.2 250);
+  background: oklch(0.6 0.12 168);
   animation-duration: 2.4s;
   animation-delay: 0.2s;
 }
 .confetti-container span:nth-child(7) {
   left: 15%;
-  background: oklch(0.75 0.2 150);
+  background: oklch(0.72 0.16 155);
   animation-duration: 2.6s;
   animation-delay: 0.12s;
   width: 6px;
@@ -296,7 +296,7 @@ body {
 }
 .confetti-container span:nth-child(8) {
   left: 50%;
-  background: oklch(0.7 0.25 30);
+  background: oklch(0.78 0.16 80);
   animation-duration: 2.3s;
   animation-delay: 0.18s;
   width: 6px;
@@ -304,7 +304,7 @@ body {
 }
 .confetti-container span:nth-child(9) {
   left: 80%;
-  background: oklch(0.65 0.25 60);
+  background: oklch(0.68 0.18 65);
   animation-duration: 2.7s;
   animation-delay: 0.07s;
   width: 10px;
@@ -313,7 +313,7 @@ body {
 }
 .confetti-container span:nth-child(10) {
   left: 35%;
-  background: oklch(0.65 0.25 330);
+  background: oklch(0.62 0.14 25);
   animation-duration: 2s;
   animation-delay: 0.25s;
   width: 10px;
