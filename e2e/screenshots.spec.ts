@@ -244,3 +244,161 @@ test("solo game - win modal", async ({ page }, testInfo) => {
 		path: screenshotPath("solo-win-modal", testInfo.project.name),
 	});
 });
+
+// --- Multiplayer progress bar mockups ---
+
+test("multiplayer - dual progress bars", async ({ page }, testInfo) => {
+	await page.goto("/");
+	await page.waitForLoadState("networkidle");
+	await page.getByText("Start Solo").click();
+	await page.getByText("Easy").click();
+	await page.waitForTimeout(800);
+
+	// Inject dual progress bars above the board to simulate multiplayer view
+	await page.evaluate(() => {
+		const header = document.querySelector(
+			".flex.items-center.justify-between.w-full",
+		);
+		if (!header) return;
+
+		const bars = document.createElement("div");
+		bars.className =
+			"w-full max-w-[min(100vw-2rem,28rem)] mb-3 flex flex-col gap-1.5 mx-auto";
+		bars.innerHTML = `
+			<div class="flex items-center gap-2">
+				<span class="text-xs text-text-secondary w-24 truncate">You</span>
+				<div class="flex-1 h-2 rounded-full bg-bg-raised overflow-hidden">
+					<div class="h-full rounded-full bg-accent transition-all duration-300" style="width: 42%"></div>
+				</div>
+				<span class="text-xs text-text-secondary font-mono tabular-nums w-8 text-right">42%</span>
+			</div>
+			<div class="flex items-center gap-2">
+				<span class="text-xs text-text-secondary w-24 truncate">Opponent</span>
+				<div class="flex-1 h-2 rounded-full bg-bg-raised overflow-hidden">
+					<div class="h-full rounded-full bg-rose-400 transition-all duration-300" style="width: 67%"></div>
+				</div>
+				<span class="text-xs text-text-secondary font-mono tabular-nums w-8 text-right">67%</span>
+			</div>
+		`;
+		header.after(bars);
+	});
+
+	await page.waitForTimeout(300);
+	await page.screenshot({
+		path: screenshotPath("multiplayer-progress-bars", testInfo.project.name),
+	});
+});
+
+test("multiplayer - dual progress bars (dark mode)", async ({
+	page,
+}, testInfo) => {
+	await page.goto("/");
+	await page.evaluate(() =>
+		localStorage.setItem("sudoku_theme", "dark"),
+	);
+	await page.goto("/");
+	await page.waitForLoadState("networkidle");
+	await page.getByText("Start Solo").click();
+	await page.getByText("Easy").click();
+	await page.waitForTimeout(800);
+
+	// Inject dual progress bars
+	await page.evaluate(() => {
+		const header = document.querySelector(
+			".flex.items-center.justify-between.w-full",
+		);
+		if (!header) return;
+
+		const bars = document.createElement("div");
+		bars.className =
+			"w-full max-w-[min(100vw-2rem,28rem)] mb-3 flex flex-col gap-1.5 mx-auto";
+		bars.innerHTML = `
+			<div class="flex items-center gap-2">
+				<span class="text-xs text-text-secondary w-24 truncate">You</span>
+				<div class="flex-1 h-2 rounded-full bg-bg-raised overflow-hidden">
+					<div class="h-full rounded-full bg-accent transition-all duration-300" style="width: 42%"></div>
+				</div>
+				<span class="text-xs text-text-secondary font-mono tabular-nums w-8 text-right">42%</span>
+			</div>
+			<div class="flex items-center gap-2">
+				<span class="text-xs text-text-secondary w-24 truncate">Opponent</span>
+				<div class="flex-1 h-2 rounded-full bg-bg-raised overflow-hidden">
+					<div class="h-full rounded-full bg-rose-400 transition-all duration-300" style="width: 67%"></div>
+				</div>
+				<span class="text-xs text-text-secondary font-mono tabular-nums w-8 text-right">67%</span>
+			</div>
+		`;
+		header.after(bars);
+	});
+
+	await page.waitForTimeout(300);
+	await page.screenshot({
+		path: screenshotPath(
+			"multiplayer-progress-bars-dark",
+			testInfo.project.name,
+		),
+	});
+});
+
+test("multiplayer - progress bars hidden", async ({ page }, testInfo) => {
+	await page.goto("/");
+	await page.waitForLoadState("networkidle");
+	await page.getByText("Start Solo").click();
+	await page.getByText("Easy").click();
+	await page.waitForTimeout(800);
+
+	// No progress bars injected — this represents the "hidden" state
+	await page.screenshot({
+		path: screenshotPath(
+			"multiplayer-progress-hidden",
+			testInfo.project.name,
+		),
+	});
+});
+
+test("multiplayer - settings with opponent bar toggle", async ({
+	page,
+}, testInfo) => {
+	await page.goto("/");
+	await page.waitForLoadState("networkidle");
+	await page.getByText("Start Solo").click();
+	await page.getByText("Easy").click();
+	await page.waitForTimeout(800);
+
+	// Open settings popover
+	await page.getByLabel("Settings").click();
+	await page.waitForTimeout(200);
+
+	// Inject the opponent bar toggle into the settings popover
+	await page.evaluate(() => {
+		const popover = document.querySelector(".absolute.right-0.top-full");
+		if (!popover) return;
+
+		const section = document.createElement("div");
+		section.className = "mt-3 pt-3 border-t border-border-default";
+		section.innerHTML = `
+			<label class="flex items-center gap-3 cursor-pointer select-none touch-manipulation">
+				<span class="text-sm text-text-secondary">Opponent bar</span>
+				<button type="button" role="switch" aria-checked="true" aria-label="Opponent bar"
+					class="relative w-11 h-6 rounded-full transition-colors duration-200 bg-accent">
+					<span class="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200 translate-x-5"></span>
+				</button>
+			</label>
+		`;
+		// Insert after numpad position section
+		const numpadSection = popover.querySelector("p + div");
+		if (numpadSection) {
+			numpadSection.after(section);
+		} else {
+			popover.appendChild(section);
+		}
+	});
+
+	await page.waitForTimeout(200);
+	await page.screenshot({
+		path: screenshotPath(
+			"multiplayer-settings-toggle",
+			testInfo.project.name,
+		),
+	});
+});
