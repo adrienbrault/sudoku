@@ -5,7 +5,8 @@ import {
   useRef,
   useState,
 } from "react";
-import type { NumPadPosition } from "../lib/types.ts";
+import type { NumPadLayout, NumPadPosition } from "../lib/types.ts";
+import { NumPadLayoutToggle } from "./NumPadLayoutToggle.tsx";
 import { NumPadPositionToggle } from "./NumPadPositionToggle.tsx";
 
 type GameLayoutProps = {
@@ -16,6 +17,8 @@ type GameLayoutProps = {
   controls: ReactNode;
   position: NumPadPosition;
   onPositionChange: (position: NumPadPosition) => void;
+  layout: NumPadLayout;
+  onLayoutChange: (layout: NumPadLayout) => void;
   title?: string | undefined;
   headerExtra?: ReactNode | undefined;
   footer?: ReactNode | undefined;
@@ -33,6 +36,8 @@ export function GameLayout({
   controls,
   position,
   onPositionChange,
+  layout,
+  onLayoutChange,
   title,
   headerExtra,
   footer,
@@ -72,6 +77,8 @@ export function GameLayout({
         <SettingsButton
           position={position}
           onPositionChange={onPositionChange}
+          layout={layout}
+          onLayoutChange={onLayoutChange}
           extra={settingsExtra}
         />
       </div>
@@ -116,10 +123,14 @@ export function GameLayout({
 function SettingsButton({
   position,
   onPositionChange,
+  layout,
+  onLayoutChange,
   extra,
 }: {
   position: NumPadPosition;
   onPositionChange: (position: NumPadPosition) => void;
+  layout: NumPadLayout;
+  onLayoutChange: (layout: NumPadLayout) => void;
   extra?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -191,6 +202,7 @@ function SettingsButton({
             position={position}
             onChange={onPositionChange}
           />
+          <NumPadLayoutToggle layout={layout} onChange={onLayoutChange} />
           {extra && (
             <div className="mt-3 pt-3 border-t border-border-default">
               {extra}

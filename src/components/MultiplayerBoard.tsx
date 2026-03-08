@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNumPadLayout } from "../hooks/useNumPadLayout.ts";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
 import { useOpponentProgressVisible } from "../hooks/useOpponentProgressVisible.ts";
 import { useSudoku } from "../hooks/useSudoku.ts";
@@ -56,6 +57,7 @@ export function MultiplayerBoard({
   const solution = useMemo(() => solvePuzzle(puzzle), [puzzle]);
   const game = useSudoku(puzzle, solution);
   const { position, setPosition } = useNumPadPosition();
+  const { layout, setLayout } = useNumPadLayout();
   const { visible: showOpponentProgress, toggle: toggleOpponentProgress } =
     useOpponentProgressVisible();
   const timerSecondsRef = useRef(0);
@@ -109,6 +111,8 @@ export function MultiplayerBoard({
       onBack={onBack}
       position={position}
       onPositionChange={setPosition}
+      layout={layout}
+      onLayoutChange={setLayout}
       onDeselectCell={game.deselectCell}
       headerClassName="max-w-[min(100vw-2rem,28rem)]"
       timer={
@@ -130,6 +134,7 @@ export function MultiplayerBoard({
       numPad={
         <NumPad
           position={position}
+          layout={layout}
           remainingCounts={game.remainingCounts}
           selectedValue={
             game.selectedCell
