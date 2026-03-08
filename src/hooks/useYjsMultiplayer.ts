@@ -77,7 +77,7 @@ export function useYjsMultiplayer({
   useEffect(() => {
     const doc = new Y.Doc();
     const provider = new WebrtcProvider(roomId, doc, {
-      signaling: ["wss://dokuel-signaling.adrienbrault.workers.dev"],
+      signaling: ["wss://signal.dokuel.com"],
     });
 
     const room = createRoomFromDoc(doc, roomId);
