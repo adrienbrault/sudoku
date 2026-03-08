@@ -9,6 +9,7 @@ type BoardProps = {
   selectedCell: Position | null;
   selectedCells?: Set<number> | undefined;
   conflicts: Set<number>;
+  hintCells?: Set<number> | undefined;
   onSelectCell: (row: number, col: number) => void;
   onSetSelectedCells?:
     | ((cells: Set<number>, primary: Position) => void)
@@ -21,6 +22,7 @@ export function Board({
   selectedCell,
   selectedCells,
   conflicts,
+  hintCells,
   onSelectCell,
   onSetSelectedCells,
   animateReveal,
@@ -161,6 +163,8 @@ export function Board({
             !isSelected &&
             (selectedCells?.size ?? 0) > 1 &&
             (selectedCells?.has(cellKey(rowIdx, colIdx)) ?? false);
+          const isHintRelated =
+            !isSelected && (hintCells?.has(cellKey(rowIdx, colIdx)) ?? false);
 
           return (
             <Cell
@@ -173,6 +177,7 @@ export function Board({
               isHighlighted={isHighlighted && !isSelected}
               isSameNumber={isSameNumber}
               isConflict={isConflict}
+              isHintRelated={isHintRelated}
               onSelect={onSelectCell}
               revealDelay={
                 animateReveal && cell.isGiven
