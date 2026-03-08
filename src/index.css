@@ -367,6 +367,51 @@ body {
   animation: fade-in 0.15s ease-out;
 }
 
+/* ─── Landscape layout for phones ─── */
+@media (orientation: landscape) and (max-height: 500px) {
+  .game-layout {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    min-height: auto;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  .game-layout .game-header {
+    margin-bottom: 0.25rem;
+  }
+  .game-layout .game-area {
+    flex-direction: row !important;
+    align-items: center !important;
+    flex: 1;
+    min-height: 0;
+    gap: 0.75rem;
+  }
+  .game-layout .game-board-col {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    height: 100%;
+    justify-content: center;
+  }
+  .game-layout .game-board-col [role="region"] {
+    max-height: calc(100dvh - 4rem);
+    aspect-ratio: 1;
+    width: auto;
+    height: 100%;
+  }
+  .game-layout .game-controls-col {
+    flex: 0 1 auto;
+    gap: 0.5rem;
+    max-width: 10rem;
+  }
+  .game-layout .game-numpad-bottom {
+    display: none !important;
+  }
+  .game-layout .game-numpad-landscape {
+    display: flex !important;
+  }
+}
+
 /* ─── Design System: Component Classes ─── */
 
 /* Buttons */
