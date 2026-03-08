@@ -104,7 +104,10 @@ describe("Lobby", () => {
       clipboard: { writeText: vi.fn().mockResolvedValue(undefined) },
     });
     // Ensure Web Share API is not available so clipboard fallback is used
-    Object.defineProperty(navigator, "share", { value: undefined, writable: true });
+    Object.defineProperty(navigator, "share", {
+      value: undefined,
+      writable: true,
+    });
     Object.defineProperty(window, "location", {
       value: { origin: "https://sudoku.brage.fr", pathname: "/abc123" },
       writable: true,
