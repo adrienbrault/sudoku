@@ -11,6 +11,7 @@ import {
   type P2PRoom,
   requestRematch,
   startGame,
+  updatePlayerName,
   updateProgress,
 } from "../lib/p2p-room.ts";
 import type { Difficulty, RoomState } from "../lib/types.ts";
@@ -70,6 +71,8 @@ export function useYjsMultiplayer({
   const roomRef = useRef<P2PRoom | null>(null);
   const providerRef = useRef<WebrtcProvider | null>(null);
   const lastGameNumberRef = useRef<number>(0);
+  const playerNameRef = useRef(playerName);
+  playerNameRef.current = playerName;
 
   useEffect(() => {
     const doc = new Y.Doc();
@@ -208,9 +211,9 @@ export function useYjsMultiplayer({
     (_board: string) => {
       const room = roomRef.current;
       if (!room) return;
-      claimWinner(room, playerId, playerName);
+      claimWinner(room, playerId, playerNameRef.current);
     },
-    [playerId, playerName],
+    [playerId],
   );
 
   const sendRematch = useCallback(() => {
@@ -218,6 +221,24 @@ export function useYjsMultiplayer({
     if (!room) return;
     requestRematch(room, difficulty);
   }, [difficulty]);
+
+  const updateName = useCallback(
+    (newName: string) => {
+      const room = roomRef.current;
+      if (!room) return;
+      updatePlayerName(room, playerId, newName);
+
+      // Update awareness too
+      const provider = providerRef.current;
+      if (provider) {
+        provider.awareness.setLocalStateField("user", {
+          id: playerId,
+          name: newName,
+        });
+      }
+    },
+    [playerId],
+  );
 
   return {
     connected,
@@ -231,5 +252,6 @@ export function useYjsMultiplayer({
     sendProgress,
     sendComplete,
     sendRematch,
+    updateName,
   };
 }

@@ -1,19 +1,50 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { RoomState } from "../lib/types.ts";
 
 type LobbyProps = {
   roomState: RoomState;
+  playerId?: string;
+  onRename?: (name: string) => void;
   onStart: () => void;
   onBack: () => void;
 };
 
-export function Lobby({ roomState, onStart, onBack }: LobbyProps) {
+export function Lobby({
+  roomState,
+  playerId,
+  onRename,
+  onStart,
+  onBack,
+}: LobbyProps) {
   const canStart = roomState.players.length === 2;
   const waiting = roomState.players.length < 2;
   const [copied, setCopied] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const gameUrl = `${window.location.origin}/${roomState.roomId}`;
+
+  useEffect(() => {
+    if (editingName) {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }, [editingName]);
+
+  function startEditing(currentName: string) {
+    setNameInput(currentName);
+    setEditingName(true);
+  }
+
+  function commitName() {
+    const trimmed = nameInput.trim();
+    if (trimmed && onRename) {
+      onRename(trimmed);
+    }
+    setEditingName(false);
+  }
 
   async function handleShare() {
     if (navigator.share) {
@@ -65,25 +96,61 @@ export function Lobby({ roomState, onStart, onBack }: LobbyProps) {
         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
           Players
         </h3>
-        {roomState.players.map((player) => (
-          <div
-            key={player.id}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
-          >
+        {roomState.players.map((player) => {
+          const isMe = player.id === playerId;
+          return (
             <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: player.color }}
-            />
-            <span className="font-medium text-gray-900 dark:text-gray-100">
-              {player.name}
-            </span>
-            {player.id === roomState.hostId && (
-              <span className="text-xs text-gray-400 dark:text-gray-500">
-                Host
-              </span>
-            )}
-          </div>
-        ))}
+              key={player.id}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800"
+            >
+              <div
+                className="w-3 h-3 rounded-full shrink-0"
+                style={{ backgroundColor: player.color }}
+              />
+              {isMe && editingName ? (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={nameInput}
+                  onChange={(e) => setNameInput(e.target.value)}
+                  onBlur={commitName}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") commitName();
+                    if (e.key === "Escape") setEditingName(false);
+                  }}
+                  maxLength={24}
+                  className="font-medium text-gray-900 dark:text-gray-100 bg-transparent border-b-2 border-accent outline-none min-w-0 flex-1"
+                />
+              ) : (
+                <button
+                  type="button"
+                  className={`font-medium text-gray-900 dark:text-gray-100 text-left truncate ${isMe ? "cursor-pointer hover:underline decoration-accent decoration-2 underline-offset-2" : "cursor-default"}`}
+                  onClick={() => {
+                    if (isMe) startEditing(player.name);
+                  }}
+                  title={isMe ? "Click to change name" : undefined}
+                >
+                  {player.name}
+                </button>
+              )}
+              {isMe && !editingName && (
+                <button
+                  type="button"
+                  className="text-xs text-gray-400 dark:text-gray-500 hover:text-accent shrink-0 touch-manipulation"
+                  onClick={() => startEditing(player.name)}
+                  title="Edit name"
+                >
+                  Edit
+                </button>
+              )}
+              {player.id === roomState.hostId && (
+                <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0 ml-auto">
+                  Host
+                </span>
+              )}
+            </div>
+          );
+        })}
         {waiting && (
           <div className="flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700 animate-pulse">
             <span className="text-sm text-gray-400 dark:text-gray-500">
