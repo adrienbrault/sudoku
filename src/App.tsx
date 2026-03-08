@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DailyGame } from "./components/DailyGame.tsx";
 import { DarkModeToggle } from "./components/DarkModeToggle.tsx";
 import { DifficultyPicker } from "./components/DifficultyPicker.tsx";
@@ -9,6 +9,14 @@ import { SoloGame } from "./components/SoloGame.tsx";
 import { SoundToggle } from "./components/SoundToggle.tsx";
 import { Stats } from "./components/Stats.tsx";
 import { useDarkMode } from "./hooks/useDarkMode.ts";
+import type { Invite } from "./hooks/usePresence.ts";
+import { usePresence } from "./hooks/usePresence.ts";
+import {
+  addFriend,
+  getFriends,
+  removeFriend as removeFriendFromStorage,
+} from "./lib/friends.ts";
+import { getPlayerId, getPlayerName } from "./lib/player-identity.ts";
 import { generateRoomCode } from "./lib/room-code.ts";
 import { getSoundEnabled, setSoundEnabled } from "./lib/sounds.ts";
 import type { AssistLevel, Difficulty } from "./lib/types.ts";
@@ -124,6 +132,47 @@ function App() {
   const darkMode = useDarkMode();
   const [soundOn, setSoundOn] = useState(getSoundEnabled);
 
+  // Friends & presence
+  const playerId = useMemo(getPlayerId, []);
+  const playerName = useMemo(getPlayerName, []);
+  const [friends, setFriends] = useState(getFriends);
+
+  const presence = usePresence({
+    playerId,
+    playerName,
+    friends,
+    enabled: screen.name === "landing" && friends.length > 0,
+  });
+
+  const handleAddFriend = useCallback((code: string) => {
+    setFriends(addFriend(code, code));
+  }, []);
+
+  const handleRemoveFriend = useCallback((friendId: string) => {
+    setFriends(removeFriendFromStorage(friendId));
+  }, []);
+
+  const handleInviteFriend = useCallback(
+    (friendId: string) => {
+      const roomId = generateRoomCode();
+      presence.sendInvite(friendId, roomId, "medium");
+      navigate({ name: "multiplayer", roomId, difficulty: "medium" });
+    },
+    [presence, navigate],
+  );
+
+  const handleJoinInvite = useCallback(
+    (invite: Invite) => {
+      presence.clearInvite(invite.fromId);
+      navigate({
+        name: "multiplayer",
+        roomId: invite.roomId,
+        difficulty: invite.difficulty,
+      });
+    },
+    [presence, navigate],
+  );
+
   switch (screen.name) {
     case "landing":
       return (
@@ -158,6 +207,14 @@ function App() {
                 assistLevel: "standard",
               });
             }}
+            playerId={playerId}
+            friends={friends}
+            onlineFriendIds={presence.onlineFriendIds}
+            pendingInvites={presence.pendingInvites}
+            onAddFriend={handleAddFriend}
+            onRemoveFriend={handleRemoveFriend}
+            onInviteFriend={handleInviteFriend}
+            onJoinInvite={handleJoinInvite}
           />
         </div>
       );
@@ -223,6 +280,9 @@ function App() {
           roomId={screen.roomId}
           difficulty={screen.difficulty}
           onBack={() => navigate({ name: "landing" })}
+          onAddFriend={(opponentId, opponentName) => {
+            setFriends(addFriend(opponentId, opponentName));
+          }}
         />
       );
 
