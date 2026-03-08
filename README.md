@@ -54,7 +54,8 @@
 |-------|-----------|
 | UI | React 19, Tailwind CSS 4 |
 | Build | Vite, TypeScript, Bun |
-| Multiplayer | Yjs CRDTs + y-webrtc (peer-to-peer, no server) |
+| Multiplayer | Yjs CRDTs + y-webrtc (peer-to-peer WebRTC) |
+| Signaling | Cloudflare Worker + Durable Objects |
 | Testing | Vitest, React Testing Library, Playwright |
 | Lint & Format | Biome |
 
@@ -121,7 +122,7 @@ src/
 
 ### Key Design Decisions
 
-- **Peer-to-peer multiplayer** — game state syncs via Yjs CRDTs over WebRTC. Public signaling servers handle peer discovery only; no custom backend needed
+- **Peer-to-peer multiplayer** — game state syncs via Yjs CRDTs over WebRTC. A self-hosted Cloudflare Worker at `signal.dokuel.com` handles peer discovery; all game data flows directly between players
 - **React hooks only** — `useReducer` for game state, no external state library
 - **Soft validation** — conflicts are visual feedback, not hard constraints. The board is complete only when fully filled with no violations
 - **No accounts** — auto-generated fun names (adjective + animal), persisted in localStorage; session identity in sessionStorage for reconnect
@@ -129,11 +130,12 @@ src/
 
 ## Deployment
 
-The frontend deploys automatically on push to `main` via Cloudflare Pages. No server infrastructure needed — multiplayer is fully peer-to-peer.
+Both the frontend and signaling server deploy automatically on push to `main`.
 
 | Service | Platform | URL |
 |---------|----------|-----|
 | Frontend | Cloudflare Pages | [dokuel.com](https://dokuel.com) |
+| Signaling | Cloudflare Worker | [signal.dokuel.com](https://signal.dokuel.com) |
 
 ## License
 

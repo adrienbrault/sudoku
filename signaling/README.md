@@ -35,9 +35,9 @@ For first-time or manual deploy:
 
 ```bash
 cd signaling
-npm install
-npx wrangler login
-npx wrangler deploy
+bun install
+bunx wrangler login
+bunx wrangler deploy
 ```
 
 ## Architecture

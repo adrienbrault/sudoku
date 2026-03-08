@@ -114,8 +114,8 @@ One-sentence explanation: "Share your filled cells as hints for both players."
 ## Real-time Multiplayer
 
 ### Architecture
-- Peer-to-peer via Yjs CRDTs + y-webrtc — no server needed
-- Public WebRTC signaling servers used only for peer discovery
+- Peer-to-peer via Yjs CRDTs + y-webrtc — game data flows directly between players
+- Self-hosted Cloudflare Worker at `signal.dokuel.com` used only for WebRTC peer discovery
 - Game state syncs directly between players via CRDTs
 
 ### Player Identity
