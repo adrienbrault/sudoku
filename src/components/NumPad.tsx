@@ -42,7 +42,7 @@ export function NumPad({
           >
             <span className="text-lg leading-none">{n}</span>
             <span
-              className={`text-[0.5625rem] leading-none mt-0.5 ${isComplete ? "invisible" : isSelected ? "text-text-on-accent/70" : "text-text-muted"}`}
+              className={`text-[0.625rem] leading-none mt-0.5 ${isComplete ? "invisible" : isSelected ? "text-text-on-accent/70" : "text-text-secondary"}`}
             >
               {remaining}
             </span>
