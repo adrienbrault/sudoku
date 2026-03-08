@@ -78,6 +78,9 @@ export function SoloGame({
   const [revealed, setRevealed] = useState(false);
   const [showConflicts, setShowConflicts] = useState(initialShowConflicts);
   const [paused, setPaused] = useState(false);
+  const [tipDismissed, setTipDismissed] = useState(
+    () => localStorage.getItem("sudoku_numpad_tip_dismissed") === "1",
+  );
 
   // Capture PB before this game's result is saved
   const priorStats = useMemo(
@@ -259,6 +262,15 @@ export function SoloGame({
               (personalBest === null || timerSecondsRef.current < personalBest)
             }
             streakInfo={streakInfo}
+            tip={
+              !tipDismissed && position === "bottom"
+                ? "Tip: Move the numpad to the side for faster two-finger play! Open settings (gear icon) to try it."
+                : undefined
+            }
+            onDismissTip={() => {
+              setTipDismissed(true);
+              localStorage.setItem("sudoku_numpad_tip_dismissed", "1");
+            }}
           />
         ) : undefined
       }

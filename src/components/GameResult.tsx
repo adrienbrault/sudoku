@@ -28,6 +28,8 @@ type GameResultProps = {
   stats?: { gamesPlayed: number; bestTime: number; averageTime: number } | null;
   isNewPB?: boolean | undefined;
   streakInfo?: { currentStreak: number; longestStreak: number } | undefined;
+  tip?: string | undefined;
+  onDismissTip?: (() => void) | undefined;
 };
 
 export function GameResult({
@@ -40,6 +42,8 @@ export function GameResult({
   stats,
   isNewPB,
   streakInfo,
+  tip,
+  onDismissTip,
 }: GameResultProps) {
   const [copied, setCopied] = useState(false);
 
@@ -159,6 +163,15 @@ export function GameResult({
             </button>
           )}
         </div>
+        {tip && (
+          <button
+            type="button"
+            className="text-xs text-text-muted text-center leading-relaxed hover:text-text-secondary transition-colors"
+            onClick={onDismissTip}
+          >
+            {tip} <span className="underline">Dismiss</span>
+          </button>
+        )}
       </div>
     </div>
   );
