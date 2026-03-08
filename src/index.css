@@ -373,6 +373,11 @@ body {
     padding: 0.25rem 0.5rem;
     min-height: auto;
     height: 100dvh;
+    /* Extra padding creates scroll room so Safari/Chrome collapse
+       their toolbar when the user scrolls down. The visible content
+       still fits in 100dvh; the padding is below the fold. */
+    padding-bottom: 30vh;
+    box-sizing: content-box;
   }
   .game-layout .game-header {
     margin-bottom: 0;
