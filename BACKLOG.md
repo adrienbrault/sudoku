@@ -37,7 +37,7 @@
 - [x] Daily challenge / seeded puzzles
 - [x] Stats history (localStorage)
 - [x] Sound effects toggle
-- [x] Spectator mode
+- [x] ~~Spectator mode~~ (removed during P2P migration — was server-side only)
 - [x] 2.5D visual polish: board elevation, cell glow, spring press, modal/screen transitions, cell reveal
 - [x] WebRTC P2P: replace Cloudflare server with Yjs + y-webrtc peer-to-peer sync
 
