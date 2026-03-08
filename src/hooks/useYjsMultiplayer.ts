@@ -10,11 +10,12 @@ import {
   joinRoom,
   type P2PRoom,
   requestRematch,
+  setAssistLevel as setRoomAssistLevel,
   startGame,
   updatePlayerName,
   updateProgress,
 } from "../lib/p2p-room.ts";
-import type { Difficulty, RoomState } from "../lib/types.ts";
+import type { AssistLevel, Difficulty, RoomState } from "../lib/types.ts";
 
 type UseYjsMultiplayerOptions = {
   roomId: string;
@@ -45,6 +46,7 @@ function deriveRoomState(room: P2PRoom): RoomState | null {
     roomId: room.roomId,
     status: status as RoomState["status"],
     difficulty: (roomMap.get("difficulty") as Difficulty) || "medium",
+    assistLevel: (roomMap.get("assistLevel") as AssistLevel) || "standard",
     hostId: (roomMap.get("hostId") as string) || "",
     players,
     puzzle: (roomMap.get("puzzle") as string) || null,
@@ -236,6 +238,12 @@ export function useYjsMultiplayer({
     [playerId],
   );
 
+  const setAssistLevel = useCallback((level: AssistLevel) => {
+    const room = roomRef.current;
+    if (!room) return;
+    setRoomAssistLevel(room, level);
+  }, []);
+
   return {
     connected,
     roomState,
@@ -249,5 +257,6 @@ export function useYjsMultiplayer({
     sendComplete,
     sendRematch,
     updateName,
+    setAssistLevel,
   };
 }

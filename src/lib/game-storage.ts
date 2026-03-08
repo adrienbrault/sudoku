@@ -1,4 +1,4 @@
-import type { Difficulty } from "./types.ts";
+import type { AssistLevel, Difficulty } from "./types.ts";
 
 export type SavedGame = {
   puzzle: string;
@@ -6,7 +6,7 @@ export type SavedGame = {
   notes: number[][];
   timer: number;
   difficulty: Difficulty;
-  showConflicts: boolean;
+  assistLevel: AssistLevel;
 };
 
 const STORAGE_PREFIX = "sudoku_save_";
@@ -23,7 +23,7 @@ export function loadGame(key: string): SavedGame | null {
   try {
     const raw = localStorage.getItem(STORAGE_PREFIX + key);
     if (!raw) return null;
-    const data = JSON.parse(raw) as SavedGame;
+    const data = JSON.parse(raw);
     if (
       typeof data.puzzle !== "string" ||
       data.puzzle.length !== 81 ||
@@ -35,7 +35,14 @@ export function loadGame(key: string): SavedGame | null {
     ) {
       return null;
     }
-    return data;
+    // Backward compat: migrate old showConflicts boolean to assistLevel
+    if (!data.assistLevel && "showConflicts" in data) {
+      data.assistLevel = data.showConflicts === false ? "paper" : "standard";
+    }
+    if (!data.assistLevel) {
+      data.assistLevel = "standard";
+    }
+    return data as SavedGame;
   } catch {
     return null;
   }

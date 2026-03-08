@@ -82,6 +82,10 @@ export type GameState = {
   conflicts: Set<number>; // row*9+col keys
 };
 
+// --- Assistance ---
+
+export type AssistLevel = "paper" | "standard" | "full";
+
 // --- Numpad ---
 
 export type NumPadPosition = "bottom" | "left" | "right";
@@ -102,6 +106,7 @@ export type RoomState = {
   roomId: string;
   status: RoomStatus;
   difficulty: Difficulty;
+  assistLevel: AssistLevel;
   hostId: string;
   players: Player[];
   puzzle: string | null; // 81-char string, null in lobby

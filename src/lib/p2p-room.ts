@@ -1,6 +1,6 @@
 import * as Y from "yjs";
 import { generatePuzzle, solvePuzzle } from "./sudoku.ts";
-import type { Difficulty, Player } from "./types.ts";
+import type { AssistLevel, Difficulty, Player } from "./types.ts";
 
 const PLAYER_COLORS = [
   "#3B82F6", // blue
@@ -20,6 +20,7 @@ export function createRoomFromDoc(doc: Y.Doc, roomId: string): P2PRoom {
     doc.transact(() => {
       roomMap.set("status", "lobby");
       roomMap.set("difficulty", "medium");
+      roomMap.set("assistLevel", "standard");
       roomMap.set("hostId", "");
       roomMap.set("puzzle", null);
       roomMap.set("solution", null);
@@ -54,6 +55,12 @@ export function joinRoom(
     if (!roomMap.get("hostId")) {
       roomMap.set("hostId", playerId);
     }
+  });
+}
+
+export function setAssistLevel(room: P2PRoom, level: AssistLevel): void {
+  room.doc.transact(() => {
+    room.doc.getMap("room").set("assistLevel", level);
   });
 }
 

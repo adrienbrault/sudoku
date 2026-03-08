@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import type { RoomState } from "../lib/types.ts";
+import type { AssistLevel, RoomState } from "../lib/types.ts";
+import { AssistLevelPicker } from "./AssistLevelPicker.tsx";
 
 type LobbyProps = {
   roomState: RoomState;
   playerId?: string;
   onRename?: (name: string) => void;
+  onAssistLevelChange?: (level: AssistLevel) => void;
   onStart: () => void;
   onBack: () => void;
 };
@@ -13,6 +15,7 @@ export function Lobby({
   roomState,
   playerId,
   onRename,
+  onAssistLevelChange,
   onStart,
   onBack,
 }: LobbyProps) {
@@ -167,6 +170,13 @@ export function Lobby({
           </div>
         )}
       </div>
+
+      {onAssistLevelChange && (
+        <AssistLevelPicker
+          value={roomState.assistLevel}
+          onChange={onAssistLevelChange}
+        />
+      )}
 
       <div className="flex flex-col gap-3 w-full">
         <button

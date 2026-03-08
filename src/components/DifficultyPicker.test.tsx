@@ -1,9 +1,17 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DifficultyPicker } from "./DifficultyPicker.tsx";
 
 describe("DifficultyPicker", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    localStorage.clear();
+  });
+
   it("renders difficulty options", () => {
     render(<DifficultyPicker onSelect={vi.fn()} onBack={vi.fn()} />);
 
@@ -13,26 +21,29 @@ describe("DifficultyPicker", () => {
     expect(screen.getByText("Expert")).toBeInTheDocument();
   });
 
-  it("calls onSelect with difficulty and showConflicts true by default", async () => {
+  it("calls onSelect with difficulty and standard assist level by default", async () => {
     const onSelect = vi.fn();
     render(<DifficultyPicker onSelect={onSelect} onBack={vi.fn()} />);
 
     await userEvent.click(screen.getByText("Medium"));
-    expect(onSelect).toHaveBeenCalledWith("medium", true);
+    expect(onSelect).toHaveBeenCalledWith("medium", "standard");
   });
 
-  it("shows placement feedback toggle defaulting to on", () => {
+  it("shows assist level picker defaulting to standard", () => {
     render(<DifficultyPicker onSelect={vi.fn()} onBack={vi.fn()} />);
 
-    expect(screen.getByText("Show placement errors")).toBeInTheDocument();
+    expect(
+      screen.getByRole("radiogroup", { name: /assistance/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("radio", { name: /standard/i })).toBeChecked();
   });
 
-  it("calls onSelect with showConflicts false when toggle is off", async () => {
+  it("calls onSelect with selected assist level", async () => {
     const onSelect = vi.fn();
     render(<DifficultyPicker onSelect={onSelect} onBack={vi.fn()} />);
 
-    await userEvent.click(screen.getByLabelText("Show placement errors"));
+    await userEvent.click(screen.getByRole("radio", { name: /paper/i }));
     await userEvent.click(screen.getByText("Easy"));
-    expect(onSelect).toHaveBeenCalledWith("easy", false);
+    expect(onSelect).toHaveBeenCalledWith("easy", "paper");
   });
 });
