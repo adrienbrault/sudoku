@@ -9,7 +9,7 @@ import {
   type SavedGame,
   saveGame,
 } from "../lib/game-storage.ts";
-import { saveGameResult } from "../lib/stats.ts";
+import { getStatsForDifficulty, saveGameResult } from "../lib/stats.ts";
 import { generatePuzzle } from "../lib/sudoku.ts";
 import type { Difficulty } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
@@ -72,6 +72,13 @@ export function SoloGame({
   const timerSecondsRef = useRef(saved?.timer ?? 0);
   const [showResult, setShowResult] = useState(false);
   const [revealed, setRevealed] = useState(false);
+
+  // Capture PB before this game's result is saved
+  const priorStats = useMemo(
+    () => getStatsForDifficulty(difficulty),
+    [difficulty],
+  );
+  const personalBest = priorStats?.bestTime ?? null;
 
   // Auto-save on every board change
   useEffect(() => {
@@ -140,6 +147,7 @@ export function SoloGame({
               {81 - game.cellsRemaining}
             </span>
             /81
+            {personalBest !== null && ` · PB ${formatTime(personalBest)}`}
           </span>
         </div>
       }
@@ -176,6 +184,10 @@ export function SoloGame({
             difficulty={difficulty}
             onNewGame={onBack}
             onRematch={onRematch}
+            stats={priorStats}
+            isNewPB={
+              personalBest === null || timerSecondsRef.current < personalBest
+            }
           />
         ) : undefined
       }
