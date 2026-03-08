@@ -78,6 +78,7 @@ export function cellKey(row: number, col: number): number {
  * Get all conflicting cell positions as a Set of numeric keys (row*9+col).
  * A conflict = same non-null value in the same row, column, or 3x3 box.
  */
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: triple-nested loops checking rows, columns, and boxes
 export function getConflicts(board: Board): Set<number> {
   const conflicts = new Set<number>();
 

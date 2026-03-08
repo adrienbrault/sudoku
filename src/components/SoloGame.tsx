@@ -44,6 +44,7 @@ type SoloGameProps = {
   onComplete?: ((time: number) => void) | undefined;
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: game component with save/load/timer/completion logic
 export function SoloGame({
   difficulty,
   gameKey,

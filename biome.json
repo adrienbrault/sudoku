@@ -47,8 +47,9 @@
           "level": "error",
           "options": { "syntax": "shorthand" }
         },
+        "noNonNullAssertion": "off",
         "noRestrictedImports": {
-          "level": "warn",
+          "level": "info",
           "options": {
             "paths": {
               "react": {

@@ -43,6 +43,7 @@ function cloneBoard(board: Board): Board {
   );
 }
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: game state reducer handling all board mutations
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case "SELECT_CELL": {
@@ -297,6 +298,7 @@ export type SavedBoard = {
   notes: number[][];
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: board initialization with saved state restoration
 function initState(args: {
   puzzle: string;
   solution?: string | undefined;

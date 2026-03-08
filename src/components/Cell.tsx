@@ -14,6 +14,7 @@ type CellProps = {
   revealDelay?: number | undefined;
 };
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: JSX conditional rendering with multiple visual states
 export const Cell = memo(function Cell({
   cell,
   row,

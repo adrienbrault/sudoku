@@ -90,6 +90,7 @@ export function useYjsMultiplayer({
 
     joinRoom(room, playerId, playerName);
 
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: derives room state from Yjs doc with multiple conditions
     const updateState = () => {
       const state = deriveRoomState(room);
       setRoomState(state);

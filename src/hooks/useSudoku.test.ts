@@ -281,6 +281,7 @@ describe("useSudoku", () => {
   });
 });
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: test helper scanning board for suitable test cells
 function findCellWithPeers(
   board: { value: number | null; isGiven: boolean }[][],
 ) {

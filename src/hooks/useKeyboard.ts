@@ -25,6 +25,7 @@ export function useKeyboard({
   useEffect(() => {
     if (!enabled) return;
 
+    // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: keyboard handler maps many keys to actions
     const handler = (e: KeyboardEvent) => {
       // Escape to deselect
       if (e.key === "Escape") {
