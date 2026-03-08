@@ -81,6 +81,20 @@ export function startGame(room: P2PRoom, difficulty: Difficulty): void {
   });
 }
 
+export function updatePlayerName(
+  room: P2PRoom,
+  playerId: string,
+  newName: string,
+): void {
+  const players = room.doc.getMap("players");
+  const playerMap = players.get(playerId) as Y.Map<unknown> | undefined;
+  if (!playerMap) return;
+
+  room.doc.transact(() => {
+    playerMap.set("name", newName);
+  });
+}
+
 export function updateProgress(
   room: P2PRoom,
   playerId: string,
