@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react";
 import { haptics } from "../lib/haptics.ts";
+import { findHint } from "../lib/hint-engine.ts";
 import { sounds } from "../lib/sounds.ts";
 import {
   cellKey,
@@ -9,6 +10,7 @@ import {
   parsePuzzle,
 } from "../lib/sudoku.ts";
 import type {
+  ActiveHint,
   Board,
   ClearedNote,
   GameStatus,
@@ -25,6 +27,7 @@ type State = {
   notesMode: boolean;
   history: MoveAction[];
   hintsUsed: number;
+  activeHint: ActiveHint | null;
 };
 
 type Action =
@@ -35,6 +38,7 @@ type Action =
   | { type: "ERASE" }
   | { type: "UNDO" }
   | { type: "HINT" }
+  | { type: "DISMISS_HINT" }
   | { type: "TOGGLE_NOTES" };
 
 function cloneBoard(board: Board): Board {
@@ -54,11 +58,17 @@ function reducer(state: State, action: Action): State {
         ...state,
         selectedCell: { row: action.row, col: action.col },
         selectedCells: new Set([key]),
+        activeHint: null,
       };
     }
 
     case "DESELECT_CELL": {
-      return { ...state, selectedCell: null, selectedCells: new Set() };
+      return {
+        ...state,
+        selectedCell: null,
+        selectedCells: new Set(),
+        activeHint: null,
+      };
     }
 
     case "SET_SELECTED_CELLS": {
@@ -66,6 +76,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         selectedCell: action.primary,
         selectedCells: action.cells,
+        activeHint: null,
       };
     }
 
@@ -115,6 +126,7 @@ function reducer(state: State, action: Action): State {
           ...state,
           board,
           history: [...state.history, moveAction],
+          activeHint: null,
         };
       }
 
@@ -137,6 +149,7 @@ function reducer(state: State, action: Action): State {
           ...state,
           board,
           history: [...state.history, moveAction],
+          activeHint: null,
         };
       }
 
@@ -186,6 +199,7 @@ function reducer(state: State, action: Action): State {
         board,
         status: complete ? "completed" : state.status,
         history: [...state.history, moveAction],
+        activeHint: null,
       };
     }
 
@@ -226,6 +240,7 @@ function reducer(state: State, action: Action): State {
           ...state,
           board,
           history: [...state.history, moveAction],
+          activeHint: null,
         };
       }
 
@@ -247,6 +262,7 @@ function reducer(state: State, action: Action): State {
         ...state,
         board,
         history: [...state.history, moveAction],
+        activeHint: null,
       };
     }
 
@@ -320,6 +336,7 @@ function reducer(state: State, action: Action): State {
           lastAction.type === "hint"
             ? Math.max(0, state.hintsUsed - 1)
             : state.hintsUsed,
+        activeHint: null,
       };
     }
 
@@ -327,82 +344,21 @@ function reducer(state: State, action: Action): State {
       return { ...state, notesMode: !state.notesMode };
     }
 
+    case "DISMISS_HINT": {
+      return { ...state, activeHint: null };
+    }
+
     case "HINT": {
       if (!state.solution || state.status === "completed") return state;
 
-      // Find the target cell: selected empty cell, or first empty cell
-      let targetRow = -1;
-      let targetCol = -1;
-      if (
-        state.selectedCell &&
-        state.board[state.selectedCell.row]![state.selectedCell.col]!.value ===
-          null
-      ) {
-        targetRow = state.selectedCell.row;
-        targetCol = state.selectedCell.col;
-      } else {
-        for (let r = 0; r < 9 && targetRow === -1; r++) {
-          for (let c = 0; c < 9; c++) {
-            if (state.board[r]![c]!.value === null) {
-              targetRow = r;
-              targetCol = c;
-              break;
-            }
-          }
-        }
-      }
-      if (targetRow === -1) return state;
-
-      const hintValue = Number(state.solution[targetRow * 9 + targetCol]);
-      const cell = state.board[targetRow]![targetCol]!;
-      const board = cloneBoard(state.board);
-      board[targetRow]![targetCol]!.value = hintValue;
-      board[targetRow]![targetCol]!.notes = new Set();
-
-      // Auto-clear notes from peers (same as PLACE_NUMBER)
-      const clearedNotes: ClearedNote[] = [];
-      const boxRow = Math.floor(targetRow / 3) * 3;
-      const boxCol = Math.floor(targetCol / 3) * 3;
-      for (let i = 0; i < 9; i++) {
-        if (i !== targetCol && board[targetRow]![i]!.notes.has(hintValue)) {
-          board[targetRow]![i]!.notes.delete(hintValue);
-          clearedNotes.push({ row: targetRow, col: i, note: hintValue });
-        }
-        if (i !== targetRow && board[i]![targetCol]!.notes.has(hintValue)) {
-          board[i]![targetCol]!.notes.delete(hintValue);
-          clearedNotes.push({ row: i, col: targetCol, note: hintValue });
-        }
-      }
-      for (let r = boxRow; r < boxRow + 3; r++) {
-        for (let c = boxCol; c < boxCol + 3; c++) {
-          if (
-            r !== targetRow &&
-            c !== targetCol &&
-            board[r]![c]!.notes.has(hintValue)
-          ) {
-            board[r]![c]!.notes.delete(hintValue);
-            clearedNotes.push({ row: r, col: c, note: hintValue });
-          }
-        }
-      }
-
-      const moveAction: MoveAction = {
-        type: "hint",
-        position: { row: targetRow, col: targetCol },
-        value: hintValue,
-        previousNotes: new Set(cell.notes),
-        clearedNotes,
-      };
-      const conflicts = getConflicts(board);
-      const complete = isBoardComplete(board, conflicts);
+      const hint = findHint(state.board, state.solution, state.selectedCell);
+      if (!hint) return state;
 
       return {
         ...state,
-        board,
-        status: complete ? "completed" : state.status,
-        selectedCell: { row: targetRow, col: targetCol },
-        selectedCells: new Set([cellKey(targetRow, targetCol)]),
-        history: [...state.history, moveAction],
+        selectedCell: hint.position,
+        selectedCells: new Set([cellKey(hint.position.row, hint.position.col)]),
+        activeHint: hint,
         hintsUsed: state.hintsUsed + 1,
       };
     }
@@ -445,6 +401,7 @@ function initState(args: {
     notesMode: false,
     history: [],
     hintsUsed: 0,
+    activeHint: null,
   };
 }
 
@@ -540,9 +497,10 @@ export function useSudoku(
 
   const hint = useCallback(() => {
     haptics.tap();
-    sounds.place();
     dispatch({ type: "HINT" });
   }, []);
+
+  const dismissHint = useCallback(() => dispatch({ type: "DISMISS_HINT" }), []);
 
   return {
     board: state.board,
@@ -564,7 +522,9 @@ export function useSudoku(
     placeNumber,
     erase,
     undo,
+    activeHint: state.activeHint,
     toggleNotesMode,
     hint,
+    dismissHint,
   };
 }

@@ -10,12 +10,13 @@ import {
   saveGame,
 } from "../lib/game-storage.ts";
 import { getStatsForDifficulty, saveGameResult } from "../lib/stats.ts";
-import { generatePuzzle, solvePuzzle } from "../lib/sudoku.ts";
+import { cellKey, generatePuzzle, solvePuzzle } from "../lib/sudoku.ts";
 import type { Difficulty } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
 import { GameControls } from "./GameControls.tsx";
 import { GameLayout } from "./GameLayout.tsx";
 import { GameResult } from "./GameResult.tsx";
+import { HintBanner } from "./HintBanner.tsx";
 import { NumPad } from "./NumPad.tsx";
 import { Timer } from "./Timer.tsx";
 
@@ -157,6 +158,15 @@ export function SoloGame({
     enabled: game.status === "playing" && !paused,
   });
 
+  const hintCells = useMemo(() => {
+    if (!game.activeHint) return undefined;
+    const set = new Set<number>();
+    for (const pos of game.activeHint.relatedCells) {
+      set.add(cellKey(pos.row, pos.col));
+    }
+    return set;
+  }, [game.activeHint]);
+
   return (
     <GameLayout
       onBack={handleBack}
@@ -210,6 +220,7 @@ export function SoloGame({
             selectedCell={paused ? null : game.selectedCell}
             selectedCells={paused ? undefined : game.selectedCells}
             conflicts={showConflicts ? game.errors : EMPTY_CONFLICTS}
+            hintCells={hintCells}
             onSelectCell={paused ? () => {} : game.selectCell}
             onSetSelectedCells={paused ? undefined : game.setSelectedCells}
             animateReveal={!revealed}
@@ -229,16 +240,21 @@ export function SoloGame({
         </div>
       }
       controls={
-        <GameControls
-          notesMode={game.notesMode}
-          onToggleNotes={game.toggleNotesMode}
-          onErase={game.erase}
-          onUndo={game.undo}
-          showConflicts={showConflicts}
-          onToggleConflicts={() => setShowConflicts((v) => !v)}
-          historyLength={game.historyLength}
-          onHint={game.hint}
-        />
+        <>
+          {game.activeHint && (
+            <HintBanner hint={game.activeHint} onDismiss={game.dismissHint} />
+          )}
+          <GameControls
+            notesMode={game.notesMode}
+            onToggleNotes={game.toggleNotesMode}
+            onErase={game.erase}
+            onUndo={game.undo}
+            showConflicts={showConflicts}
+            onToggleConflicts={() => setShowConflicts((v) => !v)}
+            historyLength={game.historyLength}
+            onHint={game.hint}
+          />
+        </>
       }
       footer={
         showResult ? (
