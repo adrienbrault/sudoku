@@ -7,7 +7,7 @@ type ToggleSwitchProps = {
 export function ToggleSwitch({ checked, onChange, label }: ToggleSwitchProps) {
   return (
     <label className="flex items-center gap-3 cursor-pointer select-none touch-manipulation">
-      <span className="text-sm text-gray-600 dark:text-gray-400">{label}</span>
+      <span className="text-sm text-text-secondary">{label}</span>
       <button
         type="button"
         role="switch"
@@ -15,7 +15,7 @@ export function ToggleSwitch({ checked, onChange, label }: ToggleSwitchProps) {
         aria-label={label}
         onClick={onChange}
         className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
-          checked ? "bg-accent" : "bg-gray-300 dark:bg-gray-600"
+          checked ? "bg-accent" : "bg-bg-disabled"
         }`}
       >
         <span

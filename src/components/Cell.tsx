@@ -80,7 +80,7 @@ export const Cell = memo(function Cell({
           {DIGITS.map((n) => (
             <span
               key={n}
-              className="flex items-center justify-center text-[clamp(0.5625rem,2.2vw,0.75rem)] text-text-secondary leading-none"
+              className="flex items-center justify-center text-[clamp(0.5625rem,2.2vw,0.75rem)] text-text-secondary font-medium leading-none"
             >
               {cell.notes.has(n) ? n : ""}
             </span>

@@ -31,6 +31,8 @@ export function Timer({
   }, [running]);
 
   return (
-    <span className={className ?? "text-mono"}>{formatTime(seconds)}</span>
+    <span className={className ?? "text-mono text-base"}>
+      {formatTime(seconds)}
+    </span>
   );
 }

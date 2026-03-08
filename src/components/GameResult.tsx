@@ -63,7 +63,7 @@ export function GameResult({
           <span />
         </div>
       )}
-      <div className="modal-panel max-w-sm sm:max-w-md w-full relative">
+      <div className="modal-panel gap-5 max-w-sm sm:max-w-md w-full relative">
         <div className="flex flex-col items-center gap-2">
           <span className="text-5xl animate-emoji-bounce">
             {isWinner ? "🎉" : "👏"}

@@ -135,7 +135,7 @@ function SettingsButton({
     <div className="relative" ref={ref}>
       <button
         type="button"
-        className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors touch-manipulation"
+        className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:bg-bg-raised transition-colors touch-manipulation"
         onClick={() => setOpen((v) => !v)}
         aria-label="Settings"
         aria-expanded={open}
@@ -155,8 +155,8 @@ function SettingsButton({
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg p-3 z-50 animate-fade-in">
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 font-medium">
+        <div className="absolute right-0 top-full mt-2 bg-bg-overlay border border-border-default rounded-xl shadow-lg p-3 z-50 animate-fade-in">
+          <p className="text-xs text-text-muted mb-2 font-medium">
             Numpad position
           </p>
           <NumPadPositionToggle
