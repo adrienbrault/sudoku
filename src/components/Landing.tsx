@@ -4,6 +4,7 @@ import { formatShortDate, formatTime } from "../lib/format.ts";
 import {
   deleteGame,
   listSavedGames,
+  loadGame,
   type SavedGameSummary,
 } from "../lib/game-storage.ts";
 import { getStats } from "../lib/stats.ts";
@@ -29,6 +30,18 @@ export function Landing({
   const completed = useMemo(() => isDailyCompleted(today), [today]);
   const streak = useMemo(() => getDailyStreak(), []);
   const [savedGames, setSavedGames] = useState(() => listSavedGames());
+  const dailyProgress = useMemo(() => {
+    if (completed) return null;
+    const dailyKey = `daily-${today}-medium`;
+    const game = loadGame(dailyKey);
+    if (!game) return null;
+    const givenCells = game.puzzle.split("").filter((c) => c !== ".").length;
+    const filledCells = game.values.split("").filter((c) => c !== ".").length;
+    const remaining = 81 - givenCells;
+    if (remaining === 0) return null;
+    const pct = Math.round(((filledCells - givenCells) / remaining) * 100);
+    return pct > 0 ? pct : null;
+  }, [today, completed]);
 
   const handleDelete = useCallback((key: string) => {
     deleteGame(key);
@@ -87,6 +100,7 @@ export function Landing({
             completed={completed}
             streak={streak.currentStreak}
             dateLabel={formatShortDate(today)}
+            progress={dailyProgress}
           />
         </div>
         <div className="flex flex-col gap-3">
@@ -128,11 +142,13 @@ function DailyChallengeButton({
   completed,
   streak,
   dateLabel,
+  progress,
 }: {
   onClick: () => void;
   completed: boolean;
   streak: number;
   dateLabel: string;
+  progress: number | null;
 }) {
   return (
     <button
@@ -158,6 +174,11 @@ function DailyChallengeButton({
               clipRule="evenodd"
             />
           </svg>
+        )}
+        {!completed && progress !== null && (
+          <span className="text-sm font-normal text-text-muted">
+            · {progress}%
+          </span>
         )}
       </span>
       {streak > 0 && (
