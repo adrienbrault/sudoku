@@ -123,6 +123,30 @@ test("multiplayer lobby", async ({ page }, testInfo) => {
 	});
 });
 
+test("about page", async ({ page }, testInfo) => {
+	await page.goto("/about");
+	await page.waitForLoadState("networkidle");
+	await page.waitForTimeout(500);
+	await page.screenshot({
+		path: screenshotPath("about", testInfo.project.name),
+		fullPage: true,
+	});
+});
+
+test("about page - dark mode", async ({ page }, testInfo) => {
+	await page.goto("/about");
+	await page.evaluate(() =>
+		localStorage.setItem("sudoku_theme", "dark"),
+	);
+	await page.goto("/about");
+	await page.waitForLoadState("networkidle");
+	await page.waitForTimeout(500);
+	await page.screenshot({
+		path: screenshotPath("about-dark", testInfo.project.name),
+		fullPage: true,
+	});
+});
+
 // --- Dark mode variants ---
 
 test("landing page - dark mode", async ({ page }, testInfo) => {
