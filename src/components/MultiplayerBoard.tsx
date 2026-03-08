@@ -14,6 +14,7 @@ const EMPTY_CONFLICTS = new Set<number>();
 export type MultiplayerBoardProps = {
   puzzle: string;
   playerId: string;
+  difficulty: import("../lib/types.ts").Difficulty;
   showConflicts?: boolean;
   opponentProgress: {
     cellsRemaining: number;
@@ -30,6 +31,7 @@ export type MultiplayerBoardProps = {
 export function MultiplayerBoard({
   puzzle,
   playerId,
+  difficulty,
   showConflicts = true,
   opponentProgress,
   opponentDisconnected,
@@ -147,6 +149,8 @@ export function MultiplayerBoard({
           <GameResult
             isWinner={gameOver.winnerId === playerId}
             time={formatTime(timerSecondsRef.current)}
+            difficulty={difficulty}
+            isMultiplayer
             onNewGame={onBack}
             onRematch={onRematch}
           />
