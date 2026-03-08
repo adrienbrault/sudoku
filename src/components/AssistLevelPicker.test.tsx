@@ -1,12 +1,11 @@
-// @vitest-environment jsdom
+import { describe, expect, it, jest } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 import { AssistLevelPicker } from "./AssistLevelPicker.tsx";
 
 describe("AssistLevelPicker", () => {
   it("renders three options", () => {
-    render(<AssistLevelPicker value="standard" onChange={vi.fn()} />);
+    render(<AssistLevelPicker value="standard" onChange={jest.fn()} />);
 
     expect(screen.getByRole("radio", { name: /paper/i })).toBeInTheDocument();
     expect(
@@ -16,7 +15,7 @@ describe("AssistLevelPicker", () => {
   });
 
   it("marks the active option as checked", () => {
-    render(<AssistLevelPicker value="paper" onChange={vi.fn()} />);
+    render(<AssistLevelPicker value="paper" onChange={jest.fn()} />);
 
     expect(screen.getByRole("radio", { name: /paper/i })).toBeChecked();
     expect(screen.getByRole("radio", { name: /standard/i })).not.toBeChecked();
@@ -24,7 +23,7 @@ describe("AssistLevelPicker", () => {
   });
 
   it("calls onChange when a different option is clicked", async () => {
-    const onChange = vi.fn();
+    const onChange = jest.fn();
     render(<AssistLevelPicker value="standard" onChange={onChange} />);
 
     await userEvent.click(screen.getByRole("radio", { name: /full/i }));
@@ -32,7 +31,7 @@ describe("AssistLevelPicker", () => {
   });
 
   it("does not call onChange when the active option is clicked", async () => {
-    const onChange = vi.fn();
+    const onChange = jest.fn();
     render(<AssistLevelPicker value="standard" onChange={onChange} />);
 
     await userEvent.click(screen.getByRole("radio", { name: /standard/i }));
@@ -40,7 +39,7 @@ describe("AssistLevelPicker", () => {
   });
 
   it("uses radiogroup role on container", () => {
-    render(<AssistLevelPicker value="standard" onChange={vi.fn()} />);
+    render(<AssistLevelPicker value="standard" onChange={jest.fn()} />);
     expect(
       screen.getByRole("radiogroup", { name: /assistance/i }),
     ).toBeInTheDocument();

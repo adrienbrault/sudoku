@@ -1,6 +1,5 @@
-// @vitest-environment jsdom
+import { beforeEach, describe, expect, it, jest } from "bun:test";
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useDarkMode } from "./useDarkMode.ts";
 
 let listeners: Array<() => void> = [];
@@ -8,7 +7,7 @@ let listeners: Array<() => void> = [];
 function mockMatchMedia(prefersDark: boolean) {
   Object.defineProperty(window, "matchMedia", {
     writable: true,
-    value: vi.fn().mockReturnValue({
+    value: jest.fn().mockReturnValue({
       matches: prefersDark,
       addEventListener: (_event: string, handler: () => void) => {
         listeners.push(handler);
