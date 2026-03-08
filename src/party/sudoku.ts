@@ -89,7 +89,7 @@ export class SudokuAgent extends Agent {
 }
 
 export default {
-	async fetch(request: Request, env: unknown, ctx: ExecutionContext) {
+	async fetch(request: Request, env: unknown) {
 		return (
 			(await routeAgentRequest(request, env)) ??
 			new Response("Not found", { status: 404 })
