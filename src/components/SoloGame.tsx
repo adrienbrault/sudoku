@@ -1,20 +1,12 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffectivePosition } from "../hooks/useEffectivePosition.ts";
 import { useKeyboard } from "../hooks/useKeyboard.ts";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
 import { useSudoku } from "../hooks/useSudoku.ts";
 import { formatTime } from "../lib/format.ts";
 import { saveGameResult } from "../lib/stats.ts";
 import { generatePuzzle, solvePuzzle } from "../lib/sudoku.ts";
-import type { Difficulty, NumPadPosition } from "../lib/types.ts";
-
-const EMPTY_CONFLICTS = new Set<number>();
-
+import type { Difficulty } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
 import { GameControls } from "./GameControls.tsx";
 import { GameResult } from "./GameResult.tsx";
@@ -22,26 +14,7 @@ import { NumPad } from "./NumPad.tsx";
 import { NumPadPositionToggle } from "./NumPadPositionToggle.tsx";
 import { Timer } from "./Timer.tsx";
 
-const wideQuery =
-  typeof window !== "undefined"
-    ? window.matchMedia("(min-width: 540px)")
-    : null;
-
-function useIsWide(): boolean {
-  return useSyncExternalStore(
-    (cb) => {
-      wideQuery?.addEventListener("change", cb);
-      return () => wideQuery?.removeEventListener("change", cb);
-    },
-    () => wideQuery?.matches ?? false,
-  );
-}
-
-function useEffectivePosition(position: NumPadPosition): NumPadPosition {
-  const isWide = useIsWide();
-  if (!isWide && position !== "bottom") return "bottom";
-  return position;
-}
+const EMPTY_CONFLICTS = new Set<number>();
 
 type SoloGameProps = {
   difficulty: Difficulty;
