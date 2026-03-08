@@ -1,1 +1,3 @@
-import "@testing-library/jest-dom/vitest";
+if (typeof document !== "undefined") {
+  await import("@testing-library/jest-dom/vitest");
+}
