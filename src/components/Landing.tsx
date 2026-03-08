@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import type { Invite } from "../hooks/usePresence.ts";
+import { DIFFICULTY_LABELS } from "../lib/constants.ts";
 import { getDailyStreak, isDailyCompleted } from "../lib/daily-streak.ts";
 import { formatShortDate, formatTime } from "../lib/format.ts";
 import type { Friend } from "../lib/friends.ts";
@@ -240,12 +241,6 @@ function DailyChallengeButton({
   );
 }
 
-const DIFFICULTY_LABELS: Record<string, string> = {
-  easy: "Easy",
-  medium: "Medium",
-  hard: "Hard",
-  expert: "Expert",
-};
 
 function progressPercent(game: SavedGameSummary): number {
   const remaining = 81 - game.givenCells;

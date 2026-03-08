@@ -1,17 +1,9 @@
 import { useMemo } from "react";
+import { DIFFICULTIES, DIFFICULTY_LABELS } from "../lib/constants.ts";
 import { getDailyStreak } from "../lib/daily-streak.ts";
 import { formatTime } from "../lib/format.ts";
 import { getStats, getStatsForDifficulty } from "../lib/stats.ts";
 import type { Difficulty } from "../lib/types.ts";
-
-const DIFFICULTIES: Difficulty[] = ["easy", "medium", "hard", "expert"];
-
-const DIFFICULTY_LABELS: Record<Difficulty, string> = {
-  easy: "Easy",
-  medium: "Medium",
-  hard: "Hard",
-  expert: "Expert",
-};
 
 const DIFFICULTY_COLORS: Record<Difficulty, string> = {
   easy: "text-emerald-600 dark:text-emerald-400",
