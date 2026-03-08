@@ -48,13 +48,11 @@ export function GameLayout({
 
   return (
     <div
-      className="flex flex-col items-center min-h-dvh bg-white dark:bg-gray-950 py-4 px-4 animate-screen-enter"
+      className="flex flex-col items-center min-h-dvh bg-bg-primary py-4 px-4 animate-screen-enter"
       onPointerDown={handleBackgroundPointerDown}
     >
       {title && (
-        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-          {title}
-        </p>
+        <p className="text-sm font-medium text-text-secondary mb-1">{title}</p>
       )}
 
       {/* Header */}
@@ -63,7 +61,7 @@ export function GameLayout({
       >
         <button
           type="button"
-          className="text-sm text-gray-400 dark:text-gray-500 touch-manipulation"
+          className="btn-ghost touch-manipulation"
           onClick={onBack}
         >
           ← Back

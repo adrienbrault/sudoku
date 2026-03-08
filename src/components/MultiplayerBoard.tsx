@@ -98,7 +98,7 @@ export function MultiplayerBoard({
               timerSecondsRef.current = s;
             }}
           />
-          <span className="text-xs text-gray-500 dark:text-gray-400 font-mono tabular-nums">
+          <span className="text-xs text-text-muted font-mono tabular-nums">
             <span className="text-accent font-medium">
               {81 - game.cellsRemaining}
             </span>
@@ -133,7 +133,7 @@ export function MultiplayerBoard({
       headerExtra={
         opponentProgress ? (
           <div className="w-full max-w-[min(100vw-2rem,28rem)] mb-3">
-            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+            <div className="flex items-center justify-between text-xs text-text-secondary mb-1">
               <span>
                 Opponent
                 {opponentDisconnected && (
@@ -144,7 +144,7 @@ export function MultiplayerBoard({
               </span>
               <span>{opponentProgress.completionPercent}%</span>
             </div>
-            <div className="w-full h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden">
+            <div className="w-full h-2 rounded-full bg-bg-raised overflow-hidden">
               <div
                 className="h-full rounded-full bg-red-400 transition-all duration-300"
                 style={{ width: `${opponentProgress.completionPercent}%` }}

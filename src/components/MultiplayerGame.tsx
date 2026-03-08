@@ -36,15 +36,15 @@ export function MultiplayerGame({
 
   if (!mp.roomState) {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-white dark:bg-gray-950 animate-screen-enter">
-        <p className="text-gray-500 dark:text-gray-400">Connecting...</p>
+      <div className="screen">
+        <p className="caption">Connecting...</p>
       </div>
     );
   }
 
   if (!mp.puzzle && mp.roomState.status === "lobby") {
     return (
-      <div className="flex min-h-dvh items-center justify-center bg-white dark:bg-gray-950 animate-screen-enter">
+      <div className="screen">
         <Lobby
           roomState={mp.roomState}
           playerId={playerId}
@@ -110,20 +110,20 @@ function DisconnectOverlay({ onClaimWin }: { onClaimWin: () => void }) {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm animate-modal-backdrop">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl px-8 py-6 shadow-2xl text-center animate-modal-content">
-        <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+    <div className="modal-overlay">
+      <div className="bg-bg-overlay rounded-2xl px-8 py-6 shadow-2xl text-center animate-modal-content">
+        <p className="text-lg font-semibold text-text-primary">
           Opponent disconnected
         </p>
         {seconds > 0 ? (
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="caption mt-1">
             Reconnecting...{" "}
             <span className="font-mono tabular-nums">{seconds}s</span>
           </p>
         ) : (
           <button
             type="button"
-            className="mt-3 px-6 py-2 rounded-xl text-sm font-semibold bg-accent text-white press-spring-soft select-none touch-manipulation"
+            className="btn btn-md btn-primary mt-3"
             onClick={onClaimWin}
           >
             Claim Win

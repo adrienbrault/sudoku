@@ -31,13 +31,6 @@ export function Timer({
   }, [running]);
 
   return (
-    <span
-      className={
-        className ??
-        "font-mono text-base text-gray-700 dark:text-gray-300 tabular-nums"
-      }
-    >
-      {formatTime(seconds)}
-    </span>
+    <span className={className ?? "text-mono"}>{formatTime(seconds)}</span>
   );
 }
