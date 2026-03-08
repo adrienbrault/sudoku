@@ -129,6 +129,18 @@ export function SoloGame({
     onBack();
   };
 
+  // Auto-pause when tab loses visibility
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.hidden && game.status === "playing") {
+        setPaused(true);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibility);
+  }, [game.status]);
+
   useKeyboard({
     selectedCell: game.selectedCell,
     onSelectCell: game.selectCell,
