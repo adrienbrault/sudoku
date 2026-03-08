@@ -3,6 +3,7 @@
 	"name": "sudoku-server",
 	"main": "src/party/sudoku.ts",
 	"compatibility_date": "2025-01-01",
+	"compatibility_flags": ["nodejs_compat"],
 	"durable_objects": {
 		"bindings": [
 			{
