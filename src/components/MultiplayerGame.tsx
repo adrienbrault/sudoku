@@ -10,6 +10,7 @@ type MultiplayerGameProps = {
   roomId: string;
   difficulty: import("../lib/types.ts").Difficulty;
   showConflicts?: boolean;
+  onRename?: (name: string) => void;
   onBack: () => void;
 };
 
@@ -19,6 +20,7 @@ export function MultiplayerGame({
   roomId,
   difficulty,
   showConflicts = true,
+  onRename,
   onBack,
 }: MultiplayerGameProps) {
   const mp = useYjsMultiplayer({ roomId, playerId, playerName, difficulty });
@@ -45,6 +47,11 @@ export function MultiplayerGame({
       <div className="flex min-h-dvh items-center justify-center bg-white dark:bg-gray-950 animate-screen-enter">
         <Lobby
           roomState={mp.roomState}
+          playerId={playerId}
+          onRename={(name) => {
+            if (onRename) onRename(name);
+            mp.updateName(name);
+          }}
           onStart={mp.sendStartGame}
           onBack={onBack}
         />
