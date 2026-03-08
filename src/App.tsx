@@ -38,6 +38,7 @@ type Screen =
       name: "solo";
       difficulty: Difficulty;
       gameId: number;
+      gameKey: string;
       showConflicts: boolean;
     }
   | { name: "daily" }
@@ -62,7 +63,7 @@ function screenToPath(screen: Screen): string {
     case "difficulty":
       return "/";
     case "solo":
-      return `/solo/${screen.difficulty}`;
+      return `/solo/${screen.difficulty}/${screen.gameKey}`;
     case "daily":
       return "/daily";
     case "join":
@@ -80,12 +81,15 @@ function pathToScreen(pathname: string): Screen {
   if (path === "join") return { name: "join" };
 
   if (path.startsWith("solo/")) {
-    const difficulty = path.slice(5);
-    if (VALID_DIFFICULTIES.has(difficulty)) {
+    const parts = path.slice(5).split("/");
+    const difficulty = parts[0] ?? "";
+    const gameKey = parts[1] ?? "";
+    if (VALID_DIFFICULTIES.has(difficulty) && gameKey) {
       return {
         name: "solo",
         difficulty: difficulty as Difficulty,
         gameId: 1,
+        gameKey,
         showConflicts: true,
       };
     }
@@ -169,6 +173,7 @@ function App() {
                   name: "solo",
                   difficulty,
                   gameId: gameIdRef.current,
+                  gameKey: generateId(),
                   showConflicts,
                 });
               } else {
@@ -189,8 +194,9 @@ function App() {
     case "solo":
       return (
         <SoloGame
-          key={screen.gameId}
+          key={screen.gameKey}
           difficulty={screen.difficulty}
+          gameKey={screen.gameKey}
           showConflicts={screen.showConflicts}
           onBack={() => navigate({ name: "landing" })}
           onRematch={() => {
@@ -200,6 +206,7 @@ function App() {
                 name: "solo",
                 difficulty: screen.difficulty,
                 gameId: gameIdRef.current,
+                gameKey: generateId(),
                 showConflicts: screen.showConflicts,
               },
               { replace: true },
@@ -320,6 +327,7 @@ function DailyGame({ onBack }: { onBack: () => void }) {
   return (
     <SoloGame
       difficulty="medium"
+      gameKey={`daily-${date}`}
       initialPuzzle={puzzle}
       title={`Daily Challenge — ${date}`}
       onBack={onBack}
