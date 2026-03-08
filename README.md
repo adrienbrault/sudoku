@@ -111,6 +111,66 @@ Output is written to `dist/`.
 
 ## Architecture
 
+### Screen Navigation
+
+```mermaid
+stateDiagram-v2
+    Landing --> DifficultyPicker: Solo / Create Game
+    Landing --> DailyGame: Daily Challenge
+    Landing --> JoinScreen: Join Game
+    Landing --> Stats: View Stats
+    Landing --> MultiplayerScreen: Accept invite
+    DifficultyPicker --> SoloGame: Pick difficulty
+    DifficultyPicker --> MultiplayerScreen: Pick difficulty
+    JoinScreen --> MultiplayerScreen: Enter room code
+    SoloGame --> Landing: Back
+    DailyGame --> Landing: Back
+    MultiplayerScreen --> Landing: Back
+    Stats --> Landing: Back
+```
+
+### Multiplayer Network Topology
+
+```mermaid
+flowchart LR
+    A[Player A<br>Browser] <-->|Yjs CRDT sync<br>over WebRTC| B[Player B<br>Browser]
+    A --->|peer discovery| S[Signaling Server<br>signal.dokuel.com]
+    B --->|peer discovery| S
+    A <-->|presence &<br>invites| P[Presence Room<br>Yjs awareness]
+    B <-->|presence &<br>invites| P
+```
+
+### Data Flow
+
+```mermaid
+flowchart TD
+    subgraph Components
+        Board
+        NumPad
+        GameControls
+    end
+    subgraph Hooks
+        useSudoku[useSudoku<br>useReducer + dispatch]
+        useYjs[useYjsMultiplayer<br>Yjs Doc sync]
+        usePresence[usePresence<br>friend awareness]
+    end
+    subgraph Lib
+        engine[sudoku engine<br>generate / solve / validate]
+        p2p[p2p-room<br>Yjs CRDT state]
+        storage[game-storage<br>localStorage]
+    end
+    NumPad -- place / erase --> useSudoku
+    GameControls -- undo / hint / notes --> useSudoku
+    useSudoku -- board state --> Board
+    useSudoku --> storage
+    useSudoku --> engine
+    useYjs --> p2p
+    useYjs -- opponent progress --> Board
+    usePresence -- online friends / invites --> Components
+```
+
+### File Structure
+
 ```
 src/
 ├── components/     # React UI components
