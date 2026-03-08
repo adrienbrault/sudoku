@@ -61,5 +61,24 @@ export default defineConfig({
         viewport: { width: 667, height: 375 },
       },
     },
+    {
+      name: "iPhone 14 Landscape Safari",
+      use: {
+        ...devices["iPhone 14"],
+        defaultBrowserType: "chromium",
+        deviceScaleFactor: 1,
+        // Real Safari landscape with toolbar visible (~50px lost)
+        viewport: { width: 844, height: 340 },
+      },
+    },
+    {
+      name: "iPhone SE Landscape Safari",
+      use: {
+        ...devices["iPhone SE"],
+        defaultBrowserType: "chromium",
+        deviceScaleFactor: 1,
+        viewport: { width: 667, height: 325 },
+      },
+    },
   ],
 });
