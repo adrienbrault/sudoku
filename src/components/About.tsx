@@ -171,7 +171,6 @@ export function About({ onBack, onPlay }: AboutProps) {
             items={[
               "All game data stored locally in your browser (localStorage)",
               "Multiplayer game state flows directly between players via WebRTC",
-              "No analytics, no cookies, no third-party scripts",
               "Open source on GitHub — MIT license",
             ]}
           />
