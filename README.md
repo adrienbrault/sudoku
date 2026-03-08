@@ -13,7 +13,7 @@
 - Multi-level undo with move count badge
 - Hint system — reveal one cell's correct value
 - Pause with board overlay
-- Soft validation — conflicts are highlighted in real time but never blocked (toggleable during gameplay)
+- Three assist levels: Paper (no highlights), Standard (conflict highlighting + auto-clear notes), Full (conflicts + row/column highlighting)
 - Auto-save — resume in-progress games across browser sessions
 - Personal best time shown near timer; PB indicator on win
 - Timer tracking with per-difficulty stats (best time, average, games played)
@@ -24,6 +24,7 @@
 - Same puzzle for everyone, every day
 - Deterministic generation via seeded RNG — same date, same board, any device
 - Streak tracking with current/longest streak shown on landing page
+- Progress indicator on landing page for in-progress daily puzzles
 
 ### 1v1 Multiplayer
 
@@ -33,6 +34,13 @@
 - Live opponent progress bar (cells remaining, completion %)
 - 60-second disconnect countdown with option to claim win
 - Rematch without leaving the room
+
+### Friends
+
+- Add friends via shareable friend code — no accounts needed
+- See which friends are online in real time
+- Send and receive game invites directly from the landing page
+- One-tap join for pending invites
 
 ### Mobile-First UX
 
@@ -107,16 +115,22 @@ Output is written to `dist/`.
 src/
 ├── components/     # React UI components
 │   ├── Board, Cell, NumPad, NumPadPositionToggle
-│   ├── SoloGame, MultiplayerGame, MultiplayerBoard, Lobby, Landing
-│   ├── GameLayout, GameControls, GameResult, Stats, DifficultyPicker, Timer
+│   ├── SoloGame, DailyGame, MultiplayerGame, MultiplayerBoard, MultiplayerScreen
+│   ├── Landing, Lobby, JoinScreen, FriendsList
+│   ├── GameLayout, GameControls, GameResult, HintBanner
+│   ├── Stats, DifficultyPicker, AssistLevelPicker, Timer
 │   ├── DarkModeToggle, SoundToggle, ToggleSwitch, Toast
 │   └── App (router)
 ├── hooks/          # State management
-│   ├── useSudoku, useYjsMultiplayer, useKeyboard
-│   └── useNumPadPosition, useDarkMode
+│   ├── useSudoku, sudokuReducer, sudokuActions
+│   ├── useYjsMultiplayer, usePresence
+│   ├── useKeyboard, useNumPadPosition, useDarkMode
+│   └── useAssistLevel, useOpponentProgressVisible
 ├── lib/            # Pure logic — no React dependency
 │   ├── sudoku (engine), types, p2p-room (Yjs CRDT), room-code
 │   ├── daily (seeded RNG), daily-streak, stats, game-storage
+│   ├── hint-engine, hint-hidden-single
+│   ├── friends, player-identity
 │   └── name-generator, haptics, sounds, format, constants
 ```
 
@@ -124,7 +138,8 @@ src/
 
 - **Peer-to-peer multiplayer** — game state syncs via Yjs CRDTs over WebRTC. A self-hosted Cloudflare Worker at `signal.dokuel.com` handles peer discovery; all game data flows directly between players
 - **React hooks only** — `useReducer` for game state, no external state library
-- **Soft validation** — conflicts are visual feedback, not hard constraints. The board is complete only when fully filled with no violations
+- **Three-level assist system** — Paper (no assistance), Standard (conflict highlighting + auto-clear notes), Full (conflicts + row/column highlighting). Configurable at difficulty selection and during gameplay
+- **Friends without accounts** — shareable friend codes, online presence via Yjs awareness, game invites from the landing page
 - **No accounts** — auto-generated fun names (adjective + animal), persisted in localStorage; session identity in sessionStorage for reconnect
 - **Colocated tests** — `*.test.ts` / `*.test.tsx` files sit next to the code they test
 
