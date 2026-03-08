@@ -28,7 +28,7 @@ export function generatePuzzle(difficulty: Difficulty): string {
   // Remove clues if we have too many
   while (givenIndices.length > targetClues) {
     const removeIdx = Math.floor(Math.random() * givenIndices.length);
-    const cellIdx = givenIndices[removeIdx];
+    const cellIdx = givenIndices[removeIdx]!;
     raw[cellIdx] = null;
     givenIndices.splice(removeIdx, 1);
   }
@@ -36,8 +36,8 @@ export function generatePuzzle(difficulty: Difficulty): string {
   // Add clues from solution if we have too few
   while (givenIndices.length < targetClues && emptyIndices.length > 0) {
     const addIdx = Math.floor(Math.random() * emptyIndices.length);
-    const cellIdx = emptyIndices[addIdx];
-    raw[cellIdx] = solution[cellIdx];
+    const cellIdx = emptyIndices[addIdx]!;
+    raw[cellIdx] = solution[cellIdx]!;
     givenIndices.push(cellIdx);
     emptyIndices.splice(addIdx, 1);
   }
@@ -83,20 +83,20 @@ export function getConflicts(board: Board): Set<number> {
 
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
-      const value = board[row][col].value;
+      const value = board[row]![col]!.value;
       if (value === null) continue;
 
       const key = cellKey(row, col);
 
       for (let c = 0; c < 9; c++) {
-        if (c !== col && board[row][c].value === value) {
+        if (c !== col && board[row]![c]!.value === value) {
           conflicts.add(key);
           conflicts.add(cellKey(row, c));
         }
       }
 
       for (let r = 0; r < 9; r++) {
-        if (r !== row && board[r][col].value === value) {
+        if (r !== row && board[r]![col]!.value === value) {
           conflicts.add(key);
           conflicts.add(cellKey(r, col));
         }
@@ -106,7 +106,7 @@ export function getConflicts(board: Board): Set<number> {
       const boxCol = Math.floor(col / 3) * 3;
       for (let r = boxRow; r < boxRow + 3; r++) {
         for (let c = boxCol; c < boxCol + 3; c++) {
-          if ((r !== row || c !== col) && board[r][c].value === value) {
+          if ((r !== row || c !== col) && board[r]![c]!.value === value) {
             conflicts.add(key);
             conflicts.add(cellKey(r, c));
           }

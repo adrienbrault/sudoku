@@ -46,7 +46,7 @@ describe("useSudoku", () => {
     act(() => result.current.selectCell(pos.row, pos.col));
     act(() => result.current.placeNumber(5));
 
-    expect(result.current.board[pos.row][pos.col].value).toBe(5);
+    expect(result.current.board[pos.row]![pos.col]!.value).toBe(5);
   });
 
   it("cannot place a number on a given cell", () => {
@@ -56,11 +56,11 @@ describe("useSudoku", () => {
     const pos = findGivenCell(result.current.board);
     if (!pos) throw new Error("No given cell found");
 
-    const originalValue = result.current.board[pos.row][pos.col].value;
+    const originalValue = result.current.board[pos.row]![pos.col]!.value;
     act(() => result.current.selectCell(pos.row, pos.col));
     act(() => result.current.placeNumber(5));
 
-    expect(result.current.board[pos.row][pos.col].value).toBe(originalValue);
+    expect(result.current.board[pos.row]![pos.col]!.value).toBe(originalValue);
   });
 
   it("undo reverts the last move", () => {
@@ -71,10 +71,10 @@ describe("useSudoku", () => {
 
     act(() => result.current.selectCell(pos.row, pos.col));
     act(() => result.current.placeNumber(5));
-    expect(result.current.board[pos.row][pos.col].value).toBe(5);
+    expect(result.current.board[pos.row]![pos.col]!.value).toBe(5);
 
     act(() => result.current.undo());
-    expect(result.current.board[pos.row][pos.col].value).toBeNull();
+    expect(result.current.board[pos.row]![pos.col]!.value).toBeNull();
   });
 
   it("erase clears a non-given cell", () => {
@@ -85,10 +85,10 @@ describe("useSudoku", () => {
 
     act(() => result.current.selectCell(pos.row, pos.col));
     act(() => result.current.placeNumber(3));
-    expect(result.current.board[pos.row][pos.col].value).toBe(3);
+    expect(result.current.board[pos.row]![pos.col]!.value).toBe(3);
 
     act(() => result.current.erase());
-    expect(result.current.board[pos.row][pos.col].value).toBeNull();
+    expect(result.current.board[pos.row]![pos.col]!.value).toBeNull();
   });
 
   it("erase does not clear a given cell", () => {
@@ -97,11 +97,11 @@ describe("useSudoku", () => {
     const pos = findGivenCell(result.current.board);
     if (!pos) throw new Error("No given cell found");
 
-    const originalValue = result.current.board[pos.row][pos.col].value;
+    const originalValue = result.current.board[pos.row]![pos.col]!.value;
     act(() => result.current.selectCell(pos.row, pos.col));
     act(() => result.current.erase());
 
-    expect(result.current.board[pos.row][pos.col].value).toBe(originalValue);
+    expect(result.current.board[pos.row]![pos.col]!.value).toBe(originalValue);
   });
 
   it("toggle notes mode on and off", () => {
@@ -125,11 +125,11 @@ describe("useSudoku", () => {
     act(() => result.current.selectCell(pos.row, pos.col));
     act(() => result.current.placeNumber(7));
 
-    expect(result.current.board[pos.row][pos.col].notes.has(7)).toBe(true);
+    expect(result.current.board[pos.row]![pos.col]!.notes.has(7)).toBe(true);
 
     // Toggle it off
     act(() => result.current.placeNumber(7));
-    expect(result.current.board[pos.row][pos.col].notes.has(7)).toBe(false);
+    expect(result.current.board[pos.row]![pos.col]!.notes.has(7)).toBe(false);
   });
 
   it("placing a value clears notes on that cell", () => {
@@ -142,14 +142,14 @@ describe("useSudoku", () => {
     act(() => result.current.toggleNotesMode());
     act(() => result.current.selectCell(pos.row, pos.col));
     act(() => result.current.placeNumber(4));
-    expect(result.current.board[pos.row][pos.col].notes.has(4)).toBe(true);
+    expect(result.current.board[pos.row]![pos.col]!.notes.has(4)).toBe(true);
 
     // Place a value (turn off notes mode first)
     act(() => result.current.toggleNotesMode());
     act(() => result.current.placeNumber(5));
 
-    expect(result.current.board[pos.row][pos.col].value).toBe(5);
-    expect(result.current.board[pos.row][pos.col].notes.size).toBe(0);
+    expect(result.current.board[pos.row]![pos.col]!.value).toBe(5);
+    expect(result.current.board[pos.row]![pos.col]!.notes.size).toBe(0);
   });
 
   it("detects conflicts on each move", () => {
@@ -163,8 +163,8 @@ describe("useSudoku", () => {
     for (let c = 0; c < 9; c++) {
       if (
         c !== pos1.col &&
-        !result.current.board[pos1.row][c].isGiven &&
-        result.current.board[pos1.row][c].value === null
+        !result.current.board[pos1.row]![c]!.isGiven &&
+        result.current.board[pos1.row]![c]!.value === null
       ) {
         pos2 = { row: pos1.row, col: c };
         break;
@@ -193,7 +193,7 @@ describe("useSudoku", () => {
     // Fill all empty cells with correct values from solution
     for (let row = 0; row < 9; row++) {
       for (let col = 0; col < 9; col++) {
-        if (!result.current.board[row][col].isGiven) {
+        if (!result.current.board[row]![col]!.isGiven) {
           act(() => result.current.selectCell(row, col));
           act(() =>
             result.current.placeNumber(Number(solution[row * 9 + col])),
@@ -214,8 +214,8 @@ describe("useSudoku", () => {
 
     // Total of all counts + placed should = 9 for each digit
     for (let d = 1; d <= 9; d++) {
-      expect(counts[d]).toBeGreaterThanOrEqual(0);
-      expect(counts[d]).toBeLessThanOrEqual(9);
+      expect(counts[d]!).toBeGreaterThanOrEqual(0);
+      expect(counts[d]!).toBeLessThanOrEqual(9);
     }
   });
 });
@@ -223,7 +223,7 @@ describe("useSudoku", () => {
 function findEmptyCell(board: { value: number | null; isGiven: boolean }[][]) {
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
-      if (!board[row][col].isGiven && board[row][col].value === null) {
+      if (!board[row]![col]!.isGiven && board[row]![col]!.value === null) {
         return { row, col };
       }
     }
@@ -234,7 +234,7 @@ function findEmptyCell(board: { value: number | null; isGiven: boolean }[][]) {
 function findGivenCell(board: { value: number | null; isGiven: boolean }[][]) {
   for (let row = 0; row < 9; row++) {
     for (let col = 0; col < 9; col++) {
-      if (board[row][col].isGiven) {
+      if (board[row]![col]!.isGiven) {
         return { row, col };
       }
     }
