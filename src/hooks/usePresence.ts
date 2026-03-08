@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { WebrtcProvider } from "y-webrtc";
-import * as Y from "yjs";
+import { Doc } from "yjs";
 import type { Friend } from "../lib/friends.ts";
 import type { Difficulty } from "../lib/types.ts";
 
@@ -43,10 +43,9 @@ export function usePresence({
   const [onlineFriendIds, setOnlineFriendIds] = useState<Set<string>>(
     () => EMPTY_SET,
   );
-  const [pendingInvites, setPendingInvites] =
-    useState<Invite[]>(EMPTY_INVITES);
+  const [pendingInvites, setPendingInvites] = useState<Invite[]>(EMPTY_INVITES);
 
-  const docRef = useRef<Y.Doc | null>(null);
+  const docRef = useRef<Doc | null>(null);
   const providerRef = useRef<WebrtcProvider | null>(null);
   const friendIdsRef = useRef<Set<string>>(new Set());
 
@@ -62,7 +61,7 @@ export function usePresence({
       return;
     }
 
-    const doc = new Y.Doc();
+    const doc = new Doc();
     const provider = new WebrtcProvider(PRESENCE_ROOM, doc, {
       signaling: ["wss://signal.dokuel.com"],
     });

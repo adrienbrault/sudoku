@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import * as Y from "yjs";
+import { Doc } from "yjs";
 import type { Friend } from "../lib/friends.ts";
 import { usePresence } from "./usePresence.ts";
 
@@ -16,7 +16,7 @@ const mockState = {
     localState: {} as Record<string, unknown>,
     clientID: 1,
   },
-  capturedDoc: null as Y.Doc | null,
+  capturedDoc: null as Doc | null,
 };
 
 vi.mock("y-webrtc", () => {
@@ -33,7 +33,7 @@ vi.mock("y-webrtc", () => {
       destroy = vi.fn();
       on = vi.fn();
       off = vi.fn();
-      constructor(_room: string, doc: Y.Doc) {
+      constructor(_room: string, doc: Doc) {
         mockState.capturedDoc = doc;
         mockState.awareness.clientID = doc.clientID;
         this.awareness = {
@@ -103,7 +103,7 @@ describe("usePresence", () => {
     );
 
     expect(mockState.instances).toHaveLength(1);
-    expect(mockState.capturedDoc).toBeInstanceOf(Y.Doc);
+    expect(mockState.capturedDoc).toBeInstanceOf(Doc);
   });
 
   it("sets awareness with player identity", () => {
