@@ -232,7 +232,6 @@ describe("p2p-room", () => {
       joinRoom(room, "player2", "Bob");
       startGame(room, "medium");
 
-      const oldPuzzle = room.doc.getMap("room").get("puzzle");
       const oldGameNumber = room.doc.getMap("room").get("gameNumber");
 
       requestRematch(room, "medium");
