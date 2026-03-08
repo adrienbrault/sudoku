@@ -267,8 +267,8 @@ describe("p2p-room", () => {
       joinRoom(room, "player1", "Alice");
 
       const players = getPlayers(room);
-      expect(players[0].id).toBe("player2");
-      expect(players[1].id).toBe("player1");
+      expect(players[0]!.id).toBe("player2");
+      expect(players[1]!.id).toBe("player1");
     });
   });
 });

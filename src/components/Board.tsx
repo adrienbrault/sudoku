@@ -19,7 +19,7 @@ export function Board({
 }: BoardProps) {
   const selectedValue =
     selectedCell !== null
-      ? board[selectedCell.row][selectedCell.col].value
+      ? board[selectedCell.row]![selectedCell.col]!.value
       : null;
 
   return (

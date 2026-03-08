@@ -42,12 +42,12 @@ function reducer(state: State, action: Action): State {
     case "PLACE_NUMBER": {
       if (!state.selectedCell || state.status === "completed") return state;
       const { row, col } = state.selectedCell;
-      const cell = state.board[row][col];
+      const cell = state.board[row]![col]!;
       if (cell.isGiven) return state;
 
       if (state.notesMode) {
         const board = cloneBoard(state.board);
-        const notes = board[row][col].notes;
+        const notes = board[row]![col]!.notes;
         const moveAction: MoveAction = {
           type: "toggleNote",
           position: { row, col },
@@ -73,8 +73,8 @@ function reducer(state: State, action: Action): State {
         previousValue: cell.value,
         previousNotes: new Set(cell.notes),
       };
-      board[row][col].value = action.value;
-      board[row][col].notes = new Set();
+      board[row]![col]!.value = action.value;
+      board[row]![col]!.notes = new Set();
       const conflicts = getConflicts(board);
       const complete = isBoardComplete(board, conflicts);
 
@@ -89,7 +89,7 @@ function reducer(state: State, action: Action): State {
     case "ERASE": {
       if (!state.selectedCell || state.status === "completed") return state;
       const { row, col } = state.selectedCell;
-      const cell = state.board[row][col];
+      const cell = state.board[row]![col]!;
       if (cell.isGiven) return state;
 
       const board = cloneBoard(state.board);
@@ -99,8 +99,8 @@ function reducer(state: State, action: Action): State {
         previousValue: cell.value,
         previousNotes: new Set(cell.notes),
       };
-      board[row][col].value = null;
-      board[row][col].notes = new Set();
+      board[row]![col]!.value = null;
+      board[row]![col]!.notes = new Set();
 
       return {
         ...state,
@@ -113,19 +113,19 @@ function reducer(state: State, action: Action): State {
       if (state.history.length === 0 || state.status === "completed")
         return state;
       const history = state.history.slice(0, -1);
-      const lastAction = state.history[state.history.length - 1];
+      const lastAction = state.history[state.history.length - 1]!;
       const board = cloneBoard(state.board);
       const { row, col } = lastAction.position;
 
       switch (lastAction.type) {
         case "place":
         case "erase": {
-          board[row][col].value = lastAction.previousValue;
-          board[row][col].notes = new Set(lastAction.previousNotes);
+          board[row]![col]!.value = lastAction.previousValue;
+          board[row]![col]!.notes = new Set(lastAction.previousNotes);
           break;
         }
         case "toggleNote": {
-          const notes = board[row][col].notes;
+          const notes = board[row]![col]!.notes;
           if (notes.has(lastAction.note)) {
             notes.delete(lastAction.note);
           } else {
@@ -170,7 +170,7 @@ export function useSudoku(puzzle: string) {
     for (const row of state.board) {
       for (const cell of row) {
         if (cell.value !== null && cell.value >= 1 && cell.value <= 9) {
-          counts[cell.value]--;
+          counts[cell.value]!--;
         } else {
           empty++;
         }

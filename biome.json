@@ -12,10 +12,59 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noArrayIndexKey": "off"
+        "noArrayIndexKey": "off",
+        "noConsole": {
+          "level": "error",
+          "options": { "allow": ["error", "warn", "info"] }
+        },
+        "noImplicitAnyLet": "error"
       },
       "a11y": {
         "useSemanticElements": "off"
+      },
+      "security": {
+        "noSecrets": "error"
+      },
+      "performance": {
+        "noBarrelFile": "error",
+        "noReExportAll": "error",
+        "noNamespaceImport": "error"
+      },
+      "complexity": {
+        "noExcessiveCognitiveComplexity": {
+          "level": "warn",
+          "options": { "maxAllowedComplexity": 15 }
+        }
+      },
+      "nursery": {
+        "useArraySortCompare": "error",
+        "noFloatingPromises": "error",
+        "noMisusedPromises": "error",
+        "noUnnecessaryConditions": "error"
+      },
+      "style": {
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": { "syntax": "shorthand" }
+        },
+        "noRestrictedImports": {
+          "level": "warn",
+          "options": {
+            "paths": {
+              "react": {
+                "importNames": ["useEffect"],
+                "message": "Consider if you really need useEffect. See https://react.dev/learn/you-might-not-need-an-effect"
+              }
+            }
+          }
+        },
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "requireAscii": true,
+            "filenameCases": ["PascalCase", "camelCase", "kebab-case"]
+          }
+        }
       }
     }
   },
@@ -38,5 +87,32 @@
   },
   "files": {
     "includes": ["src/**", "*.ts", "*.json"]
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["src/**/*.test.ts", "src/**/*.test.tsx"],
+      "linter": {
+        "rules": {
+          "security": {
+            "noSecrets": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "src/lib/p2p-room.ts",
+        "src/lib/p2p-room.test.ts",
+        "src/hooks/useYjsMultiplayer.ts",
+        "src/lib/sudoku.ts"
+      ],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noNamespaceImport": "off"
+          }
+        }
+      }
+    }
+  ]
 }

@@ -61,7 +61,7 @@ describe("solvePuzzle", () => {
     for (let col = 0; col < 9; col++) {
       const digits: string[] = [];
       for (let row = 0; row < 9; row++) {
-        digits.push(solution[row * 9 + col]);
+        digits.push(solution[row * 9 + col]!);
       }
       expect(new Set(digits).size).toBe(9);
     }
@@ -92,11 +92,11 @@ describe("parsePuzzle", () => {
       for (let col = 0; col < 9; col++) {
         const char = KNOWN_PUZZLE[row * 9 + col];
         if (char !== ".") {
-          expect(board[row][col].isGiven).toBe(true);
-          expect(board[row][col].value).toBe(Number(char));
+          expect(board[row]![col]!.isGiven).toBe(true);
+          expect(board[row]![col]!.value).toBe(Number(char));
         } else {
-          expect(board[row][col].isGiven).toBe(false);
-          expect(board[row][col].value).toBeNull();
+          expect(board[row]![col]!.isGiven).toBe(false);
+          expect(board[row]![col]!.value).toBeNull();
         }
       }
     }
@@ -122,8 +122,8 @@ describe("getConflicts", () => {
 
   it("detects row conflict", () => {
     const board = makeEmptyBoard();
-    board[0][0].value = 5;
-    board[0][4].value = 5;
+    board[0]![0]!.value = 5;
+    board[0]![4]!.value = 5;
     const conflicts = getConflicts(board);
     expect(conflicts.has(cellKey(0, 0))).toBe(true);
     expect(conflicts.has(cellKey(0, 4))).toBe(true);
@@ -131,8 +131,8 @@ describe("getConflicts", () => {
 
   it("detects column conflict", () => {
     const board = makeEmptyBoard();
-    board[0][0].value = 3;
-    board[5][0].value = 3;
+    board[0]![0]!.value = 3;
+    board[5]![0]!.value = 3;
     const conflicts = getConflicts(board);
     expect(conflicts.has(cellKey(0, 0))).toBe(true);
     expect(conflicts.has(cellKey(5, 0))).toBe(true);
@@ -140,8 +140,8 @@ describe("getConflicts", () => {
 
   it("detects box conflict", () => {
     const board = makeEmptyBoard();
-    board[0][0].value = 7;
-    board[2][2].value = 7;
+    board[0]![0]!.value = 7;
+    board[2]![2]!.value = 7;
     const conflicts = getConflicts(board);
     expect(conflicts.has(cellKey(0, 0))).toBe(true);
     expect(conflicts.has(cellKey(2, 2))).toBe(true);
@@ -149,9 +149,9 @@ describe("getConflicts", () => {
 
   it("does not flag non-conflicting cells", () => {
     const board = makeEmptyBoard();
-    board[0][0].value = 1;
-    board[0][1].value = 2;
-    board[1][0].value = 3;
+    board[0]![0]!.value = 1;
+    board[0]![1]!.value = 2;
+    board[1]![0]!.value = 3;
     const conflicts = getConflicts(board);
     expect(conflicts.size).toBe(0);
   });
@@ -172,7 +172,7 @@ describe("isBoardComplete", () => {
     const board = makeEmptyBoard();
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
-        board[r][c].value = 1;
+        board[r]![c]!.value = 1;
       }
     }
     expect(isBoardComplete(board)).toBe(false);

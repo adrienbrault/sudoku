@@ -48,7 +48,7 @@ export const sounds = {
   complete: () => {
     const notes = [523, 659, 784, 1047];
     for (let i = 0; i < notes.length; i++) {
-      setTimeout(() => playTone(notes[i], 0.2, 0.08), i * 100);
+      setTimeout(() => playTone(notes[i]!, 0.2, 0.08), i * 100);
     }
   },
 };

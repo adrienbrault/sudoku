@@ -30,9 +30,9 @@ describe("stats", () => {
       saveGameResult("easy", 120, true);
       const stats = getStats();
       expect(stats).toHaveLength(1);
-      expect(stats[0].difficulty).toBe("easy");
-      expect(stats[0].time).toBe(120);
-      expect(stats[0].won).toBe(true);
+      expect(stats[0]!.difficulty).toBe("easy");
+      expect(stats[0]!.time).toBe(120);
+      expect(stats[0]!.won).toBe(true);
     });
 
     it("appends to existing stats", () => {
@@ -47,7 +47,7 @@ describe("stats", () => {
       }
       const stats = getStats();
       expect(stats).toHaveLength(100);
-      expect(stats[0].time).toBe(5);
+      expect(stats[0]!.time).toBe(5);
     });
   });
 
