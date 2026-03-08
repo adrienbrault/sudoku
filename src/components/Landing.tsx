@@ -11,6 +11,7 @@ import {
   type SavedGameSummary,
 } from "../lib/game-storage.ts";
 import { getStats } from "../lib/stats.ts";
+import { countFilledCells } from "../lib/sudoku.ts";
 import { FriendsList } from "./FriendsList.tsx";
 import {
   ActionButton,
@@ -66,8 +67,8 @@ export function Landing({
     const dailyKey = `daily-${today}-medium`;
     const game = loadGame(dailyKey);
     if (!game) return null;
-    const givenCells = game.puzzle.split("").filter((c) => c !== ".").length;
-    const filledCells = game.values.split("").filter((c) => c !== ".").length;
+    const givenCells = countFilledCells(game.puzzle);
+    const filledCells = countFilledCells(game.values);
     const remaining = 81 - givenCells;
     if (remaining === 0) return null;
     const pct = Math.round(((filledCells - givenCells) / remaining) * 100);
