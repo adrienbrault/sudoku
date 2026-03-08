@@ -1,39 +1,11 @@
 import { useCallback, useMemo, useState } from "react";
-import { generatePlayerName } from "../lib/name-generator.ts";
+import {
+  getPlayerId,
+  getPlayerName,
+  persistPlayerName,
+} from "../lib/player-identity.ts";
 import type { Difficulty } from "../lib/types.ts";
 import { MultiplayerGame } from "./MultiplayerGame.tsx";
-
-function generateId() {
-  return Math.random().toString(36).slice(2, 10);
-}
-
-function getPlayerId() {
-  let id = localStorage.getItem("sudoku_player_id");
-  if (!id) {
-    id = sessionStorage.getItem("sudoku_player_id");
-    if (!id) {
-      id = generateId();
-    }
-    localStorage.setItem("sudoku_player_id", id);
-  }
-  return id;
-}
-
-function getPlayerName() {
-  let name = localStorage.getItem("sudoku_player_name");
-  if (!name) {
-    name = sessionStorage.getItem("sudoku_player_name");
-    if (!name) {
-      name = generatePlayerName();
-    }
-    localStorage.setItem("sudoku_player_name", name);
-  }
-  return name;
-}
-
-function persistPlayerName(name: string) {
-  localStorage.setItem("sudoku_player_name", name);
-}
 
 export function MultiplayerScreen({
   roomId,
