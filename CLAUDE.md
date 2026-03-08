@@ -1,4 +1,4 @@
-# Sudoku 1v1 - Implementation Guide
+# Dokuel - Implementation Guide
 
 ## Commands
 
@@ -28,11 +28,11 @@ The frontend deploys automatically on push to `main`. No server infrastructure n
 ### Frontend (Cloudflare Pages)
 - **Project**: `sudoku` on Cloudflare Pages, connected to `adrienbrault/sudoku` on GitHub
 - **Build**: `bun install && bun run build` → `dist/`
-- **URL**: https://sudoku.brage.fr (custom domain), https://sudoku-4cc.pages.dev (default)
+- **URL**: https://dokuel.com (custom domain, pending DNS), https://sudoku-4cc.pages.dev (default)
 - Deploys are triggered automatically by GitHub pushes (Cloudflare Pages GitHub integration)
 
 ### DNS (Cloudflare)
-- `sudoku.brage.fr` → CNAME to `sudoku-4cc.pages.dev` (Cloudflare Pages)
+- `dokuel.com` → CNAME to `sudoku-4cc.pages.dev` (Cloudflare Pages) — DNS update pending
 
 ## Git Workflow — MANDATORY
 
