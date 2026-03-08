@@ -1,5 +1,5 @@
 import type React from "react";
-import { type PointerEvent, useCallback, useRef } from "react";
+import { type PointerEvent, useCallback, useMemo, useRef } from "react";
 import { cellKey } from "../lib/sudoku.ts";
 import type {
   AssistLevel,
@@ -42,7 +42,7 @@ export function Board({
 
   // In full assist mode, collect rows/cols of all cells matching selected value
   // (excluding the selected cell itself) for cross-highlight
-  const matchRowColSet = (() => {
+  const matchRowColSet = useMemo(() => {
     if (!isFull || selectedValue === null) return null;
     const rows = new Set<number>();
     const cols = new Set<number>();
@@ -58,7 +58,7 @@ export function Board({
       }
     }
     return rows.size > 0 || cols.size > 0 ? { rows, cols } : null;
-  })();
+  }, [board, selectedValue, isFull, selectedCell]);
 
   const dragRef = useRef<{
     startKey: number;
