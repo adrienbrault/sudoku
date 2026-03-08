@@ -42,6 +42,7 @@ type SoloGameProps = {
   onBack: () => void;
   onRematch?: (() => void) | undefined;
   onComplete?: ((time: number) => void) | undefined;
+  streakInfo?: { currentStreak: number; longestStreak: number } | undefined;
 };
 
 export function SoloGame({
@@ -53,6 +54,7 @@ export function SoloGame({
   onBack,
   onRematch,
   onComplete,
+  streakInfo,
 }: SoloGameProps) {
   const saved = useMemo(() => (gameKey ? loadGame(gameKey) : null), [gameKey]);
 
@@ -256,6 +258,7 @@ export function SoloGame({
               game.hintsUsed === 0 &&
               (personalBest === null || timerSecondsRef.current < personalBest)
             }
+            streakInfo={streakInfo}
           />
         ) : undefined
       }

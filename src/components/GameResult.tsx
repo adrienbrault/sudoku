@@ -27,6 +27,7 @@ type GameResultProps = {
   onNewGame: () => void;
   stats?: { gamesPlayed: number; bestTime: number; averageTime: number } | null;
   isNewPB?: boolean | undefined;
+  streakInfo?: { currentStreak: number; longestStreak: number } | undefined;
 };
 
 export function GameResult({
@@ -38,6 +39,7 @@ export function GameResult({
   onNewGame,
   stats,
   isNewPB,
+  streakInfo,
 }: GameResultProps) {
   const [copied, setCopied] = useState(false);
 
@@ -115,6 +117,18 @@ export function GameResult({
               </div>
               <div className="text-xs text-text-muted">Average</div>
             </div>
+          </div>
+        )}
+
+        {streakInfo && streakInfo.currentStreak > 0 && (
+          <div className="flex items-center justify-center gap-2 text-sm text-accent font-semibold">
+            <span>{streakInfo.currentStreak}-day streak!</span>
+            {streakInfo.currentStreak >= streakInfo.longestStreak &&
+              streakInfo.currentStreak > 1 && (
+                <span className="text-xs font-normal text-text-muted">
+                  New record!
+                </span>
+              )}
           </div>
         )}
 

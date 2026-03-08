@@ -375,8 +375,16 @@ function JoinScreen({
 
 function DailyGame({ onBack }: { onBack: () => void }) {
   const { puzzle, date } = useMemo(() => getDailyPuzzle(), []);
+  const [streakInfo, setStreakInfo] = useState<{
+    currentStreak: number;
+    longestStreak: number;
+  }>();
   const handleComplete = useCallback(() => {
-    recordDailyCompletion(date);
+    const streak = recordDailyCompletion(date);
+    setStreakInfo({
+      currentStreak: streak.currentStreak,
+      longestStreak: streak.longestStreak,
+    });
   }, [date]);
 
   return (
@@ -387,6 +395,7 @@ function DailyGame({ onBack }: { onBack: () => void }) {
       title={`Daily — ${formatShortDate(date)}`}
       onBack={onBack}
       onComplete={handleComplete}
+      streakInfo={streakInfo}
     />
   );
 }
