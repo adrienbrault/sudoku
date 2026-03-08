@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { DIGITS } from "../lib/constants.ts";
-import type { Cell as CellType } from "../lib/types.ts";
+import type { AssistLevel, Cell as CellType } from "../lib/types.ts";
 
 type CellProps = {
   cell: CellType;
@@ -12,6 +12,7 @@ type CellProps = {
   isSameNumber: boolean;
   isConflict: boolean;
   isHintRelated?: boolean | undefined;
+  assistLevel?: AssistLevel | undefined;
   onSelect: (row: number, col: number) => void;
   revealDelay?: number | undefined;
 };
@@ -26,13 +27,16 @@ export const Cell = memo(function Cell({
   isSameNumber,
   isConflict,
   isHintRelated,
+  assistLevel = "standard",
   onSelect,
   revealDelay,
 }: CellProps) {
-  const bgClass = isSelected
-    ? "bg-cell-selected"
-    : isMultiSelected
-      ? "bg-cell-selected"
+  const isPaper = assistLevel === "paper";
+  const bgClass =
+    isSelected || isMultiSelected
+      ? isPaper
+        ? "bg-cell-bg"
+        : "bg-cell-selected"
       : isConflict
         ? "bg-cell-conflict-bg"
         : isHintRelated
@@ -65,7 +69,7 @@ export const Cell = memo(function Cell({
 				transition-colors duration-100
 				select-none touch-manipulation
 				outline-none focus-visible:ring-2 focus-visible:ring-accent
-				${isSelected || isMultiSelected ? "cell-selected-glow" : ""}
+				${isSelected || isMultiSelected ? (isPaper ? "ring-2 ring-accent ring-inset" : "cell-selected-glow") : ""}
 				${revealDelay !== undefined ? "animate-cell-reveal" : ""}
 			`}
       style={

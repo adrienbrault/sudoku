@@ -1,7 +1,11 @@
 import type React from "react";
 import { type PointerEvent, useCallback, useRef } from "react";
 import { cellKey } from "../lib/sudoku.ts";
-import type { Board as BoardType, Position } from "../lib/types.ts";
+import type {
+  AssistLevel,
+  Board as BoardType,
+  Position,
+} from "../lib/types.ts";
 import { Cell } from "./Cell.tsx";
 
 type BoardProps = {
@@ -15,6 +19,7 @@ type BoardProps = {
     | ((cells: Set<number>, primary: Position) => void)
     | undefined;
   animateReveal?: boolean;
+  assistLevel?: AssistLevel;
 };
 
 export function Board({
@@ -26,7 +31,9 @@ export function Board({
   onSelectCell,
   onSetSelectedCells,
   animateReveal,
+  assistLevel = "standard",
 }: BoardProps) {
+  const isPaper = assistLevel === "paper";
   const selectedValue =
     selectedCell !== null
       ? board[selectedCell.row]![selectedCell.col]!.value
@@ -148,12 +155,14 @@ export function Board({
           const isSelected =
             selectedCell?.row === rowIdx && selectedCell?.col === colIdx;
           const isHighlighted =
+            !isPaper &&
             selectedCell !== null &&
             (selectedCell.row === rowIdx ||
               selectedCell.col === colIdx ||
               (Math.floor(selectedCell.row / 3) === Math.floor(rowIdx / 3) &&
                 Math.floor(selectedCell.col / 3) === Math.floor(colIdx / 3)));
           const isSameNumber =
+            !isPaper &&
             !isSelected &&
             selectedValue !== null &&
             cell.value !== null &&
@@ -178,6 +187,7 @@ export function Board({
               isSameNumber={isSameNumber}
               isConflict={isConflict}
               isHintRelated={isHintRelated}
+              assistLevel={assistLevel}
               onSelect={onSelectCell}
               revealDelay={
                 animateReveal && cell.isGiven
