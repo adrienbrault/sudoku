@@ -28,6 +28,7 @@ type LandingProps = {
   onJoin: () => void;
   onContinue: (gameKey: string, difficulty: string) => void;
   onStats: () => void;
+  onAbout: () => void;
   playerId?: string;
   friends?: Friend[];
   onlineFriendIds?: Set<string>;
@@ -45,6 +46,7 @@ export function Landing({
   onJoin,
   onContinue,
   onStats,
+  onAbout,
   playerId,
   friends,
   onlineFriendIds,
@@ -162,15 +164,25 @@ export function Landing({
           View Stats
         </span>
       </button>
-      <a
-        href="https://github.com/adrienbrault/sudoku"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent transition-colors"
-      >
-        <GitHubIcon />
-        <span>Open source</span>
-      </a>
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className="text-xs text-text-muted hover:text-accent transition-colors"
+          onClick={onAbout}
+        >
+          About
+        </button>
+        <span className="text-text-muted text-xs">·</span>
+        <a
+          href="https://github.com/adrienbrault/sudoku"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent transition-colors"
+        >
+          <GitHubIcon />
+          <span>Open source</span>
+        </a>
+      </div>
     </div>
   );
 }

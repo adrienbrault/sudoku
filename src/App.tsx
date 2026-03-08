@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { About } from "./components/About.tsx";
 import { DailyGame } from "./components/DailyGame.tsx";
 import { DarkModeToggle } from "./components/DarkModeToggle.tsx";
 import { DifficultyPicker } from "./components/DifficultyPicker.tsx";
@@ -43,7 +44,8 @@ type Screen =
       difficulty: Difficulty;
     }
   | { name: "join" }
-  | { name: "stats" };
+  | { name: "stats" }
+  | { name: "about" };
 
 const VALID_DIFFICULTIES = new Set<string>([
   "easy",
@@ -65,6 +67,8 @@ function screenToPath(screen: Screen): string {
       return "/join";
     case "stats":
       return "/stats";
+    case "about":
+      return "/about";
     case "multiplayer":
       return `/${screen.roomId}`;
   }
@@ -77,6 +81,7 @@ function pathToScreen(pathname: string): Screen {
   if (path === "daily") return { name: "daily" };
   if (path === "join") return { name: "join" };
   if (path === "stats") return { name: "stats" };
+  if (path === "about") return { name: "about" };
 
   if (path.startsWith("solo/")) {
     const parts = path.slice(5).split("/");
@@ -197,6 +202,7 @@ function App() {
             onCreate={() => navigate({ name: "difficulty", mode: "create" })}
             onJoin={() => navigate({ name: "join" })}
             onStats={() => navigate({ name: "stats" })}
+            onAbout={() => navigate({ name: "about" })}
             onContinue={(gameKey, difficulty) => {
               gameIdRef.current++;
               navigate({
@@ -300,6 +306,14 @@ function App() {
             });
           }}
           onBack={() => navigate({ name: "landing" })}
+        />
+      );
+
+    case "about":
+      return (
+        <About
+          onBack={() => navigate({ name: "landing" })}
+          onPlay={() => navigate({ name: "landing" })}
         />
       );
   }
