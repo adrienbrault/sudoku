@@ -137,9 +137,7 @@ export function MultiplayerBoard({
               <span>
                 Opponent
                 {opponentDisconnected && (
-                  <span className="ml-1 text-amber-500">
-                    (reconnecting...)
-                  </span>
+                  <span className="ml-1 text-amber-500">(reconnecting...)</span>
                 )}
               </span>
               <span>{opponentProgress.completionPercent}%</span>
