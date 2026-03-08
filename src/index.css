@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  /* Board & cell */
   --color-board-bg: oklch(0.98 0 0);
   --color-board-border: oklch(0.3 0 0);
   --color-cell-bg: oklch(1 0 0);
@@ -14,10 +15,28 @@
   --color-success: oklch(0.65 0.2 150);
   --color-accent: oklch(0.55 0.15 250);
   --color-accent-light: oklch(0.92 0.05 250);
+
+  /* Semantic surfaces */
+  --color-bg-primary: oklch(1 0 0);
+  --color-bg-inset: oklch(0.97 0 0);
+  --color-bg-raised: oklch(0.96 0 0);
+  --color-bg-overlay: oklch(1 0 0);
+  --color-border-default: oklch(0.9 0 0);
+
+  /* Semantic text */
+  --color-text-primary: oklch(0.15 0 0);
+  --color-text-secondary: oklch(0.45 0 0);
+  --color-text-muted: oklch(0.6 0 0);
+  --color-text-on-accent: oklch(1 0 0);
+
+  /* Semantic interactive */
+  --color-bg-disabled: oklch(0.88 0 0);
+  --color-text-disabled: oklch(0.55 0 0);
 }
 
-/* Dark mode overrides for board colors */
+/* Dark mode overrides */
 .dark {
+  /* Board & cell */
   --color-board-bg: oklch(0.2 0 0);
   --color-board-border: oklch(0.7 0 0);
   --color-cell-bg: oklch(0.18 0 0);
@@ -29,6 +48,22 @@
   --color-cell-conflict: oklch(0.7 0.2 25);
   --color-cell-conflict-bg: oklch(0.25 0.06 25);
   --color-accent-light: oklch(0.28 0.06 250);
+
+  /* Semantic surfaces */
+  --color-bg-primary: oklch(0.13 0 0);
+  --color-bg-inset: oklch(0.15 0 0);
+  --color-bg-raised: oklch(0.2 0 0);
+  --color-bg-overlay: oklch(0.15 0 0);
+  --color-border-default: oklch(0.25 0 0);
+
+  /* Semantic text */
+  --color-text-primary: oklch(0.93 0 0);
+  --color-text-secondary: oklch(0.7 0 0);
+  --color-text-muted: oklch(0.5 0 0);
+
+  /* Semantic interactive */
+  --color-bg-disabled: oklch(0.25 0 0);
+  --color-text-disabled: oklch(0.45 0 0);
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
