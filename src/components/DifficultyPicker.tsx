@@ -50,7 +50,7 @@ export function DifficultyPicker({ onSelect, onBack }: DifficultyPickerProps) {
           <button
             key={d.value}
             type="button"
-            className="card flex flex-col items-start gap-0.5 w-full px-5 py-4 press-spring-soft select-none touch-manipulation"
+            className="card flex flex-col items-start gap-0.5 w-full px-5 py-4 press-spring-soft select-none touch-manipulation hover:bg-bg-raised focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none transition-colors"
             onClick={() => onSelect(d.value, showConflicts)}
           >
             <span className="flex items-center gap-2 text-lg font-semibold text-text-primary">
