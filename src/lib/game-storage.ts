@@ -41,6 +41,38 @@ export function loadGame(key: string): SavedGame | null {
   }
 }
 
+export type SavedGameSummary = {
+  key: string;
+  difficulty: Difficulty;
+  filledCells: number;
+  timer: number;
+};
+
+export function listSavedGames(): SavedGameSummary[] {
+  const results: SavedGameSummary[] = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const storageKey = localStorage.key(i);
+      if (!storageKey?.startsWith(STORAGE_PREFIX)) continue;
+      const key = storageKey.slice(STORAGE_PREFIX.length);
+      // Skip daily challenge saves — they have their own entry point
+      if (key.startsWith("daily-")) continue;
+      const game = loadGame(key);
+      if (!game) continue;
+      const filledCells = game.values.split("").filter((c) => c !== ".").length;
+      results.push({
+        key,
+        difficulty: game.difficulty,
+        filledCells,
+        timer: game.timer,
+      });
+    }
+  } catch {
+    // localStorage unavailable
+  }
+  return results;
+}
+
 export function deleteGame(key: string): void {
   try {
     localStorage.removeItem(STORAGE_PREFIX + key);

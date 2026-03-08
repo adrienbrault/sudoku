@@ -1,18 +1,27 @@
 import { useMemo } from "react";
 import { getDailyStreak, isDailyCompleted } from "../lib/daily-streak.ts";
-import { formatShortDate } from "../lib/format.ts";
+import { formatShortDate, formatTime } from "../lib/format.ts";
+import { listSavedGames, type SavedGameSummary } from "../lib/game-storage.ts";
 
 type LandingProps = {
   onSolo: () => void;
   onDaily: () => void;
   onCreate: () => void;
   onJoin: () => void;
+  onContinue: (gameKey: string, difficulty: string) => void;
 };
 
-export function Landing({ onSolo, onDaily, onCreate, onJoin }: LandingProps) {
+export function Landing({
+  onSolo,
+  onDaily,
+  onCreate,
+  onJoin,
+  onContinue,
+}: LandingProps) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const completed = useMemo(() => isDailyCompleted(today), [today]);
   const streak = useMemo(() => getDailyStreak(), []);
+  const savedGames = useMemo(() => listSavedGames(), []);
 
   return (
     <div className="screen-content gap-10">
@@ -37,6 +46,18 @@ export function Landing({ onSolo, onDaily, onCreate, onJoin }: LandingProps) {
         />
       </div>
       <div className="flex flex-col gap-6 w-full">
+        {savedGames.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <span className="label">Continue</span>
+            {savedGames.map((game) => (
+              <ContinueButton
+                key={game.key}
+                game={game}
+                onClick={() => onContinue(game.key, game.difficulty)}
+              />
+            ))}
+          </div>
+        )}
         <div className="flex flex-col gap-3">
           <span className="label">Solo</span>
           <ActionButton label="Start Solo" onClick={onSolo} primary />
@@ -117,6 +138,37 @@ function DailyChallengeButton({
           {streak}-day streak
         </span>
       )}
+    </button>
+  );
+}
+
+const DIFFICULTY_LABELS: Record<string, string> = {
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+  expert: "Expert",
+};
+
+function ContinueButton({
+  game,
+  onClick,
+}: {
+  game: SavedGameSummary;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className="btn btn-lg btn-primary w-full"
+      onClick={onClick}
+    >
+      <span className="flex items-center justify-center gap-2">
+        Continue
+        <span className="text-sm font-normal opacity-80">
+          {DIFFICULTY_LABELS[game.difficulty] ?? game.difficulty} ·{" "}
+          {game.filledCells}/81 · {formatTime(game.timer)}
+        </span>
+      </span>
     </button>
   );
 }

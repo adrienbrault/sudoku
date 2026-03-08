@@ -175,6 +175,16 @@ function App() {
             onDaily={() => navigate({ name: "daily" })}
             onCreate={() => navigate({ name: "difficulty", mode: "create" })}
             onJoin={() => navigate({ name: "join" })}
+            onContinue={(gameKey, difficulty) => {
+              gameIdRef.current++;
+              navigate({
+                name: "solo",
+                difficulty: difficulty as Difficulty,
+                gameId: gameIdRef.current,
+                gameKey,
+                showConflicts: true,
+              });
+            }}
           />
         </div>
       );
