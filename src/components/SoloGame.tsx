@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useKeyboard } from "../hooks/useKeyboard.ts";
+import { useNumPadLayout } from "../hooks/useNumPadLayout.ts";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
 import { useSudoku } from "../hooks/useSudoku.ts";
 import { formatTime } from "../lib/format.ts";
@@ -75,6 +76,7 @@ export function SoloGame({
 
   const game = useSudoku(puzzle, solution, savedBoard);
   const { position, setPosition } = useNumPadPosition();
+  const numPadLayout = useNumPadLayout(position);
   const timerSecondsRef = useRef(saved?.timer ?? 0);
   const [showResult, setShowResult] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -215,6 +217,7 @@ export function SoloGame({
       numPad={
         <NumPad
           position={position}
+          layout={numPadLayout}
           remainingCounts={game.remainingCounts}
           selectedValue={
             game.selectedCell
