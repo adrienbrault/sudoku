@@ -8,7 +8,7 @@ bun run test         # Run tests once (vitest run)
 bun run test:watch   # Run tests in watch mode
 bun run lint         # Check lint + format (biome check)
 bun run lint:fix     # Auto-fix lint + format (biome check --write)
-bun run typecheck    # TypeScript check (tsc --noEmit)
+bun run typecheck    # TypeScript check (tsc --noEmit -p tsconfig.app.json)
 bun run ci           # Full CI: lint + typecheck + test
 ```
 
@@ -17,7 +17,7 @@ bun run ci           # Full CI: lint + typecheck + test
 - **Frontend**: Vite + React 19 + Tailwind CSS 4
 - **Multiplayer**: Peer-to-peer via Yjs + y-webrtc (no server needed)
 - **Testing**: Vitest + React Testing Library
-- **Lint/Format**: Biome (tabs, double quotes, semicolons)
+- **Lint/Format**: Biome (2-space indent, double quotes, semicolons)
 
 See `spec.md` for full product specification.
 
@@ -165,10 +165,9 @@ Follow the TDD skill in `.claude/skills/tdd/SKILL.md`. Key rules:
 ## Project Conventions
 
 ### File Structure
-- Components: `src/components/ComponentName.tsx` — React functional components
-- Hooks: `src/hooks/useHookName.ts` — custom React hooks
-- Library: `src/lib/` — pure logic, no React dependency
-- P2P: `src/lib/p2p-room.ts` — Yjs-based peer-to-peer room logic
+- Components: `src/components/` — React functional components (Board, Cell, NumPad, SoloGame, MultiplayerGame, Lobby, GameControls, GameResult, DifficultyPicker, Timer, DarkModeToggle, SoundToggle, NumPadPositionToggle, Landing)
+- Hooks: `src/hooks/` — custom React hooks (useSudoku, useYjsMultiplayer, useKeyboard, useNumPadPosition, useDarkMode)
+- Library: `src/lib/` — pure logic, no React dependency (sudoku engine, types, p2p-room, daily challenge, stats, haptics, sounds, format, constants)
 - Tests: colocated as `*.test.ts` / `*.test.tsx`
 
 ### Code Style (enforced by Biome)
@@ -223,11 +222,14 @@ You cannot judge visual quality from code alone. **Always screenshot, always rev
 
 ## Key Design Decisions
 
-- **Soft validation**: Conflicts shown visually, not blocked. Board complete only when all filled + valid.
+- **Soft validation**: Conflicts shown visually, not blocked. Optional `showConflicts` toggle at difficulty selection. Board complete only when all filled + valid.
 - **Peer-to-peer**: No server needed. Game state syncs via Yjs CRDTs over WebRTC. Public signaling servers used only for peer discovery.
 - **Board sharing**: Sharer's cells become locked/given on both boards. Notes not shared.
 - **Numpad positions**: Bottom (default), Left, Right. Persisted in localStorage.
 - **No accounts**: Nickname + random color. sessionStorage for reconnect identity.
+- **Daily challenge**: Deterministic puzzle via seeded RNG — same date, same board, any device.
+- **Stats tracking**: Per-difficulty game history (best time, average, games played) in localStorage.
+- **Sound effects**: Synthesized via Web Audio API, toggleable.
 
 <!-- rtk-instructions v2 -->
 # RTK (Rust Token Killer) - Token-Optimized Commands
