@@ -1,6 +1,7 @@
 import {
   type PointerEvent,
   type ReactNode,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -121,6 +122,42 @@ export function GameLayout({
       </div>
 
       {footer}
+      <LandscapeHint />
+    </div>
+  );
+}
+
+function LandscapeHint() {
+  const [dismissed, setDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem("landscape-hint-dismissed") === "1";
+    } catch {
+      return false;
+    }
+  });
+
+  const dismiss = useCallback(() => {
+    setDismissed(true);
+    try {
+      sessionStorage.setItem("landscape-hint-dismissed", "1");
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  if (dismissed) return null;
+
+  return (
+    <div className="game-landscape-hint hidden fixed bottom-2 left-1/2 -translate-x-1/2 items-center gap-2 bg-bg-overlay/95 backdrop-blur border border-border-default rounded-full px-3 py-1.5 shadow-lg z-50 text-xs text-text-secondary animate-fade-in">
+      <span>Scroll down to hide the browser toolbar</span>
+      <button
+        type="button"
+        className="ml-1 text-text-muted hover:text-text-primary transition-colors"
+        onClick={dismiss}
+        aria-label="Dismiss hint"
+      >
+        ✕
+      </button>
     </div>
   );
 }

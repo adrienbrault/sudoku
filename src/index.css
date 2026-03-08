@@ -113,15 +113,6 @@ body {
     env(safe-area-inset-bottom) env(safe-area-inset-left);
 }
 
-/* In landscape on phones, make the page taller than the viewport so
-   Safari/Chrome collapse the toolbar on scroll. The game layout is
-   position: fixed so it stays put. */
-@media (orientation: landscape) and (max-height: 500px) {
-  body {
-    min-height: calc(100dvh + 1px);
-  }
-}
-
 @keyframes pop-in {
   0% {
     transform: scale(0.6);
@@ -378,19 +369,10 @@ body {
 
 /* ─── Landscape layout for phones ─── */
 @media (orientation: landscape) and (max-height: 500px) {
-  /*
-   * Trick Safari into hiding the toolbar: make the page taller than
-   * the viewport so there's scrollable content, then fix-position
-   * the actual game UI so it stays put.
-   */
   .game-layout {
-    position: fixed;
-    inset: 0;
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.5rem;
     min-height: auto;
     height: 100dvh;
-    overflow: hidden;
-    z-index: 1;
   }
   .game-layout .game-header {
     margin-bottom: 0;
@@ -402,22 +384,23 @@ body {
     flex: 1 1 0;
     min-height: 0;
     gap: 0.75rem;
+    overflow: hidden;
   }
-  /* Board column: shrink to fit, don't stretch */
+  /* Board column: shrink to fit */
   .game-layout .game-board-col {
     flex: 0 1 auto !important;
     width: auto !important;
     max-width: none !important;
     min-height: 0;
+    height: 100%;
     gap: 0 !important;
-    overflow: hidden;
   }
-  /* Board: height-constrained, width follows from aspect-ratio */
+  /* Board: size from height, width follows aspect-ratio */
   .game-layout .game-board-col [role="region"] {
     width: auto !important;
     max-width: none !important;
-    height: calc(100dvh - 2.5rem);
-    max-height: calc(100dvh - 2.5rem);
+    height: 100%;
+    max-height: 100%;
     aspect-ratio: 1;
   }
   /* Hide portrait controls + numpad under the board */
@@ -433,6 +416,11 @@ body {
     flex: 1 1 0;
     min-width: 0;
     max-width: 16rem;
+    overflow: hidden;
+  }
+  /* Landscape hint */
+  .game-landscape-hint {
+    display: flex !important;
   }
 }
 
