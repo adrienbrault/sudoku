@@ -21,22 +21,20 @@ export default {
       });
     }
 
-    // Health check
+    // WebSocket upgrade
+    if (request.headers.get("Upgrade") === "websocket") {
+      const id = env.SIGNALING_ROOM.idFromName("global");
+      const stub = env.SIGNALING_ROOM.get(id);
+      return stub.fetch(request);
+    }
+
+    // Health check (non-WebSocket requests)
     const url = new URL(request.url);
     if (url.pathname === "/" || url.pathname === "/health") {
       return new Response("ok", { headers: corsHeaders() });
     }
 
-    // WebSocket upgrade
-    if (request.headers.get("Upgrade") !== "websocket") {
-      return new Response("Expected WebSocket", { status: 426 });
-    }
-
-    // Route all connections to a single Durable Object instance
-    // (the DO handles topic-based routing internally)
-    const id = env.SIGNALING_ROOM.idFromName("global");
-    const stub = env.SIGNALING_ROOM.get(id);
-    return stub.fetch(request);
+    return new Response("Expected WebSocket", { status: 426 });
   },
 };
 
@@ -50,19 +48,16 @@ function corsHeaders(): Record<string, string> {
 
 import { DurableObject } from "cloudflare:workers";
 
-type ClientState = {
-  topics: Set<string>;
-};
+// Attachment stored on each WebSocket, survives DO hibernation
+type WsAttachment = { topics: string[] };
 
 export class SignalingRoom extends DurableObject {
-  private clients: Map<WebSocket, ClientState> = new Map();
-
   async fetch(request: Request): Promise<Response> {
     const pair = new WebSocketPair();
     const [client, server] = [pair[0], pair[1]];
 
     this.ctx.acceptWebSocket(server);
-    this.clients.set(server, { topics: new Set() });
+    server.serializeAttachment({ topics: [] } satisfies WsAttachment);
 
     return new Response(null, { status: 101, webSocket: client });
   }
@@ -77,36 +72,35 @@ export class SignalingRoom extends DurableObject {
       return;
     }
 
-    const client = this.clients.get(ws);
-    if (!client) return;
-
     switch (msg.type) {
       case "subscribe": {
         const topics = msg.topics as string[] | undefined;
         if (!Array.isArray(topics)) return;
-        for (const topic of topics) {
-          client.topics.add(topic);
-        }
+        const attachment = ws.deserializeAttachment() as WsAttachment;
+        const updated = new Set([...attachment.topics, ...topics]);
+        ws.serializeAttachment({ topics: [...updated] } satisfies WsAttachment);
         break;
       }
       case "unsubscribe": {
         const topics = msg.topics as string[] | undefined;
         if (!Array.isArray(topics)) return;
-        for (const topic of topics) {
-          client.topics.delete(topic);
-        }
+        const attachment = ws.deserializeAttachment() as WsAttachment;
+        const updated = attachment.topics.filter((t) => !topics.includes(t));
+        ws.serializeAttachment({ topics: updated } satisfies WsAttachment);
         break;
       }
       case "publish": {
         const topic = msg.topic as string | undefined;
         if (!topic) return;
         // Forward to all other clients subscribed to this topic
-        for (const [peer, peerState] of this.clients) {
-          if (peer !== ws && peerState.topics.has(topic)) {
+        for (const peer of this.ctx.getWebSockets()) {
+          if (peer === ws) continue;
+          const attachment = peer.deserializeAttachment() as WsAttachment | null;
+          if (attachment?.topics.includes(topic)) {
             try {
               peer.send(data);
             } catch {
-              // Client disconnected, will be cleaned up in webSocketClose
+              // Client disconnected
             }
           }
         }
@@ -123,11 +117,6 @@ export class SignalingRoom extends DurableObject {
     }
   }
 
-  async webSocketClose(ws: WebSocket) {
-    this.clients.delete(ws);
-  }
-
-  async webSocketError(ws: WebSocket) {
-    this.clients.delete(ws);
-  }
+  async webSocketClose(_ws: WebSocket) {}
+  async webSocketError(_ws: WebSocket) {}
 }
