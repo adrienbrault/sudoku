@@ -76,7 +76,7 @@ export function SoloGame({
 
   const game = useSudoku(puzzle, solution, savedBoard);
   const { position, setPosition } = useNumPadPosition();
-  const numPadLayout = useNumPadLayout();
+  const numPadLayout = useNumPadLayout(position);
   const timerSecondsRef = useRef(saved?.timer ?? 0);
   const [showResult, setShowResult] = useState(false);
   const [revealed, setRevealed] = useState(false);

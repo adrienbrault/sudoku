@@ -1,10 +1,12 @@
 import { useSyncExternalStore } from "react";
-import type { NumPadLayout } from "../lib/types.ts";
+import type { NumPadLayout, NumPadPosition } from "../lib/types.ts";
 
 /**
- * Auto-detects the best numpad layout based on viewport.
- * - Landscape phones: always grid (sidebar layout)
- * - Portrait: grid when enough vertical space, row when tight
+ * Auto-detects the best numpad layout based on viewport and position.
+ * - Left/right position: always row (vertical column)
+ * - Landscape phones: grid
+ * - Portrait with enough height: grid
+ * - Otherwise: row
  */
 
 const landscapeQuery =
@@ -21,7 +23,7 @@ const tallPortraitQuery =
       )
     : null;
 
-// Desktop/tablet: always grid
+// Desktop/tablet: always row (vertical column beside board)
 const desktopQuery =
   typeof window !== "undefined"
     ? window.matchMedia("(min-width: 769px)")
@@ -38,9 +40,9 @@ function subscribe(cb: () => void) {
   };
 }
 
-function getLayout(): NumPadLayout {
+function getViewportLayout(): NumPadLayout {
   if (landscapeQuery?.matches) return "grid";
-  if (desktopQuery?.matches) return "row"; // desktop uses the vertical column
+  if (desktopQuery?.matches) return "row";
   if (tallPortraitQuery?.matches) return "grid";
   return "row";
 }
@@ -49,6 +51,13 @@ function getServerLayout(): NumPadLayout {
   return "row";
 }
 
-export function useNumPadLayout(): NumPadLayout {
-  return useSyncExternalStore(subscribe, getLayout, getServerLayout);
+export function useNumPadLayout(position: NumPadPosition): NumPadLayout {
+  const viewportLayout = useSyncExternalStore(
+    subscribe,
+    getViewportLayout,
+    getServerLayout,
+  );
+  // Side positions always use row (vertical column)
+  if (position === "left" || position === "right") return "row";
+  return viewportLayout;
 }
