@@ -222,7 +222,13 @@ export function SoloGame({
             difficulty={difficulty}
             onNewGame={onBack}
             onRematch={onRematch}
-            stats={priorStats}
+            stats={
+              priorStats ?? {
+                gamesPlayed: 0,
+                bestTime: timerSecondsRef.current,
+                averageTime: timerSecondsRef.current,
+              }
+            }
             isNewPB={
               game.hintsUsed === 0 &&
               (personalBest === null || timerSecondsRef.current < personalBest)
