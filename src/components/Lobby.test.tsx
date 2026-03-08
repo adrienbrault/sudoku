@@ -8,6 +8,7 @@ const BASE_STATE: RoomState = {
   roomId: "abc123",
   status: "lobby",
   difficulty: "medium",
+  assistLevel: "standard",
   hostId: "p1",
   players: [
     {
