@@ -7,6 +7,7 @@ type CellProps = {
   row: number;
   col: number;
   isSelected: boolean;
+  isMultiSelected: boolean;
   isHighlighted: boolean;
   isSameNumber: boolean;
   isConflict: boolean;
@@ -19,6 +20,7 @@ export const Cell = memo(function Cell({
   row,
   col,
   isSelected,
+  isMultiSelected,
   isHighlighted,
   isSameNumber,
   isConflict,
@@ -27,13 +29,15 @@ export const Cell = memo(function Cell({
 }: CellProps) {
   const bgClass = isSelected
     ? "bg-cell-selected"
-    : isConflict
-      ? "bg-cell-conflict-bg"
-      : isSameNumber
-        ? "bg-cell-same-number"
-        : isHighlighted
-          ? "bg-cell-highlight"
-          : "bg-cell-bg";
+    : isMultiSelected
+      ? "bg-cell-selected"
+      : isConflict
+        ? "bg-cell-conflict-bg"
+        : isSameNumber
+          ? "bg-cell-same-number"
+          : isHighlighted
+            ? "bg-cell-highlight"
+            : "bg-cell-bg";
 
   const textClass = cell.isGiven
     ? "text-cell-given font-bold"
@@ -57,7 +61,7 @@ export const Cell = memo(function Cell({
 				transition-colors duration-100
 				select-none touch-manipulation
 				outline-none focus-visible:ring-2 focus-visible:ring-accent
-				${isSelected ? "cell-selected-glow" : ""}
+				${isSelected || isMultiSelected ? "cell-selected-glow" : ""}
 				${revealDelay !== undefined ? "animate-cell-reveal" : ""}
 			`}
       style={
@@ -65,6 +69,8 @@ export const Cell = memo(function Cell({
           ? { animationDelay: `${revealDelay}ms` }
           : undefined
       }
+      data-row={row}
+      data-col={col}
       onClick={() => onSelect(row, col)}
       aria-label={`Cell row ${row + 1} column ${col + 1}${cell.value ? `, value ${cell.value}` : ", empty"}`}
     >
