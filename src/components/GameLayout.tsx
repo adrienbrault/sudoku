@@ -155,7 +155,7 @@ function SettingsButton({
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 bg-bg-overlay border border-border-default rounded-xl shadow-lg p-3 z-50 animate-fade-in">
+        <div className="absolute right-0 top-full mt-2 bg-bg-overlay border border-border-default rounded-xl shadow-lg p-3 z-50 animate-fade-in min-w-48">
           <p className="text-xs text-text-muted mb-2 font-medium">
             Numpad position
           </p>
@@ -163,8 +163,32 @@ function SettingsButton({
             position={position}
             onChange={onPositionChange}
           />
+          <div className="hidden lg:block mt-3 pt-3 border-t border-border-default">
+            <p className="text-xs text-text-muted mb-2 font-medium">
+              Keyboard shortcuts
+            </p>
+            <div className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+              <Shortcut keys="1–9" label="Place number" />
+              <Shortcut keys="←↑→↓" label="Move cursor" />
+              <Shortcut keys="N" label="Toggle notes" />
+              <Shortcut keys="Backspace" label="Erase" />
+              <Shortcut keys="⌘Z" label="Undo" />
+              <Shortcut keys="Esc" label="Deselect" />
+            </div>
+          </div>
         </div>
       )}
     </div>
+  );
+}
+
+function Shortcut({ keys, label }: { keys: string; label: string }) {
+  return (
+    <>
+      <kbd className="font-mono text-text-primary bg-bg-raised px-1 rounded text-center">
+        {keys}
+      </kbd>
+      <span className="text-text-muted">{label}</span>
+    </>
   );
 }
