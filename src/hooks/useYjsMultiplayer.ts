@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
+import { SIGNALING_URL } from "../lib/constants.ts";
 import {
   claimWinner,
   createRoomFromDoc,
@@ -79,7 +80,7 @@ export function useYjsMultiplayer({
   useEffect(() => {
     const doc = new Y.Doc();
     const provider = new WebrtcProvider(roomId, doc, {
-      signaling: ["wss://signal.dokuel.com"],
+      signaling: [SIGNALING_URL],
     });
 
     const room = createRoomFromDoc(doc, roomId);

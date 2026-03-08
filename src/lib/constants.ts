@@ -12,3 +12,5 @@ export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
 };
 
 export const EMPTY_CONFLICTS = new Set<number>();
+
+export const SIGNALING_URL = "wss://signal.dokuel.com";
