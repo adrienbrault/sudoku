@@ -1,8 +1,8 @@
-# Sudoku 1v1
+# Dokuel
 
-Premium, mobile-first Sudoku with real-time 1v1 multiplayer. No accounts required.
+1v1 sudoku duel — real-time, peer-to-peer, no account needed.
 
-**[Play now at sudoku.brage.fr](https://sudoku.brage.fr)**
+**[Play now at dokuel.com](https://dokuel.com)**
 
 ## Features
 
@@ -133,7 +133,7 @@ The frontend deploys automatically on push to `main` via Cloudflare Pages. No se
 
 | Service | Platform | URL |
 |---------|----------|-----|
-| Frontend | Cloudflare Pages | [sudoku.brage.fr](https://sudoku.brage.fr) |
+| Frontend | Cloudflare Pages | [dokuel.com](https://dokuel.com) |
 
 ## License
 

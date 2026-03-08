@@ -26,9 +26,9 @@ export function Landing({
   return (
     <div className="screen-content gap-10">
       <div className="flex flex-col items-center gap-2">
-        <h1 className="heading-xl">Sudoku</h1>
+        <h1 className="heading-xl">Dokuel</h1>
         <p className="text-sm text-text-muted">
-          Free multiplayer sudoku — no account needed.
+          1v1 sudoku duel — no account needed.
         </p>
       </div>
       <div className="flex flex-col gap-3 w-full">

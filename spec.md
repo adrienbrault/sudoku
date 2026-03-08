@@ -1,4 +1,4 @@
-# Sudoku 1v1 - Product Specification
+# Dokuel - Product Specification
 
 ## Overview
 
