@@ -11,7 +11,7 @@ Premium, mobile-first Sudoku with real-time 1v1 multiplayer. No accounts require
 - Four difficulty levels: Easy, Medium, Hard, Expert
 - Pencil notes with a 3x3 mini-grid per cell
 - Multi-level undo
-- Soft validation — conflicts are highlighted in real time but never blocked
+- Soft validation — conflicts are highlighted in real time but never blocked (toggleable)
 - Timer tracking with per-difficulty stats (best time, average, games played)
 - Completion celebration with haptic feedback and sound
 
@@ -98,9 +98,17 @@ Output is written to `dist/`.
 
 ```
 src/
-├── components/     # React UI components (Board, NumPad, Lobby, etc.)
-├── hooks/          # State management (useSudoku, useYjsMultiplayer, useKeyboard, etc.)
-├── lib/            # Pure logic — puzzle generation, validation, P2P room, types
+├── components/     # React UI components
+│   ├── Board, Cell, NumPad, NumPadPositionToggle
+│   ├── SoloGame, MultiplayerGame, Lobby, Landing
+│   ├── GameControls, GameResult, DifficultyPicker, Timer
+│   └── DarkModeToggle, SoundToggle
+├── hooks/          # State management
+│   ├── useSudoku, useYjsMultiplayer, useKeyboard
+│   └── useNumPadPosition, useDarkMode
+├── lib/            # Pure logic — no React dependency
+│   ├── sudoku (engine), types, p2p-room (Yjs CRDT)
+│   └── daily (seeded RNG), stats, haptics, sounds, format
 ```
 
 ### Key Design Decisions
