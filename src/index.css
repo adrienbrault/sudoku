@@ -369,15 +369,22 @@ body {
 
 /* ─── Landscape layout for phones ─── */
 @media (orientation: landscape) and (max-height: 500px) {
+  /*
+   * Two-layer trick for Safari toolbar collapse:
+   * 1. .game-layout-scroll is a tall wrapper that creates scroll room
+   * 2. .game-layout is position:sticky so it stays pinned at the top
+   *    while the user scrolls to collapse the browser toolbar.
+   */
+  .game-layout-scroll {
+    height: calc(100dvh + 40vh);
+  }
   .game-layout {
+    position: sticky;
+    top: 0;
     padding: 0.25rem 0.5rem;
     min-height: auto;
     height: 100dvh;
-    /* Extra padding creates scroll room so Safari/Chrome collapse
-       their toolbar when the user scrolls down. The visible content
-       still fits in 100dvh; the padding is below the fold. */
-    padding-bottom: 30vh;
-    box-sizing: content-box;
+    overflow: hidden;
   }
   .game-layout .game-header {
     margin-bottom: 0;

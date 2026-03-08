@@ -55,74 +55,78 @@ export function GameLayout({
   };
 
   return (
-    <div
-      className="game-layout flex flex-col items-center min-h-dvh bg-bg-primary py-4 px-4 animate-screen-enter"
-      onPointerDown={handleBackgroundPointerDown}
-    >
-      {title && (
-        <p className="text-sm font-medium text-text-secondary mb-1">{title}</p>
-      )}
-
-      {/* Header */}
+    <div className="game-layout-scroll">
       <div
-        className={`game-header flex items-center justify-between w-full ${headerClassName} mb-4`}
+        className="game-layout flex flex-col items-center min-h-dvh bg-bg-primary py-4 px-4 animate-screen-enter"
+        onPointerDown={handleBackgroundPointerDown}
       >
-        <button
-          type="button"
-          className="btn-ghost touch-manipulation"
-          onClick={onBack}
-        >
-          ← Back
-        </button>
-        {timer}
-        <SettingsButton
-          position={position}
-          onPositionChange={onPositionChange}
-          layout={layout}
-          onLayoutChange={onLayoutChange}
-          extra={settingsExtra}
-        />
-      </div>
+        {title && (
+          <p className="text-sm font-medium text-text-secondary mb-1">
+            {title}
+          </p>
+        )}
 
-      {headerExtra}
-
-      {/* Main game area — mobile: respects position; desktop: always side-by-side */}
-      <div
-        className={`
-          game-area flex gap-3 w-full justify-center flex-1
-          lg:flex-row lg:items-start lg:max-w-4xl lg:mx-auto lg:gap-6
-          ${position === "left" ? "flex-row items-center max-w-lg mx-auto lg:max-w-4xl" : ""}
-          ${position === "right" ? "flex-row-reverse items-center max-w-lg mx-auto lg:max-w-4xl lg:flex-row" : ""}
-          ${position === "bottom" ? "flex-col items-center lg:flex-row lg:items-start" : ""}
-        `}
-      >
-        {/* Mobile: show numpad in position (left/right) */}
-        <div className="lg:hidden">{position !== "bottom" && numPad}</div>
+        {/* Header */}
         <div
-          className={`game-board-col flex flex-col items-center gap-3 lg:max-w-2xl lg:w-full ${position === "bottom" ? "flex-1 justify-center w-full" : "flex-1 min-w-0"} ${boardClassName}`}
+          className={`game-header flex items-center justify-between w-full ${headerClassName} mb-4`}
         >
-          {board}
-          <div className="game-controls-col flex flex-col items-center gap-3 w-full">
-            {controls}
-            {/* Mobile: show numpad at bottom if position=bottom */}
-            <div className="game-numpad-bottom lg:hidden w-full">
-              {position === "bottom" && numPad}
+          <button
+            type="button"
+            className="btn-ghost touch-manipulation"
+            onClick={onBack}
+          >
+            ← Back
+          </button>
+          {timer}
+          <SettingsButton
+            position={position}
+            onPositionChange={onPositionChange}
+            layout={layout}
+            onLayoutChange={onLayoutChange}
+            extra={settingsExtra}
+          />
+        </div>
+
+        {headerExtra}
+
+        {/* Main game area — mobile: respects position; desktop: always side-by-side */}
+        <div
+          className={`
+            game-area flex gap-3 w-full justify-center flex-1
+            lg:flex-row lg:items-start lg:max-w-4xl lg:mx-auto lg:gap-6
+            ${position === "left" ? "flex-row items-center max-w-lg mx-auto lg:max-w-4xl" : ""}
+            ${position === "right" ? "flex-row-reverse items-center max-w-lg mx-auto lg:max-w-4xl lg:flex-row" : ""}
+            ${position === "bottom" ? "flex-col items-center lg:flex-row lg:items-start" : ""}
+          `}
+        >
+          {/* Mobile: show numpad in position (left/right) */}
+          <div className="lg:hidden">{position !== "bottom" && numPad}</div>
+          <div
+            className={`game-board-col flex flex-col items-center gap-3 lg:max-w-2xl lg:w-full ${position === "bottom" ? "flex-1 justify-center w-full" : "flex-1 min-w-0"} ${boardClassName}`}
+          >
+            {board}
+            <div className="game-controls-col flex flex-col items-center gap-3 w-full">
+              {controls}
+              {/* Mobile: show numpad at bottom if position=bottom */}
+              <div className="game-numpad-bottom lg:hidden w-full">
+                {position === "bottom" && numPad}
+              </div>
             </div>
           </div>
+          {/* Landscape: controls + numpad alongside board */}
+          <div className="game-numpad-landscape hidden">
+            {controls}
+            {numPad}
+          </div>
+          {/* Desktop: always show numpad on the right */}
+          <div className="hidden lg:flex lg:flex-col lg:gap-3 lg:pt-2">
+            {numPad}
+          </div>
         </div>
-        {/* Landscape: controls + numpad alongside board */}
-        <div className="game-numpad-landscape hidden">
-          {controls}
-          {numPad}
-        </div>
-        {/* Desktop: always show numpad on the right */}
-        <div className="hidden lg:flex lg:flex-col lg:gap-3 lg:pt-2">
-          {numPad}
-        </div>
-      </div>
 
-      {footer}
-      <LandscapeHint />
+        {footer}
+        <LandscapeHint />
+      </div>
     </div>
   );
 }
