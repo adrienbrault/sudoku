@@ -161,9 +161,32 @@ function SettingsButton({
       </button>
       {open && (
         <div className="absolute right-0 top-full mt-2 bg-bg-overlay border border-border-default rounded-xl shadow-lg p-3 z-50 animate-fade-in min-w-48">
-          <p className="text-xs text-text-muted mb-2 font-medium">
-            Numpad position
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-text-muted font-medium">
+              Numpad position
+            </p>
+            <button
+              type="button"
+              className="w-6 h-6 flex items-center justify-center rounded text-text-muted hover:text-text-primary transition-colors"
+              onClick={() => setOpen(false)}
+              aria-label="Close settings"
+            >
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
           <NumPadPositionToggle
             position={position}
             onChange={onPositionChange}

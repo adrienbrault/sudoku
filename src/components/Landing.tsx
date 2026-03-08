@@ -31,7 +31,7 @@ export function Landing({
   );
 
   return (
-    <div className="screen-content gap-6 sm:gap-10">
+    <div className="screen-content gap-4 sm:gap-8">
       <div className="flex flex-col items-center gap-1 sm:gap-2">
         <h1 className="heading-xl">Dokuel</h1>
         {!isReturningUser && (
@@ -41,7 +41,7 @@ export function Landing({
         )}
       </div>
       {!isReturningUser && (
-        <div className="flex flex-col gap-2 sm:gap-3 w-full">
+        <div className="flex flex-col gap-1.5 sm:gap-3 w-full">
           <FeatureRow
             icon={<ZapIcon />}
             text="Real-time 1v1 — race a friend peer-to-peer"
@@ -56,7 +56,7 @@ export function Landing({
           />
         </div>
       )}
-      <div className="flex flex-col gap-4 sm:gap-6 w-full">
+      <div className="flex flex-col gap-3 sm:gap-6 w-full">
         {savedGames.length > 0 && (
           <div className="flex flex-col gap-3">
             <span className="label">Continue</span>
