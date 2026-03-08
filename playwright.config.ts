@@ -43,5 +43,14 @@ export default defineConfig({
         viewport: { width: 1280, height: 800 },
       },
     },
+    {
+      name: "iPhone 14 Landscape",
+      use: {
+        ...devices["iPhone 14"],
+        defaultBrowserType: "chromium",
+        deviceScaleFactor: 1,
+        viewport: { width: 844, height: 390 },
+      },
+    },
   ],
 });
