@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { DarkModeToggle } from "./components/DarkModeToggle.tsx";
 import { DifficultyPicker } from "./components/DifficultyPicker.tsx";
 import { Landing } from "./components/Landing.tsx";
@@ -38,6 +38,7 @@ type Screen =
       name: "solo";
       difficulty: Difficulty;
       gameId: number;
+      gameKey: string;
       showConflicts: boolean;
     }
   | { name: "daily" }
@@ -49,20 +50,88 @@ type Screen =
     }
   | { name: "join" };
 
-function App() {
-  const [screen, setScreen] = useState<Screen>(() => {
-    const path = window.location.pathname.slice(1);
-    if (path && path !== "") {
+const VALID_DIFFICULTIES = new Set<string>([
+  "easy",
+  "medium",
+  "hard",
+  "expert",
+]);
+
+function screenToPath(screen: Screen): string {
+  switch (screen.name) {
+    case "landing":
+    case "difficulty":
+      return "/";
+    case "solo":
+      return `/solo/${screen.difficulty}/${screen.gameKey}`;
+    case "daily":
+      return "/daily";
+    case "join":
+      return "/join";
+    case "multiplayer":
+      return `/${screen.roomId}`;
+  }
+}
+
+function pathToScreen(pathname: string): Screen {
+  const path = pathname.replace(/^\/+|\/+$/g, "");
+
+  if (path === "") return { name: "landing" };
+  if (path === "daily") return { name: "daily" };
+  if (path === "join") return { name: "join" };
+
+  if (path.startsWith("solo/")) {
+    const parts = path.slice(5).split("/");
+    const difficulty = parts[0] ?? "";
+    const gameKey = parts[1] ?? "";
+    if (VALID_DIFFICULTIES.has(difficulty) && gameKey) {
       return {
-        name: "multiplayer",
-        roomId: path,
-        difficulty: "medium" as Difficulty,
+        name: "solo",
+        difficulty: difficulty as Difficulty,
+        gameId: 1,
+        gameKey,
         showConflicts: true,
       };
     }
     return { name: "landing" };
-  });
-  const gameIdRef = useRef(0);
+  }
+
+  // Everything else is treated as a multiplayer roomId
+  return {
+    name: "multiplayer",
+    roomId: path,
+    difficulty: "medium" as Difficulty,
+    showConflicts: true,
+  };
+}
+
+function App() {
+  const [screen, setScreen] = useState<Screen>(() =>
+    pathToScreen(window.location.pathname),
+  );
+
+  const navigate = useCallback(
+    (newScreen: Screen, { replace = false } = {}) => {
+      const path = screenToPath(newScreen);
+      if (replace) {
+        window.history.replaceState(null, "", path);
+      } else {
+        window.history.pushState(null, "", path);
+      }
+      setScreen(newScreen);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setScreen(pathToScreen(window.location.pathname));
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const gameIdRef = useRef(screen.name === "solo" ? screen.gameId : 0);
   const darkMode = useDarkMode();
   const [soundOn, setSoundOn] = useState(getSoundEnabled);
 
@@ -85,10 +154,10 @@ function App() {
             />
           </div>
           <Landing
-            onSolo={() => setScreen({ name: "difficulty", mode: "solo" })}
-            onDaily={() => setScreen({ name: "daily" })}
-            onCreate={() => setScreen({ name: "difficulty", mode: "create" })}
-            onJoin={() => setScreen({ name: "join" })}
+            onSolo={() => navigate({ name: "difficulty", mode: "solo" })}
+            onDaily={() => navigate({ name: "daily" })}
+            onCreate={() => navigate({ name: "difficulty", mode: "create" })}
+            onJoin={() => navigate({ name: "join" })}
           />
         </div>
       );
@@ -100,16 +169,16 @@ function App() {
             onSelect={(difficulty, showConflicts) => {
               if (screen.mode === "solo") {
                 gameIdRef.current++;
-                setScreen({
+                navigate({
                   name: "solo",
                   difficulty,
                   gameId: gameIdRef.current,
+                  gameKey: generateId(),
                   showConflicts,
                 });
               } else {
                 const roomId = generateId();
-                window.history.pushState(null, "", `/${roomId}`);
-                setScreen({
+                navigate({
                   name: "multiplayer",
                   roomId,
                   difficulty,
@@ -117,7 +186,7 @@ function App() {
                 });
               }
             }}
-            onBack={() => setScreen({ name: "landing" })}
+            onBack={() => navigate({ name: "landing" })}
           />
         </div>
       );
@@ -125,24 +194,29 @@ function App() {
     case "solo":
       return (
         <SoloGame
-          key={screen.gameId}
+          key={screen.gameKey}
           difficulty={screen.difficulty}
+          gameKey={screen.gameKey}
           showConflicts={screen.showConflicts}
-          onBack={() => setScreen({ name: "landing" })}
+          onBack={() => navigate({ name: "landing" })}
           onRematch={() => {
             gameIdRef.current++;
-            setScreen({
-              name: "solo",
-              difficulty: screen.difficulty,
-              gameId: gameIdRef.current,
-              showConflicts: screen.showConflicts,
-            });
+            navigate(
+              {
+                name: "solo",
+                difficulty: screen.difficulty,
+                gameId: gameIdRef.current,
+                gameKey: generateId(),
+                showConflicts: screen.showConflicts,
+              },
+              { replace: true },
+            );
           }}
         />
       );
 
     case "daily":
-      return <DailyGame onBack={() => setScreen({ name: "landing" })} />;
+      return <DailyGame onBack={() => navigate({ name: "landing" })} />;
 
     case "multiplayer":
       return (
@@ -150,10 +224,7 @@ function App() {
           roomId={screen.roomId}
           difficulty={screen.difficulty}
           showConflicts={screen.showConflicts}
-          onBack={() => {
-            window.history.pushState(null, "", "/");
-            setScreen({ name: "landing" });
-          }}
+          onBack={() => navigate({ name: "landing" })}
         />
       );
 
@@ -161,15 +232,14 @@ function App() {
       return (
         <JoinScreen
           onJoin={(roomId) => {
-            window.history.pushState(null, "", `/${roomId}`);
-            setScreen({
+            navigate({
               name: "multiplayer",
               roomId,
               difficulty: "medium",
               showConflicts: true,
             });
           }}
-          onBack={() => setScreen({ name: "landing" })}
+          onBack={() => navigate({ name: "landing" })}
         />
       );
   }
@@ -257,6 +327,7 @@ function DailyGame({ onBack }: { onBack: () => void }) {
   return (
     <SoloGame
       difficulty="medium"
+      gameKey={`daily-${date}`}
       initialPuzzle={puzzle}
       title={`Daily Challenge — ${date}`}
       onBack={onBack}
