@@ -5,6 +5,7 @@ type NumPadProps = {
   position: NumPadPosition;
   remainingCounts: Record<number, number>;
   selectedValue?: number | null | undefined;
+  showRemainingCounts?: boolean | undefined;
   onNumber: (n: number) => void;
 };
 
@@ -12,6 +13,7 @@ export function NumPad({
   position,
   remainingCounts,
   selectedValue,
+  showRemainingCounts = true,
   onNumber,
 }: NumPadProps) {
   const isVertical = position === "left" || position === "right";
@@ -35,17 +37,23 @@ export function NumPad({
           <button
             key={n}
             type="button"
-            disabled={isComplete}
-            className={`flex flex-col items-center justify-center rounded-lg select-none touch-manipulation font-semibold lg:h-10 lg:w-14 ${isVertical ? "h-11 w-12" : "h-14 flex-1 max-w-14"} ${isComplete ? "opacity-30 cursor-default" : "press-spring"} ${isSelected ? "bg-accent text-text-on-accent shadow-md" : "bg-bg-raised text-text-primary active:bg-accent active:text-text-on-accent active:shadow-md"}`}
+            disabled={showRemainingCounts && isComplete}
+            className={`flex flex-col items-center justify-center rounded-lg select-none touch-manipulation font-semibold lg:h-10 lg:w-14 ${isVertical ? "h-11 w-12" : "h-14 flex-1 max-w-14"} ${showRemainingCounts && isComplete ? "opacity-30 cursor-default" : "press-spring"} ${isSelected ? "bg-accent text-text-on-accent shadow-md" : "bg-bg-raised text-text-primary active:bg-accent active:text-text-on-accent active:shadow-md"}`}
             onClick={() => onNumber(n)}
-            aria-label={`${n}, ${remaining} remaining${isSelected ? ", selected" : ""}`}
+            aria-label={
+              showRemainingCounts
+                ? `${n}, ${remaining} remaining${isSelected ? ", selected" : ""}`
+                : `${n}${isSelected ? ", selected" : ""}`
+            }
           >
             <span className="text-lg leading-none">{n}</span>
-            <span
-              className={`text-[0.625rem] leading-none mt-0.5 ${isComplete ? "invisible" : isSelected ? "text-text-on-accent/70" : "text-text-secondary"}`}
-            >
-              {remaining}
-            </span>
+            {showRemainingCounts && (
+              <span
+                className={`text-[0.625rem] leading-none mt-0.5 ${isComplete ? "invisible" : isSelected ? "text-text-on-accent/70" : "text-text-secondary"}`}
+              >
+                {remaining}
+              </span>
+            )}
           </button>
         );
       })}
