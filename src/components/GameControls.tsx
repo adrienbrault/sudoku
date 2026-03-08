@@ -20,7 +20,7 @@ export function GameControls({
   onHint,
 }: GameControlsProps) {
   return (
-    <div className="flex gap-3 w-full max-w-lg">
+    <div className="flex gap-1.5 sm:gap-3 w-full max-w-lg">
       <ControlButton
         label="Undo"
         icon="↩"
@@ -37,7 +37,7 @@ export function GameControls({
       />
       {onToggleConflicts && (
         <ControlButton
-          label={showConflicts ? "Errors: On" : "Errors: Off"}
+          label="Errors"
           icon="👁"
           onClick={onToggleConflicts}
           active={showConflicts ?? false}
