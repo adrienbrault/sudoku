@@ -7,7 +7,13 @@ import {
   isBoardComplete,
   parsePuzzle,
 } from "../lib/sudoku.ts";
-import type { Board, GameStatus, MoveAction, Position } from "../lib/types.ts";
+import type {
+  Board,
+  ClearedNote,
+  GameStatus,
+  MoveAction,
+  Position,
+} from "../lib/types.ts";
 
 type State = {
   board: Board;
@@ -71,15 +77,43 @@ function reducer(state: State, action: Action): State {
       }
 
       const board = cloneBoard(state.board);
+      board[row]![col]!.value = action.value;
+      board[row]![col]!.notes = new Set();
+
+      // Auto-clear matching notes from peers in same row, column, and box
+      const clearedNotes: ClearedNote[] = [];
+      const boxRow = Math.floor(row / 3) * 3;
+      const boxCol = Math.floor(col / 3) * 3;
+      for (let i = 0; i < 9; i++) {
+        // Same row
+        if (i !== col && board[row]![i]!.notes.has(action.value)) {
+          board[row]![i]!.notes.delete(action.value);
+          clearedNotes.push({ row, col: i, note: action.value });
+        }
+        // Same column
+        if (i !== row && board[i]![col]!.notes.has(action.value)) {
+          board[i]![col]!.notes.delete(action.value);
+          clearedNotes.push({ row: i, col, note: action.value });
+        }
+      }
+      // Same 3x3 box (skip cells already handled by row/col)
+      for (let r = boxRow; r < boxRow + 3; r++) {
+        for (let c = boxCol; c < boxCol + 3; c++) {
+          if (r !== row && c !== col && board[r]![c]!.notes.has(action.value)) {
+            board[r]![c]!.notes.delete(action.value);
+            clearedNotes.push({ row: r, col: c, note: action.value });
+          }
+        }
+      }
+
       const moveAction: MoveAction = {
         type: "place",
         position: { row, col },
         value: action.value,
         previousValue: cell.value,
         previousNotes: new Set(cell.notes),
+        clearedNotes,
       };
-      board[row]![col]!.value = action.value;
-      board[row]![col]!.notes = new Set();
       const conflicts = getConflicts(board);
       const complete = isBoardComplete(board, conflicts);
 
@@ -123,7 +157,15 @@ function reducer(state: State, action: Action): State {
       const { row, col } = lastAction.position;
 
       switch (lastAction.type) {
-        case "place":
+        case "place": {
+          board[row]![col]!.value = lastAction.previousValue;
+          board[row]![col]!.notes = new Set(lastAction.previousNotes);
+          // Restore auto-cleared notes from peers
+          for (const cleared of lastAction.clearedNotes) {
+            board[cleared.row]![cleared.col]!.notes.add(cleared.note);
+          }
+          break;
+        }
         case "erase": {
           board[row]![col]!.value = lastAction.previousValue;
           board[row]![col]!.notes = new Set(lastAction.previousNotes);

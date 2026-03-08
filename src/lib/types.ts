@@ -16,6 +16,8 @@ export type Position = { row: number; col: number };
 
 // --- Game State ---
 
+export type ClearedNote = { row: number; col: number; note: number };
+
 export type MoveAction =
   | {
       type: "place";
@@ -23,6 +25,7 @@ export type MoveAction =
       value: number;
       previousValue: CellValue;
       previousNotes: Set<number>;
+      clearedNotes: ClearedNote[];
     }
   | {
       type: "erase";
