@@ -292,15 +292,6 @@ src/
 - **No accounts** — auto-generated fun names (adjective + animal), persisted in localStorage; session identity in sessionStorage for reconnect
 - **Colocated tests** — `*.test.ts` / `*.test.tsx` files sit next to the code they test
 
-## Deployment
-
-Both the frontend and signaling server deploy automatically on push to `main`.
-
-| Service | Platform | URL |
-|---------|----------|-----|
-| Frontend | Cloudflare Pages | [dokuel.com](https://dokuel.com) |
-| Signaling | Cloudflare Worker | [signal.dokuel.com](https://signal.dokuel.com) |
-
 ## License
 
 [MIT](LICENSE)
