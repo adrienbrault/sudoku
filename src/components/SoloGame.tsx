@@ -164,10 +164,7 @@ export function SoloGame({
       position={position}
       onPositionChange={setPosition}
       onDeselectCell={game.deselectCell}
-      boardClassName={[
-        game.status === "completed" ? "animate-celebration" : "",
-        game.notesMode ? "ring-2 ring-accent/50 rounded-lg" : "",
-      ].join(" ")}
+      boardClassName={game.status === "completed" ? "animate-celebration" : ""}
       timer={
         <button
           type="button"
