@@ -23,8 +23,8 @@ export function getDailyStreak(): DailyStreak {
 
 /** Check if the given date string is exactly one day after the other. */
 function isConsecutiveDay(prev: string, next: string): boolean {
-  const prevDate = new Date(prev + "T00:00:00");
-  const nextDate = new Date(next + "T00:00:00");
+  const prevDate = new Date(`${prev}T00:00:00`);
+  const nextDate = new Date(`${next}T00:00:00`);
   const diffMs = nextDate.getTime() - prevDate.getTime();
   return diffMs === 24 * 60 * 60 * 1000;
 }
