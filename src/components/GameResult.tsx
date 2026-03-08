@@ -31,7 +31,6 @@ type GameResultProps = {
 export function GameResult({
   isWinner,
   time,
-  timeSeconds,
   difficulty,
   isMultiplayer,
   onRematch,

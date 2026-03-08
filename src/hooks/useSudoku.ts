@@ -299,7 +299,7 @@ export type SavedBoard = {
 
 function initState(args: {
   puzzle: string;
-  solution?: string;
+  solution?: string | undefined;
   savedBoard?: SavedBoard | undefined;
 }): State {
   const board = parsePuzzle(args.puzzle);
