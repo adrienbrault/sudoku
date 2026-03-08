@@ -22,6 +22,7 @@ type GameLayoutProps = {
   boardClassName?: string | undefined;
   headerClassName?: string | undefined;
   onDeselectCell?: (() => void) | undefined;
+  settingsExtra?: ReactNode | undefined;
 };
 
 export function GameLayout({
@@ -38,6 +39,7 @@ export function GameLayout({
   boardClassName = "",
   headerClassName = "max-w-lg lg:max-w-4xl",
   onDeselectCell,
+  settingsExtra,
 }: GameLayoutProps) {
   const handleBackgroundPointerDown = (e: PointerEvent<HTMLDivElement>) => {
     if (!onDeselectCell) return;
@@ -70,6 +72,7 @@ export function GameLayout({
         <SettingsButton
           position={position}
           onPositionChange={onPositionChange}
+          extra={settingsExtra}
         />
       </div>
 
@@ -113,9 +116,11 @@ export function GameLayout({
 function SettingsButton({
   position,
   onPositionChange,
+  extra,
 }: {
   position: NumPadPosition;
   onPositionChange: (position: NumPadPosition) => void;
+  extra?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -163,6 +168,11 @@ function SettingsButton({
             position={position}
             onChange={onPositionChange}
           />
+          {extra && (
+            <div className="mt-3 pt-3 border-t border-border-default">
+              {extra}
+            </div>
+          )}
           <div className="hidden lg:block mt-3 pt-3 border-t border-border-default">
             <p className="text-xs text-text-muted mb-2 font-medium">
               Keyboard shortcuts
