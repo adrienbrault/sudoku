@@ -2,68 +2,68 @@
 
 @theme {
   /* Board & cell */
-  --color-board-bg: oklch(0.98 0 0);
-  --color-board-border: oklch(0.3 0 0);
-  --color-cell-bg: oklch(1 0 0);
-  --color-cell-selected: oklch(0.92 0.05 250);
-  --color-cell-highlight: oklch(0.95 0.02 250);
-  --color-cell-same-number: oklch(0.9 0.06 250);
-  --color-cell-given: oklch(0.25 0 0);
-  --color-cell-user: oklch(0.45 0.15 250);
-  --color-cell-conflict: oklch(0.65 0.25 25);
-  --color-cell-conflict-bg: oklch(0.95 0.05 25);
-  --color-success: oklch(0.65 0.2 150);
-  --color-accent: oklch(0.55 0.15 250);
-  --color-accent-light: oklch(0.92 0.05 250);
+  --color-board-bg: oklch(0.97 0.005 80);
+  --color-board-border: oklch(0.35 0.01 80);
+  --color-cell-bg: oklch(0.995 0.003 80);
+  --color-cell-selected: oklch(0.92 0.04 168);
+  --color-cell-highlight: oklch(0.95 0.015 168);
+  --color-cell-same-number: oklch(0.9 0.05 168);
+  --color-cell-given: oklch(0.25 0.01 80);
+  --color-cell-user: oklch(0.42 0.12 168);
+  --color-cell-conflict: oklch(0.6 0.2 25);
+  --color-cell-conflict-bg: oklch(0.95 0.04 25);
+  --color-success: oklch(0.65 0.18 155);
+  --color-accent: oklch(0.52 0.12 168);
+  --color-accent-light: oklch(0.92 0.04 168);
 
   /* Semantic surfaces */
-  --color-bg-primary: oklch(1 0 0);
-  --color-bg-inset: oklch(0.97 0 0);
-  --color-bg-raised: oklch(0.96 0 0);
-  --color-bg-overlay: oklch(1 0 0);
-  --color-border-default: oklch(0.9 0 0);
+  --color-bg-primary: oklch(0.99 0.004 80);
+  --color-bg-inset: oklch(0.96 0.006 80);
+  --color-bg-raised: oklch(0.95 0.008 80);
+  --color-bg-overlay: oklch(0.99 0.004 80);
+  --color-border-default: oklch(0.9 0.01 80);
 
   /* Semantic text */
-  --color-text-primary: oklch(0.15 0 0);
-  --color-text-secondary: oklch(0.45 0 0);
-  --color-text-muted: oklch(0.6 0 0);
-  --color-text-on-accent: oklch(1 0 0);
+  --color-text-primary: oklch(0.18 0.01 80);
+  --color-text-secondary: oklch(0.45 0.01 80);
+  --color-text-muted: oklch(0.58 0.01 80);
+  --color-text-on-accent: oklch(0.99 0 0);
 
   /* Semantic interactive */
-  --color-bg-disabled: oklch(0.88 0 0);
-  --color-text-disabled: oklch(0.55 0 0);
+  --color-bg-disabled: oklch(0.88 0.008 80);
+  --color-text-disabled: oklch(0.55 0.01 80);
 }
 
 /* Dark mode overrides */
 .dark {
   /* Board & cell */
-  --color-board-bg: oklch(0.2 0 0);
-  --color-board-border: oklch(0.7 0 0);
-  --color-cell-bg: oklch(0.18 0 0);
-  --color-cell-selected: oklch(0.28 0.06 250);
-  --color-cell-highlight: oklch(0.22 0.02 250);
-  --color-cell-same-number: oklch(0.26 0.06 250);
-  --color-cell-given: oklch(0.9 0 0);
-  --color-cell-user: oklch(0.7 0.15 250);
-  --color-cell-conflict: oklch(0.7 0.2 25);
-  --color-cell-conflict-bg: oklch(0.25 0.06 25);
-  --color-accent-light: oklch(0.28 0.06 250);
+  --color-board-bg: oklch(0.2 0.008 80);
+  --color-board-border: oklch(0.55 0.01 80);
+  --color-cell-bg: oklch(0.18 0.006 80);
+  --color-cell-selected: oklch(0.28 0.05 168);
+  --color-cell-highlight: oklch(0.22 0.02 168);
+  --color-cell-same-number: oklch(0.26 0.05 168);
+  --color-cell-given: oklch(0.92 0.005 80);
+  --color-cell-user: oklch(0.7 0.13 168);
+  --color-cell-conflict: oklch(0.7 0.18 25);
+  --color-cell-conflict-bg: oklch(0.25 0.05 25);
+  --color-accent-light: oklch(0.28 0.05 168);
 
   /* Semantic surfaces */
-  --color-bg-primary: oklch(0.13 0 0);
-  --color-bg-inset: oklch(0.15 0 0);
-  --color-bg-raised: oklch(0.2 0 0);
-  --color-bg-overlay: oklch(0.15 0 0);
-  --color-border-default: oklch(0.25 0 0);
+  --color-bg-primary: oklch(0.14 0.008 80);
+  --color-bg-inset: oklch(0.16 0.008 80);
+  --color-bg-raised: oklch(0.21 0.008 80);
+  --color-bg-overlay: oklch(0.16 0.008 80);
+  --color-border-default: oklch(0.26 0.008 80);
 
   /* Semantic text */
-  --color-text-primary: oklch(0.93 0 0);
-  --color-text-secondary: oklch(0.7 0 0);
-  --color-text-muted: oklch(0.5 0 0);
+  --color-text-primary: oklch(0.93 0.005 80);
+  --color-text-secondary: oklch(0.7 0.008 80);
+  --color-text-muted: oklch(0.5 0.008 80);
 
   /* Semantic interactive */
-  --color-bg-disabled: oklch(0.25 0 0);
-  --color-text-disabled: oklch(0.45 0 0);
+  --color-bg-disabled: oklch(0.25 0.008 80);
+  --color-text-disabled: oklch(0.45 0.008 80);
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
