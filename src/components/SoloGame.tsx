@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useEffectivePosition } from "../hooks/useEffectivePosition.ts";
 import { useKeyboard } from "../hooks/useKeyboard.ts";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
 import { useSudoku } from "../hooks/useSudoku.ts";
@@ -46,7 +45,6 @@ export function SoloGame({
 
   const game = useSudoku(puzzle, solution);
   const { position, setPosition } = useNumPadPosition();
-  const effectivePosition = useEffectivePosition(position);
   const timerSecondsRef = useRef(0);
   const [showResult, setShowResult] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -81,7 +79,7 @@ export function SoloGame({
 
   const numPad = (
     <NumPad
-      position={effectivePosition}
+      position={position}
       remainingCounts={game.remainingCounts}
       onNumber={handleNumber}
     />
@@ -115,14 +113,14 @@ export function SoloGame({
       <div
         className={`
 					flex gap-3 w-full justify-center flex-1
-					${effectivePosition === "left" ? "flex-row items-center max-w-lg mx-auto" : ""}
-					${effectivePosition === "right" ? "flex-row-reverse items-center max-w-lg mx-auto" : ""}
-					${effectivePosition === "bottom" ? "flex-col items-center" : ""}
+					${position === "left" ? "flex-row items-center max-w-lg mx-auto" : ""}
+					${position === "right" ? "flex-row-reverse items-center max-w-lg mx-auto" : ""}
+					${position === "bottom" ? "flex-col items-center" : ""}
 				`}
       >
-        {effectivePosition !== "bottom" && numPad}
+        {position !== "bottom" && numPad}
         <div
-          className={`flex flex-col items-center gap-3 ${effectivePosition === "bottom" ? "flex-1 justify-center w-full" : "flex-1 min-w-0"} ${game.status === "completed" ? "animate-celebration" : ""}`}
+          className={`flex flex-col items-center gap-3 ${position === "bottom" ? "flex-1 justify-center w-full" : "flex-1 min-w-0"} ${game.status === "completed" ? "animate-celebration" : ""}`}
         >
           <Board
             board={game.board}
@@ -139,7 +137,7 @@ export function SoloGame({
               onErase={game.erase}
               onUndo={game.undo}
             />
-            {effectivePosition === "bottom" && numPad}
+            {position === "bottom" && numPad}
           </div>
         </div>
       </div>
