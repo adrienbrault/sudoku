@@ -215,6 +215,49 @@ describe("useSudoku", () => {
     );
   });
 
+  it("undo restores notes cleared from peer cells", () => {
+    const { result } = setupHook();
+
+    // Find an empty cell and a peer in same row
+    const pos = findEmptyCell(result.current.board);
+    if (!pos) throw new Error("No empty cell found");
+
+    let rowPeer: { row: number; col: number } | null = null;
+    for (let c = 0; c < 9; c++) {
+      if (
+        c !== pos.col &&
+        !result.current.board[pos.row]![c]!.isGiven &&
+        result.current.board[pos.row]![c]!.value === null
+      ) {
+        rowPeer = { row: pos.row, col: c };
+        break;
+      }
+    }
+    if (!rowPeer) throw new Error("No empty peer in same row");
+
+    // Add note "5" to the peer cell
+    act(() => result.current.toggleNotesMode());
+    act(() => result.current.selectCell(rowPeer.row, rowPeer.col));
+    act(() => result.current.placeNumber(5));
+    expect(result.current.board[rowPeer.row]![rowPeer.col]!.notes.has(5)).toBe(
+      true,
+    );
+
+    // Place value 5 in target — should clear peer's note
+    act(() => result.current.toggleNotesMode());
+    act(() => result.current.selectCell(pos.row, pos.col));
+    act(() => result.current.placeNumber(5));
+    expect(result.current.board[rowPeer.row]![rowPeer.col]!.notes.has(5)).toBe(
+      false,
+    );
+
+    // Undo — peer's note should be restored
+    act(() => result.current.undo());
+    expect(result.current.board[rowPeer.row]![rowPeer.col]!.notes.has(5)).toBe(
+      true,
+    );
+  });
+
   it("detects conflicts on each move", () => {
     const { result } = setupHook();
 
