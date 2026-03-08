@@ -5,6 +5,7 @@ import { Landing } from "./components/Landing.tsx";
 import { MultiplayerGame } from "./components/MultiplayerGame.tsx";
 import { SoloGame } from "./components/SoloGame.tsx";
 import { SoundToggle } from "./components/SoundToggle.tsx";
+import { Stats } from "./components/Stats.tsx";
 import { useDarkMode } from "./hooks/useDarkMode.ts";
 import { getDailyPuzzle } from "./lib/daily.ts";
 import { recordDailyCompletion } from "./lib/daily-streak.ts";
@@ -66,7 +67,8 @@ type Screen =
       difficulty: Difficulty;
       showConflicts: boolean;
     }
-  | { name: "join" };
+  | { name: "join" }
+  | { name: "stats" };
 
 const VALID_DIFFICULTIES = new Set<string>([
   "easy",
@@ -86,6 +88,8 @@ function screenToPath(screen: Screen): string {
       return "/daily";
     case "join":
       return "/join";
+    case "stats":
+      return "/stats";
     case "multiplayer":
       return `/${screen.roomId}`;
   }
@@ -97,6 +101,7 @@ function pathToScreen(pathname: string): Screen {
   if (path === "") return { name: "landing" };
   if (path === "daily") return { name: "daily" };
   if (path === "join") return { name: "join" };
+  if (path === "stats") return { name: "stats" };
 
   if (path.startsWith("solo/")) {
     const parts = path.slice(5).split("/");
@@ -176,6 +181,7 @@ function App() {
             onDaily={() => navigate({ name: "daily" })}
             onCreate={() => navigate({ name: "difficulty", mode: "create" })}
             onJoin={() => navigate({ name: "join" })}
+            onStats={() => navigate({ name: "stats" })}
             onContinue={(gameKey, difficulty) => {
               gameIdRef.current++;
               navigate({
@@ -255,6 +261,9 @@ function App() {
           onBack={() => navigate({ name: "landing" })}
         />
       );
+
+    case "stats":
+      return <Stats onBack={() => navigate({ name: "landing" })} />;
 
     case "join":
       return (

@@ -9,6 +9,7 @@ type LandingProps = {
   onCreate: () => void;
   onJoin: () => void;
   onContinue: (gameKey: string, difficulty: string) => void;
+  onStats: () => void;
 };
 
 export function Landing({
@@ -17,6 +18,7 @@ export function Landing({
   onCreate,
   onJoin,
   onContinue,
+  onStats,
 }: LandingProps) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const completed = useMemo(() => isDailyCompleted(today), [today]);
@@ -74,6 +76,16 @@ export function Landing({
           <ActionButton label="Join Game" onClick={onJoin} />
         </div>
       </div>
+      <button
+        type="button"
+        className="btn btn-ghost text-sm"
+        onClick={onStats}
+      >
+        <span className="flex items-center gap-1.5">
+          <StatsIcon />
+          View Stats
+        </span>
+      </button>
       <a
         href="https://github.com/adrienbrault/sudoku"
         target="_blank"
@@ -248,6 +260,26 @@ function GlobeIcon() {
       <circle cx="12" cy="12" r="10" />
       <path d="M2 12h20" />
       <ellipse cx="12" cy="12" rx="4" ry="10" />
+    </svg>
+  );
+}
+
+function StatsIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M18 20V10" />
+      <path d="M12 20V4" />
+      <path d="M6 20v-6" />
     </svg>
   );
 }
