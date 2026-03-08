@@ -7,7 +7,7 @@ export function DarkModeToggle({ isDark, onToggle }: DarkModeToggleProps) {
   return (
     <button
       type="button"
-      className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors touch-manipulation"
+      className="p-2 rounded-lg text-text-muted hover:bg-bg-raised transition-colors touch-manipulation"
       onClick={onToggle}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >

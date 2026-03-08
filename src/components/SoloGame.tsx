@@ -156,7 +156,7 @@ export function SoloGame({
               timerSecondsRef.current = s;
             }}
           />
-          <span className="text-xs text-gray-500 dark:text-gray-400 font-mono tabular-nums">
+          <span className="text-xs text-text-muted font-mono tabular-nums">
             {paused ? (
               "Paused"
             ) : (
@@ -190,11 +190,11 @@ export function SoloGame({
           {paused && (
             <button
               type="button"
-              className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-950/80 backdrop-blur-md rounded-lg"
+              className="absolute inset-0 flex items-center justify-center bg-bg-primary/80 backdrop-blur-md rounded-lg"
               onClick={() => setPaused(false)}
               aria-label="Resume game"
             >
-              <span className="text-xl font-semibold text-gray-500 dark:text-gray-400">
+              <span className="text-xl font-semibold text-text-muted">
                 Paused — tap to resume
               </span>
             </button>
