@@ -1,7 +1,8 @@
+import { useState } from "react";
 import type { Difficulty } from "../lib/types.ts";
 
 type DifficultyPickerProps = {
-  onSelect: (difficulty: Difficulty) => void;
+  onSelect: (difficulty: Difficulty, showConflicts: boolean) => void;
   onBack: () => void;
 };
 
@@ -17,6 +18,8 @@ const DIFFICULTIES: {
 ];
 
 export function DifficultyPicker({ onSelect, onBack }: DifficultyPickerProps) {
+  const [showConflicts, setShowConflicts] = useState(true);
+
   return (
     <div className="flex flex-col items-center gap-6 w-full max-w-sm px-6">
       <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -35,7 +38,7 @@ export function DifficultyPicker({ onSelect, onBack }: DifficultyPickerProps) {
 							press-spring-soft
 							select-none touch-manipulation
 						"
-            onClick={() => onSelect(d.value)}
+            onClick={() => onSelect(d.value, showConflicts)}
           >
             <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {d.label}
@@ -46,6 +49,18 @@ export function DifficultyPicker({ onSelect, onBack }: DifficultyPickerProps) {
           </button>
         ))}
       </div>
+      <label className="flex items-center gap-3 cursor-pointer select-none touch-manipulation">
+        <span className="text-sm text-gray-600 dark:text-gray-400">
+          Show placement errors
+        </span>
+        <input
+          type="checkbox"
+          checked={showConflicts}
+          onChange={() => setShowConflicts(!showConflicts)}
+          aria-label="Show placement errors"
+          className="w-5 h-5 rounded accent-accent"
+        />
+      </label>
       <button
         type="button"
         className="text-sm text-gray-400 dark:text-gray-500 mt-2 touch-manipulation"
