@@ -10,6 +10,7 @@ import {
   joinRoom,
   type P2PRoom,
   requestRematch,
+  setAssistLevel as setRoomAssistLevel,
   startGame,
   updatePlayerName,
   updateProgress,
@@ -237,6 +238,12 @@ export function useYjsMultiplayer({
     [playerId],
   );
 
+  const setAssistLevel = useCallback((level: AssistLevel) => {
+    const room = roomRef.current;
+    if (!room) return;
+    setRoomAssistLevel(room, level);
+  }, []);
+
   return {
     connected,
     roomState,
@@ -250,5 +257,6 @@ export function useYjsMultiplayer({
     sendComplete,
     sendRematch,
     updateName,
+    setAssistLevel,
   };
 }

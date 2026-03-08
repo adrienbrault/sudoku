@@ -4,6 +4,7 @@ import { useOpponentProgressVisible } from "../hooks/useOpponentProgressVisible.
 import { useSudoku } from "../hooks/useSudoku.ts";
 import { formatTime } from "../lib/format.ts";
 import { solvePuzzle } from "../lib/sudoku.ts";
+import type { AssistLevel } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
 import { GameControls } from "./GameControls.tsx";
 import { GameLayout } from "./GameLayout.tsx";
@@ -18,7 +19,7 @@ export type MultiplayerBoardProps = {
   puzzle: string;
   playerId: string;
   difficulty: import("../lib/types.ts").Difficulty;
-  showConflicts?: boolean;
+  assistLevel?: AssistLevel;
   opponentProgress: {
     cellsRemaining: number;
     completionPercent: number;
@@ -35,7 +36,7 @@ export function MultiplayerBoard({
   puzzle,
   playerId,
   difficulty,
-  showConflicts = true,
+  assistLevel = "standard",
   opponentProgress,
   opponentDisconnected,
   gameOver,
@@ -91,7 +92,7 @@ export function MultiplayerBoard({
 
   const handleNumber = (n: number) => {
     if (game.selectedCell || game.selectedCells.size > 0) {
-      game.placeNumber(n);
+      game.placeNumber(n, assistLevel === "full");
     }
   };
 
@@ -127,6 +128,7 @@ export function MultiplayerBoard({
               ? game.board[game.selectedCell.row]![game.selectedCell.col]!.value
               : null
           }
+          showRemainingCounts={assistLevel === "full"}
           onNumber={handleNumber}
         />
       }
@@ -135,7 +137,8 @@ export function MultiplayerBoard({
           board={game.board}
           selectedCell={game.selectedCell}
           selectedCells={game.selectedCells}
-          conflicts={showConflicts ? game.errors : EMPTY_CONFLICTS}
+          assistLevel={assistLevel}
+          conflicts={assistLevel !== "paper" ? game.errors : EMPTY_CONFLICTS}
           onSelectCell={game.selectCell}
           onSetSelectedCells={game.setSelectedCells}
           animateReveal={!revealed}
