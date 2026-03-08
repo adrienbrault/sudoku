@@ -73,6 +73,7 @@ export function SoloGame({
   const [showResult, setShowResult] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [showConflicts, setShowConflicts] = useState(initialShowConflicts);
+  const [paused, setPaused] = useState(false);
 
   // Capture PB before this game's result is saved
   const priorStats = useMemo(
@@ -123,7 +124,7 @@ export function SoloGame({
     onErase: game.erase,
     onUndo: game.undo,
     onToggleNotes: game.toggleNotesMode,
-    enabled: game.status === "playing",
+    enabled: game.status === "playing" && !paused,
   });
 
   return (
@@ -135,22 +136,35 @@ export function SoloGame({
       onDeselectCell={game.deselectCell}
       boardClassName={game.status === "completed" ? "animate-celebration" : ""}
       timer={
-        <div className="flex flex-col items-center">
+        <button
+          type="button"
+          className="flex flex-col items-center touch-manipulation"
+          onClick={() => {
+            if (game.status === "playing") setPaused((p) => !p);
+          }}
+          aria-label={paused ? "Resume" : "Pause"}
+        >
           <Timer
-            running={game.status === "playing"}
+            running={game.status === "playing" && !paused}
             initialSeconds={saved?.timer}
             onTick={(s) => {
               timerSecondsRef.current = s;
             }}
           />
           <span className="text-xs text-gray-500 dark:text-gray-400 font-mono tabular-nums">
-            <span className="text-accent font-medium">
-              {81 - game.cellsRemaining}
-            </span>
-            /81
-            {personalBest !== null && ` · PB ${formatTime(personalBest)}`}
+            {paused ? (
+              "Paused"
+            ) : (
+              <>
+                <span className="text-accent font-medium">
+                  {81 - game.cellsRemaining}
+                </span>
+                /81
+                {personalBest !== null && ` · PB ${formatTime(personalBest)}`}
+              </>
+            )}
           </span>
-        </div>
+        </button>
       }
       numPad={
         <NumPad
@@ -160,13 +174,27 @@ export function SoloGame({
         />
       }
       board={
-        <Board
-          board={game.board}
-          selectedCell={game.selectedCell}
-          conflicts={showConflicts ? game.conflicts : EMPTY_CONFLICTS}
-          onSelectCell={game.selectCell}
-          animateReveal={!revealed}
-        />
+        <div className="relative w-full">
+          <Board
+            board={game.board}
+            selectedCell={paused ? null : game.selectedCell}
+            conflicts={showConflicts ? game.conflicts : EMPTY_CONFLICTS}
+            onSelectCell={paused ? () => {} : game.selectCell}
+            animateReveal={!revealed}
+          />
+          {paused && (
+            <button
+              type="button"
+              className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-950/80 backdrop-blur-md rounded-lg"
+              onClick={() => setPaused(false)}
+              aria-label="Resume game"
+            >
+              <span className="text-xl font-semibold text-gray-500 dark:text-gray-400">
+                Paused — tap to resume
+              </span>
+            </button>
+          )}
+        </div>
       }
       controls={
         <GameControls
