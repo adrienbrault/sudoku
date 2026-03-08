@@ -110,7 +110,7 @@ export function Lobby({ roomState, playerId, onStart, onBack }: LobbyProps) {
           className="text-sm text-gray-400 dark:text-gray-500 mt-2 touch-manipulation"
           onClick={onBack}
         >
-          Back
+          ← Back
         </button>
       </div>
     </div>
