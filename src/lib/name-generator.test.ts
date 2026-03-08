@@ -18,7 +18,9 @@ describe("generatePlayerName", () => {
   });
 
   it("generates different names on repeated calls", () => {
-    const names = new Set(Array.from({ length: 20 }, () => generatePlayerName()));
+    const names = new Set(
+      Array.from({ length: 20 }, () => generatePlayerName()),
+    );
     expect(names.size).toBeGreaterThan(1);
   });
 });
