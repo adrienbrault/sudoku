@@ -1,9 +1,9 @@
-import { useState } from "react";
-import type { Difficulty } from "../lib/types.ts";
-import { ToggleSwitch } from "./ToggleSwitch.tsx";
+import { useAssistLevel } from "../hooks/useAssistLevel.ts";
+import type { AssistLevel, Difficulty } from "../lib/types.ts";
+import { AssistLevelPicker } from "./AssistLevelPicker.tsx";
 
 type DifficultyPickerProps = {
-  onSelect: (difficulty: Difficulty, showConflicts: boolean) => void;
+  onSelect: (difficulty: Difficulty, assistLevel: AssistLevel) => void;
   onBack: () => void;
 };
 
@@ -40,7 +40,7 @@ const DIFFICULTIES: {
 ];
 
 export function DifficultyPicker({ onSelect, onBack }: DifficultyPickerProps) {
-  const [showConflicts, setShowConflicts] = useState(true);
+  const { level: assistLevel, setLevel: setAssistLevel } = useAssistLevel();
 
   return (
     <div className="screen-content gap-6">
@@ -51,7 +51,7 @@ export function DifficultyPicker({ onSelect, onBack }: DifficultyPickerProps) {
             key={d.value}
             type="button"
             className="card flex flex-col items-start gap-0.5 w-full px-5 py-4 press-spring-soft select-none touch-manipulation hover:bg-bg-raised focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none transition-colors"
-            onClick={() => onSelect(d.value, showConflicts)}
+            onClick={() => onSelect(d.value, assistLevel)}
           >
             <span className="flex items-center gap-2 text-lg font-semibold text-text-primary">
               <span
@@ -64,11 +64,7 @@ export function DifficultyPicker({ onSelect, onBack }: DifficultyPickerProps) {
           </button>
         ))}
       </div>
-      <ToggleSwitch
-        checked={showConflicts}
-        onChange={() => setShowConflicts(!showConflicts)}
-        label="Show placement errors"
-      />
+      <AssistLevelPicker value={assistLevel} onChange={setAssistLevel} />
       <button
         type="button"
         className="btn-ghost mt-2 touch-manipulation"
