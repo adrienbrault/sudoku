@@ -20,7 +20,8 @@ const SHORT_MONTHS = [
 ];
 
 export function formatShortDate(isoDate: string): string {
-  const [, month, day] = isoDate.split("-");
-  const monthIndex = Number.parseInt(month, 10) - 1;
-  return `${SHORT_MONTHS[monthIndex]} ${Number.parseInt(day, 10)}`;
+  const parts = isoDate.split("-");
+  const monthIndex = Number.parseInt(parts[1] ?? "1", 10) - 1;
+  const monthName = SHORT_MONTHS[monthIndex] ?? "Jan";
+  return `${monthName} ${Number.parseInt(parts[2] ?? "1", 10)}`;
 }
