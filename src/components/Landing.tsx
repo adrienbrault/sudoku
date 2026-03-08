@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import type { Invite } from "../hooks/usePresence.ts";
 import { DIFFICULTY_LABELS } from "../lib/constants.ts";
 import { getDailyStreak, isDailyCompleted } from "../lib/daily-streak.ts";
-import { formatShortDate, formatTime } from "../lib/format.ts";
+import { formatShortDate, formatTime, getTodayISO } from "../lib/format.ts";
 import type { Friend } from "../lib/friends.ts";
 import {
   deleteGame,
@@ -57,7 +57,7 @@ export function Landing({
   onInviteFriend,
   onJoinInvite,
 }: LandingProps) {
-  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const today = useMemo(() => getTodayISO(), []);
   const completed = useMemo(() => isDailyCompleted(today), [today]);
   const streak = useMemo(() => getDailyStreak(), []);
   const [savedGames, setSavedGames] = useState(() => listSavedGames());
