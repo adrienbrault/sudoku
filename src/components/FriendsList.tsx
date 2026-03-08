@@ -122,6 +122,7 @@ export function FriendsList({
           >
             <div className="flex items-center gap-2">
               <span
+                role="img"
                 className={`w-2 h-2 rounded-full ${isOnline ? "bg-emerald-500" : "bg-text-muted/30"}`}
                 aria-label={isOnline ? "Online" : "Offline"}
               />

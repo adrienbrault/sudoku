@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
+import type { Invite } from "../hooks/usePresence.ts";
 import { getDailyStreak, isDailyCompleted } from "../lib/daily-streak.ts";
 import { formatShortDate, formatTime } from "../lib/format.ts";
+import type { Friend } from "../lib/friends.ts";
 import {
   deleteGame,
   listSavedGames,
@@ -8,6 +10,7 @@ import {
   type SavedGameSummary,
 } from "../lib/game-storage.ts";
 import { getStats } from "../lib/stats.ts";
+import { FriendsList } from "./FriendsList.tsx";
 
 type LandingProps = {
   onSolo: () => void;
@@ -16,6 +19,14 @@ type LandingProps = {
   onJoin: () => void;
   onContinue: (gameKey: string, difficulty: string) => void;
   onStats: () => void;
+  playerId?: string;
+  friends?: Friend[];
+  onlineFriendIds?: Set<string>;
+  pendingInvites?: Invite[];
+  onAddFriend?: (code: string) => void;
+  onRemoveFriend?: (playerId: string) => void;
+  onInviteFriend?: (friendId: string) => void;
+  onJoinInvite?: (invite: Invite) => void;
 };
 
 export function Landing({
@@ -25,6 +36,14 @@ export function Landing({
   onJoin,
   onContinue,
   onStats,
+  playerId,
+  friends,
+  onlineFriendIds,
+  pendingInvites,
+  onAddFriend,
+  onRemoveFriend,
+  onInviteFriend,
+  onJoinInvite,
 }: LandingProps) {
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
   const completed = useMemo(() => isDailyCompleted(today), [today]);
@@ -108,6 +127,25 @@ export function Landing({
           <ActionButton label="Create Game" onClick={onCreate} />
           <ActionButton label="Join Game" onClick={onJoin} />
         </div>
+        {playerId &&
+          friends &&
+          onlineFriendIds &&
+          pendingInvites &&
+          onAddFriend &&
+          onRemoveFriend &&
+          onInviteFriend &&
+          onJoinInvite && (
+            <FriendsList
+              playerId={playerId}
+              friends={friends}
+              onlineFriendIds={onlineFriendIds}
+              pendingInvites={pendingInvites}
+              onAddFriend={onAddFriend}
+              onRemoveFriend={onRemoveFriend}
+              onInviteFriend={onInviteFriend}
+              onJoinInvite={onJoinInvite}
+            />
+          )}
       </div>
       <button type="button" className="btn btn-ghost text-sm" onClick={onStats}>
         <span className="flex items-center gap-1.5">

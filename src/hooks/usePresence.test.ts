@@ -189,8 +189,8 @@ describe("usePresence", () => {
     });
 
     expect(result.current.pendingInvites).toHaveLength(1);
-    expect(result.current.pendingInvites[0].roomId).toBe("test-room");
-    expect(result.current.pendingInvites[0].fromName).toBe("Bold Lion");
+    expect(result.current.pendingInvites[0]!.roomId).toBe("test-room");
+    expect(result.current.pendingInvites[0]!.fromName).toBe("Bold Lion");
   });
 
   it("sendInvite writes to Yjs invites map", () => {

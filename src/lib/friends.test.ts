@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { addFriend, getFriends, isFriend, removeFriend } from "./friends.ts";
 
 describe("friends", () => {
@@ -22,19 +22,24 @@ describe("friends", () => {
       addFriend("abc12345", "Swift Panda");
       const friends = getFriends();
       expect(friends).toHaveLength(1);
-      expect(friends[0].playerId).toBe("abc12345");
-      expect(friends[0].name).toBe("Swift Panda");
-      expect(friends[0].addedAt).toBeTruthy();
+      expect(friends[0]!.playerId).toBe("abc12345");
+      expect(friends[0]!.name).toBe("Swift Panda");
+      expect(friends[0]!.addedAt).toBeTruthy();
     });
 
     it("updates name and addedAt for existing friend", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-03-01T10:00:00Z"));
       addFriend("abc12345", "Swift Panda");
-      const before = getFriends()[0].addedAt;
+      const before = getFriends()[0]!.addedAt;
+
+      vi.setSystemTime(new Date("2026-03-02T10:00:00Z"));
       addFriend("abc12345", "Bold Lion");
       const friends = getFriends();
       expect(friends).toHaveLength(1);
-      expect(friends[0].name).toBe("Bold Lion");
-      expect(friends[0].addedAt).not.toBe(before);
+      expect(friends[0]!.name).toBe("Bold Lion");
+      expect(friends[0]!.addedAt).not.toBe(before);
+      vi.useRealTimers();
     });
 
     it("caps at 20 friends, dropping oldest", () => {
@@ -55,7 +60,7 @@ describe("friends", () => {
       removeFriend("abc12345");
       const friends = getFriends();
       expect(friends).toHaveLength(1);
-      expect(friends[0].playerId).toBe("xyz67890");
+      expect(friends[0]!.playerId).toBe("xyz67890");
     });
 
     it("is a no-op for unknown playerId", () => {
