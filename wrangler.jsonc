@@ -1,0 +1,20 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "sudoku-server",
+	"main": "src/party/sudoku.ts",
+	"compatibility_date": "2025-01-01",
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "SudokuAgent",
+				"class_name": "SudokuAgent"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": ["SudokuAgent"]
+		}
+	]
+}

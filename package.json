@@ -17,7 +17,7 @@
 		"screenshots": "bunx playwright test e2e/screenshots.spec.ts --reporter=html"
 	},
 	"dependencies": {
-		"partysocket": "^1.1.16",
+		"agents": "^0.7.5",
 		"react": "^19.2.0",
 		"react-dom": "^19.2.0",
 		"sudoku": "^0.0.3"
@@ -34,10 +34,10 @@
 		"@types/react-dom": "^19.2.3",
 		"@vitejs/plugin-react": "^5.1.1",
 		"jsdom": "^28.1.0",
-		"partykit": "^0.0.115",
 		"tailwindcss": "^4.2.1",
 		"typescript": "~5.9.3",
 		"vite": "^7.3.1",
-		"vitest": "^4.0.18"
+		"vitest": "^4.0.18",
+		"wrangler": "^4.71.0"
 	}
 }

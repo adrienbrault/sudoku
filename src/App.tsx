@@ -1,4 +1,3 @@
-import PartySocket from "partysocket";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DarkModeToggle } from "./components/DarkModeToggle.tsx";
 import { DifficultyPicker } from "./components/DifficultyPicker.tsx";
@@ -12,7 +11,7 @@ import { getSoundEnabled, setSoundEnabled } from "./lib/sounds.ts";
 import type { Difficulty } from "./lib/types.ts";
 import "./index.css";
 
-const PARTY_HOST = import.meta.env.VITE_PARTY_HOST || "localhost:1999";
+const PARTY_HOST = import.meta.env.VITE_PARTY_HOST || "localhost:8787";
 
 function generateId() {
 	return Math.random().toString(36).slice(2, 10);
@@ -158,14 +157,12 @@ function MultiplayerScreen({
 	const playerId = useMemo(getPlayerId, []);
 	const playerName = useMemo(getPlayerName, []);
 
-	const socket = useMemo(
-		() =>
-			new PartySocket({
-				host: PARTY_HOST,
-				room: roomId,
-			}),
-		[roomId],
-	);
+	const socket = useMemo(() => {
+		const protocol = PARTY_HOST.startsWith("localhost") ? "ws" : "wss";
+		return new WebSocket(
+			`${protocol}://${PARTY_HOST}/parties/sudoku/${roomId}`,
+		);
+	}, [roomId]);
 
 	useEffect(() => {
 		return () => {
@@ -177,7 +174,7 @@ function MultiplayerScreen({
 		<MultiplayerGame
 			playerId={playerId}
 			playerName={playerName}
-			socket={socket as unknown as WebSocket}
+			socket={socket}
 			onBack={onBack}
 		/>
 	);
