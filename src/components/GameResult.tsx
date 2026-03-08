@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { formatTime } from "../lib/format.ts";
 import type { Difficulty } from "../lib/types.ts";
 
@@ -38,6 +39,8 @@ export function GameResult({
   stats,
   isNewPB,
 }: GameResultProps) {
+  const [copied, setCopied] = useState(false);
+
   const handleShare = () => {
     const lines = ["Sudoku"];
     if (difficulty) lines[0] += ` ${DIFFICULTY_LABELS[difficulty]}`;
@@ -45,6 +48,8 @@ export function GameResult({
     if (isNewPB) lines.push("New Personal Best!");
     lines.push("https://sudoku.brage.fr");
     navigator.clipboard.writeText(lines.join("\n"));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -136,7 +141,7 @@ export function GameResult({
               className="btn btn-ghost w-full py-2"
               onClick={handleShare}
             >
-              Share Result
+              {copied ? "Copied!" : "Share Result"}
             </button>
           )}
         </div>
