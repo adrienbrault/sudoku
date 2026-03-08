@@ -47,7 +47,7 @@ type SoloGameProps = {
 export function SoloGame({
   difficulty,
   gameKey,
-  showConflicts = true,
+  showConflicts: initialShowConflicts = true,
   initialPuzzle,
   title,
   onBack,
@@ -72,6 +72,7 @@ export function SoloGame({
   const timerSecondsRef = useRef(saved?.timer ?? 0);
   const [showResult, setShowResult] = useState(false);
   const [revealed, setRevealed] = useState(false);
+  const [showConflicts, setShowConflicts] = useState(initialShowConflicts);
 
   // Capture PB before this game's result is saved
   const priorStats = useMemo(
@@ -173,6 +174,8 @@ export function SoloGame({
           onToggleNotes={game.toggleNotesMode}
           onErase={game.erase}
           onUndo={game.undo}
+          showConflicts={showConflicts}
+          onToggleConflicts={() => setShowConflicts((v) => !v)}
         />
       }
       footer={

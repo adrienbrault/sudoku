@@ -3,6 +3,8 @@ type GameControlsProps = {
   onToggleNotes: () => void;
   onErase: () => void;
   onUndo: () => void;
+  showConflicts?: boolean | undefined;
+  onToggleConflicts?: (() => void) | undefined;
 };
 
 export function GameControls({
@@ -10,6 +12,8 @@ export function GameControls({
   onToggleNotes,
   onErase,
   onUndo,
+  showConflicts,
+  onToggleConflicts,
 }: GameControlsProps) {
   return (
     <div className="flex gap-3 w-full max-w-lg">
@@ -21,6 +25,14 @@ export function GameControls({
         onClick={onToggleNotes}
         active={notesMode}
       />
+      {onToggleConflicts && (
+        <ControlButton
+          label="Errors"
+          icon="👁"
+          onClick={onToggleConflicts}
+          active={showConflicts ?? false}
+        />
+      )}
     </div>
   );
 }
