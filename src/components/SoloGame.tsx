@@ -118,6 +118,17 @@ export function SoloGame({
     }
   };
 
+  const handleBack = () => {
+    if (
+      game.status === "playing" &&
+      game.historyLength > 0 &&
+      !window.confirm("Leave game? Your progress is saved.")
+    ) {
+      return;
+    }
+    onBack();
+  };
+
   useKeyboard({
     selectedCell: game.selectedCell,
     onSelectCell: game.selectCell,
@@ -131,7 +142,7 @@ export function SoloGame({
 
   return (
     <GameLayout
-      onBack={onBack}
+      onBack={handleBack}
       title={title}
       position={position}
       onPositionChange={setPosition}
@@ -150,7 +161,7 @@ export function SoloGame({
           aria-label={paused ? "Resume" : "Pause"}
         >
           <Timer
-            running={game.status === "playing" && !paused}
+            running={game.status === "playing" && !paused && revealed}
             initialSeconds={saved?.timer}
             onTick={(s) => {
               timerSecondsRef.current = s;
@@ -222,7 +233,13 @@ export function SoloGame({
             difficulty={difficulty}
             onNewGame={onBack}
             onRematch={onRematch}
-            stats={priorStats}
+            stats={
+              priorStats ?? {
+                gamesPlayed: 0,
+                bestTime: timerSecondsRef.current,
+                averageTime: timerSecondsRef.current,
+              }
+            }
             isNewPB={
               game.hintsUsed === 0 &&
               (personalBest === null || timerSecondsRef.current < personalBest)
