@@ -76,11 +76,7 @@ export function Landing({
           <ActionButton label="Join Game" onClick={onJoin} />
         </div>
       </div>
-      <button
-        type="button"
-        className="btn btn-ghost text-sm"
-        onClick={onStats}
-      >
+      <button type="button" className="btn btn-ghost text-sm" onClick={onStats}>
         <span className="flex items-center gap-1.5">
           <StatsIcon />
           View Stats
