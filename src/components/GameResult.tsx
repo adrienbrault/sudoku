@@ -46,7 +46,7 @@ export function GameResult({
     if (difficulty) lines[0] += ` ${DIFFICULTY_LABELS[difficulty]}`;
     lines.push(`Time: ${time}`);
     if (isNewPB) lines.push("New Personal Best!");
-    lines.push("https://sudoku.brage.fr");
+    lines.push("https://dokuel.com");
     navigator.clipboard.writeText(lines.join("\n"));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
