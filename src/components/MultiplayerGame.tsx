@@ -64,6 +64,7 @@ export function MultiplayerGame({
     return (
       <>
         <MultiplayerBoard
+          key={mp.puzzle}
           puzzle={mp.puzzle}
           playerId={playerId}
           difficulty={difficulty}
