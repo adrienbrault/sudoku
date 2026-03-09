@@ -142,7 +142,9 @@ function App() {
     playerId,
     playerName,
     friends,
-    enabled: screen.name === "landing" && friends.length > 0,
+    enabled:
+      (screen.name === "landing" || screen.name === "multiplayer") &&
+      friends.length > 0,
   });
 
   const handleAddFriend = useCallback((code: string) => {
@@ -299,6 +301,10 @@ function App() {
           onBack={() => navigate({ name: "landing" })}
           onAddFriend={(opponentId, opponentName) => {
             setFriends(addFriend(opponentId, opponentName));
+          }}
+          friends={friends}
+          onInviteFriendToRoom={(friendId: string) => {
+            presence.sendInvite(friendId, screen.roomId, screen.difficulty);
           }}
         />
       );
