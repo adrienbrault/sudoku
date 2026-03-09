@@ -12,13 +12,9 @@ import {
 } from "../lib/game-storage.ts";
 import { getStats } from "../lib/stats.ts";
 import { countFilledCells } from "../lib/sudoku.ts";
+import { DemoBoard } from "./DemoBoard.tsx";
 import { FriendsList } from "./FriendsList.tsx";
-import {
-  ActionButton,
-  GitHubIcon,
-  MiniBoard,
-  StatsIcon,
-} from "./LandingIcons.tsx";
+import { ActionButton, GitHubIcon, StatsIcon } from "./LandingIcons.tsx";
 
 type LandingProps = {
   onSolo: () => void;
@@ -97,12 +93,7 @@ export function Landing({
           </p>
         )}
       </div>
-      {!isReturningUser && (
-        <div className="flex flex-col items-center gap-2 w-full">
-          <MiniBoard />
-          <p className="text-xs text-text-muted">No account needed.</p>
-        </div>
-      )}
+      {!isReturningUser && <DemoBoard />}
       <div className="flex flex-col gap-3 sm:gap-6 w-full">
         {savedGames.length > 0 && (
           <div className="flex flex-col gap-3">
@@ -179,13 +170,28 @@ export function Landing({
             />
           )}
       </div>
-      <button type="button" className="btn btn-ghost text-sm" onClick={onStats}>
-        <span className="flex items-center gap-1.5">
-          <StatsIcon />
-          View Stats
-        </span>
-      </button>
+      <div className="flex flex-col gap-2 text-center max-w-sm">
+        <p className="text-sm text-text-secondary">
+          Four difficulty levels, daily challenges, pencil notes, hints, and
+          personal best tracking — all in your browser, no account needed.
+        </p>
+        <p className="text-sm text-text-secondary">
+          Race friends in real-time 1v1 via peer-to-peer — your game data never
+          touches a server.
+        </p>
+      </div>
       <div className="flex items-center gap-3">
+        <button
+          type="button"
+          className="btn btn-ghost text-sm"
+          onClick={onStats}
+        >
+          <span className="flex items-center gap-1.5">
+            <StatsIcon />
+            Stats
+          </span>
+        </button>
+        <span className="text-text-muted text-xs">·</span>
         <button
           type="button"
           className="text-xs text-text-muted hover:text-accent transition-colors"
