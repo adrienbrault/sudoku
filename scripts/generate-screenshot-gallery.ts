@@ -94,11 +94,15 @@ const html = `<!DOCTYPE html>
     body { font-family: system-ui, sans-serif; background: #f5f5f5; color: #333; padding: 1rem; }
     h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
     .meta { font-size: 0.8rem; color: #888; margin-bottom: 1.5rem; }
-    .nav { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;
+    .nav { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 2rem;
            position: sticky; top: 0; background: #f5f5f5; padding: 0.5rem 0; z-index: 10; }
-    .nav a { font-size: 0.8rem; padding: 0.25rem 0.5rem; background: #e0e0e0;
-             border-radius: 4px; text-decoration: none; color: #333; }
+    .nav a { font-size: 0.7rem; padding: 0.15rem 0.35rem; background: #e0e0e0;
+             border-radius: 3px; text-decoration: none; color: #333; line-height: 1.2; }
     .nav a:hover { background: #d0d0d0; }
+    @media (min-width: 640px) {
+      .nav { gap: 0.5rem; }
+      .nav a { font-size: 0.8rem; padding: 0.25rem 0.5rem; border-radius: 4px; }
+    }
     .screen-group { margin-bottom: 3rem; }
     .screen-group h2 { font-size: 1.1rem; margin-bottom: 1rem; padding-top: 1rem;
                        border-bottom: 1px solid #ddd; padding-bottom: 0.5rem; }
