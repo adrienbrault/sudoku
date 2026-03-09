@@ -1,4 +1,5 @@
 import { findHiddenSingle } from "./hint-hidden-single.ts";
+import { getBoxOrigin, getCandidates } from "./sudoku.ts";
 import type { Board, Position } from "./types.ts";
 
 export type HintExplanation = {
@@ -8,40 +9,6 @@ export type HintExplanation = {
   explanation: string;
   relatedCells: Position[];
 };
-
-/**
- * Compute candidates for a single cell: digits 1-9 not already present
- * in the same row, column, or 3x3 box.
- */
-function getCandidates(board: Board, row: number, col: number): Set<number> {
-  const used = new Set<number>();
-
-  // Row
-  for (let c = 0; c < 9; c++) {
-    const v = board[row]![c]!.value;
-    if (v !== null) used.add(v);
-  }
-  // Column
-  for (let r = 0; r < 9; r++) {
-    const v = board[r]![col]!.value;
-    if (v !== null) used.add(v);
-  }
-  // Box
-  const boxRow = Math.floor(row / 3) * 3;
-  const boxCol = Math.floor(col / 3) * 3;
-  for (let r = boxRow; r < boxRow + 3; r++) {
-    for (let c = boxCol; c < boxCol + 3; c++) {
-      const v = board[r]![c]!.value;
-      if (v !== null) used.add(v);
-    }
-  }
-
-  const candidates = new Set<number>();
-  for (let d = 1; d <= 9; d++) {
-    if (!used.has(d)) candidates.add(d);
-  }
-  return candidates;
-}
 
 /**
  * Find cells in the same row, column, or box that eliminate candidates
@@ -72,8 +39,8 @@ function getEliminatingCells(
   for (let r = 0; r < 9; r++) {
     if (r !== row) addIfNew(r, col);
   }
-  const bRow = Math.floor(row / 3) * 3;
-  const bCol = Math.floor(col / 3) * 3;
+  const bRow = getBoxOrigin(row);
+  const bCol = getBoxOrigin(col);
   for (let r = bRow; r < bRow + 3; r++) {
     for (let c = bCol; c < bCol + 3; c++) {
       if (r !== row || c !== col) addIfNew(r, c);
