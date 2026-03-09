@@ -1,3 +1,4 @@
+import { BOARD_CELLS, STORAGE_KEYS } from "./constants.ts";
 import { countFilledCells } from "./sudoku.ts";
 import type { AssistLevel, Difficulty } from "./types.ts";
 
@@ -22,7 +23,7 @@ export function boardToNotes(board: { notes: Set<number> }[][]): number[][] {
   return board.flatMap((row) => row.map((c) => Array.from(c.notes)));
 }
 
-const STORAGE_PREFIX = "sudoku_save_";
+const STORAGE_PREFIX = STORAGE_KEYS.GAME_SAVE_PREFIX;
 
 export function saveGame(key: string, data: SavedGame): void {
   try {
@@ -39,11 +40,11 @@ export function loadGame(key: string): SavedGame | null {
     const data = JSON.parse(raw);
     if (
       typeof data.puzzle !== "string" ||
-      data.puzzle.length !== 81 ||
+      data.puzzle.length !== BOARD_CELLS ||
       typeof data.values !== "string" ||
-      data.values.length !== 81 ||
+      data.values.length !== BOARD_CELLS ||
       !Array.isArray(data.notes) ||
-      data.notes.length !== 81 ||
+      data.notes.length !== BOARD_CELLS ||
       typeof data.timer !== "number"
     ) {
       return null;
