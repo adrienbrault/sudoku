@@ -1,6 +1,5 @@
-// @vitest-environment jsdom
+import { describe, expect, it, jest } from "bun:test";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
 import type { Invite } from "../hooks/usePresence.ts";
 import type { Friend } from "../lib/friends.ts";
 import { FriendsList } from "./FriendsList.tsx";
@@ -24,10 +23,10 @@ const defaultProps = {
   friends: [] as Friend[],
   onlineFriendIds: new Set<string>(),
   pendingInvites: [] as Invite[],
-  onAddFriend: vi.fn(),
-  onRemoveFriend: vi.fn(),
-  onInviteFriend: vi.fn(),
-  onJoinInvite: vi.fn(),
+  onAddFriend: jest.fn(),
+  onRemoveFriend: jest.fn(),
+  onInviteFriend: jest.fn(),
+  onJoinInvite: jest.fn(),
 };
 
 describe("FriendsList", () => {
@@ -37,7 +36,7 @@ describe("FriendsList", () => {
   });
 
   it("adds friend via input", () => {
-    const onAddFriend = vi.fn();
+    const onAddFriend = jest.fn();
     render(<FriendsList {...defaultProps} onAddFriend={onAddFriend} />);
 
     const input = screen.getByLabelText("Friend code input");
@@ -48,7 +47,7 @@ describe("FriendsList", () => {
   });
 
   it("does not add own code as friend", () => {
-    const onAddFriend = vi.fn();
+    const onAddFriend = jest.fn();
     render(<FriendsList {...defaultProps} onAddFriend={onAddFriend} />);
 
     const input = screen.getByLabelText("Friend code input");
@@ -107,7 +106,7 @@ describe("FriendsList", () => {
   });
 
   it("calls onInviteFriend when invite button clicked", () => {
-    const onInviteFriend = vi.fn();
+    const onInviteFriend = jest.fn();
     const friends = [makeFriend("friend1", "Bold Lion")];
     const onlineFriendIds = new Set(["friend1"]);
 
@@ -135,7 +134,7 @@ describe("FriendsList", () => {
   });
 
   it("calls onJoinInvite when join button clicked", () => {
-    const onJoinInvite = vi.fn();
+    const onJoinInvite = jest.fn();
     const invites = [makeInvite("friend1", "Bold Lion")];
 
     render(
@@ -151,7 +150,7 @@ describe("FriendsList", () => {
   });
 
   it("calls onRemoveFriend when remove button clicked", () => {
-    const onRemoveFriend = vi.fn();
+    const onRemoveFriend = jest.fn();
     const friends = [makeFriend("friend1", "Bold Lion")];
 
     render(

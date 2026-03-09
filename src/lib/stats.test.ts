@@ -1,5 +1,4 @@
-// @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { getStats, getStatsForDifficulty, saveGameResult } from "./stats.ts";
 
 describe("stats", () => {

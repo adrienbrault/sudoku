@@ -1,12 +1,11 @@
-// @vitest-environment jsdom
+import { describe, expect, it, jest } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
 import { buildShareText, GameResult } from "./GameResult.tsx";
 
 describe("GameResult", () => {
   it("renders win state with time and emoji", () => {
-    render(<GameResult isWinner={true} time="03:42" onNewGame={vi.fn()} />);
+    render(<GameResult isWinner={true} time="03:42" onNewGame={jest.fn()} />);
 
     expect(screen.getByText("You Won!")).toBeInTheDocument();
     expect(screen.getByText("03:42")).toBeInTheDocument();
@@ -14,7 +13,7 @@ describe("GameResult", () => {
   });
 
   it("renders completion state for non-winner", () => {
-    render(<GameResult isWinner={false} time="05:00" onNewGame={vi.fn()} />);
+    render(<GameResult isWinner={false} time="05:00" onNewGame={jest.fn()} />);
 
     expect(screen.getByText("Puzzle Complete!")).toBeInTheDocument();
     expect(screen.getByText("👏")).toBeInTheDocument();
@@ -26,7 +25,7 @@ describe("GameResult", () => {
         isWinner={true}
         time="03:42"
         difficulty="hard"
-        onNewGame={vi.fn()}
+        onNewGame={jest.fn()}
       />,
     );
 
@@ -39,7 +38,7 @@ describe("GameResult", () => {
         isWinner={true}
         time="04:00"
         difficulty="medium"
-        onNewGame={vi.fn()}
+        onNewGame={jest.fn()}
         stats={{ gamesPlayed: 2, bestTime: 250, averageTime: 275 }}
       />,
     );
@@ -55,7 +54,7 @@ describe("GameResult", () => {
         isWinner={true}
         time="02:00"
         difficulty="easy"
-        onNewGame={vi.fn()}
+        onNewGame={jest.fn()}
         isNewPB={true}
       />,
     );
@@ -68,8 +67,8 @@ describe("GameResult", () => {
       <GameResult
         isWinner={true}
         time="03:00"
-        onRematch={vi.fn()}
-        onNewGame={vi.fn()}
+        onRematch={jest.fn()}
+        onNewGame={jest.fn()}
       />,
     );
 
@@ -80,8 +79,8 @@ describe("GameResult", () => {
         isWinner={true}
         time="03:00"
         isMultiplayer={true}
-        onRematch={vi.fn()}
-        onNewGame={vi.fn()}
+        onRematch={jest.fn()}
+        onNewGame={jest.fn()}
       />,
     );
 
@@ -123,8 +122,8 @@ describe("GameResult", () => {
   });
 
   it("calls onRematch and onNewGame when buttons clicked", async () => {
-    const onRematch = vi.fn();
-    const onNewGame = vi.fn();
+    const onRematch = jest.fn();
+    const onNewGame = jest.fn();
 
     render(
       <GameResult

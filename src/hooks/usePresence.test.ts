@@ -1,15 +1,14 @@
-// @vitest-environment jsdom
+import { beforeEach, describe, expect, it, jest, mock } from "bun:test";
 import { act, renderHook } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Doc } from "yjs";
 import type { Friend } from "../lib/friends.ts";
 import { usePresence } from "./usePresence.ts";
 
-// Shared state for mock — declared before vi.mock so hoisting works
+// Shared state for mock — declared before jest.mock so hoisting works
 const mockState = {
   instances: [] as Array<{
-    disconnect: ReturnType<typeof vi.fn>;
-    destroy: ReturnType<typeof vi.fn>;
+    disconnect: ReturnType<typeof jest.fn>;
+    destroy: ReturnType<typeof jest.fn>;
   }>,
   awareness: {
     listeners: new Map<string, Set<(...args: unknown[]) => void>>(),
@@ -20,7 +19,7 @@ const mockState = {
   capturedDoc: null as Doc | null,
 };
 
-vi.mock("y-webrtc", () => {
+mock.module("y-webrtc", () => {
   return {
     WebrtcProvider: class MockProvider {
       awareness: {
@@ -30,10 +29,10 @@ vi.mock("y-webrtc", () => {
         off: (event: string, fn: (...args: unknown[]) => void) => void;
       };
       connected = true;
-      disconnect = vi.fn();
-      destroy = vi.fn();
-      on = vi.fn();
-      off = vi.fn();
+      disconnect = jest.fn();
+      destroy = jest.fn();
+      on = jest.fn();
+      off = jest.fn();
       constructor(_room: string, doc: Doc) {
         mockState.capturedDoc = doc;
         mockState.awareness.clientID = doc.clientID;
@@ -71,7 +70,7 @@ function makeFriend(playerId: string, name: string): Friend {
 
 describe("usePresence", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    jest.clearAllMocks();
     mockState.instances = [];
     mockState.awareness.listeners.clear();
     mockState.awareness.states.clear();

@@ -1,6 +1,5 @@
-// @vitest-environment jsdom
+import { describe, expect, it, jest } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
 import { About } from "./About.tsx";
 
 describe("About", () => {
@@ -31,7 +30,7 @@ describe("About", () => {
   });
 
   it("renders call-to-action buttons", () => {
-    const onPlay = vi.fn();
+    const onPlay = jest.fn();
     render(<About onBack={() => {}} onPlay={onPlay} />);
     const playBtns = screen.getAllByRole("button", { name: /play now/i });
     expect(playBtns.length).toBeGreaterThanOrEqual(1);
@@ -40,7 +39,7 @@ describe("About", () => {
   });
 
   it("renders back button", () => {
-    const onBack = vi.fn();
+    const onBack = jest.fn();
     render(<About onBack={onBack} onPlay={() => {}} />);
     const backBtn = screen.getByRole("button", { name: /back/i });
     expect(backBtn).toBeInTheDocument();

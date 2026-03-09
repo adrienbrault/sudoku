@@ -1,5 +1,4 @@
-// @vitest-environment jsdom
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, jest } from "bun:test";
 import { addFriend, getFriends, isFriend, removeFriend } from "./friends.ts";
 
 describe("friends", () => {
@@ -29,18 +28,18 @@ describe("friends", () => {
     });
 
     it("updates name and addedAt for existing friend", () => {
-      vi.useFakeTimers();
-      vi.setSystemTime(new Date("2026-03-01T10:00:00Z"));
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date("2026-03-01T10:00:00Z"));
       addFriend("abc12345", "Swift Panda");
       const before = getFriends()[0]!.addedAt;
 
-      vi.setSystemTime(new Date("2026-03-02T10:00:00Z"));
+      jest.setSystemTime(new Date("2026-03-02T10:00:00Z"));
       addFriend("abc12345", "Bold Lion");
       const friends = getFriends();
       expect(friends).toHaveLength(1);
       expect(friends[0]!.name).toBe("Bold Lion");
       expect(friends[0]!.addedAt).not.toBe(before);
-      vi.useRealTimers();
+      jest.useRealTimers();
     });
 
     it("caps at 20 friends, dropping oldest", () => {

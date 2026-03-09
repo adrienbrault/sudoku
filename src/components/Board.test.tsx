@@ -1,6 +1,5 @@
-// @vitest-environment jsdom
+import { describe, expect, it, jest } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
 import type { Board as BoardType, Cell } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
 
@@ -31,7 +30,7 @@ describe("Board same-number row/col highlighting (full assist)", () => {
         board={board}
         selectedCell={{ row: 1, col: 2 }}
         conflicts={new Set()}
-        onSelectCell={vi.fn()}
+        onSelectCell={jest.fn()}
         assistLevel="full"
       />,
     );
@@ -57,7 +56,7 @@ describe("Board same-number row/col highlighting (full assist)", () => {
         board={board}
         selectedCell={{ row: 1, col: 2 }}
         conflicts={new Set()}
-        onSelectCell={vi.fn()}
+        onSelectCell={jest.fn()}
         assistLevel="standard"
       />,
     );
@@ -78,7 +77,7 @@ describe("Board same-number row/col highlighting (full assist)", () => {
         board={board}
         selectedCell={{ row: 1, col: 2 }}
         conflicts={new Set()}
-        onSelectCell={vi.fn()}
+        onSelectCell={jest.fn()}
         assistLevel="paper"
       />,
     );
