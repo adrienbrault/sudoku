@@ -82,6 +82,46 @@ export function cellKey(row: number, col: number): number {
   return row * 9 + col;
 }
 
+/** Return the top-left corner (row, col) of the 3x3 box containing (row, col). */
+export function boxOrigin(
+  row: number,
+  col: number,
+): { boxRow: number; boxCol: number } {
+  return { boxRow: Math.floor(row / 3) * 3, boxCol: Math.floor(col / 3) * 3 };
+}
+
+/**
+ * Compute candidates for a single cell: digits 1-9 not already present
+ * in the same row, column, or 3x3 box.
+ */
+export function getCandidates(
+  board: Board,
+  row: number,
+  col: number,
+): Set<number> {
+  const used = new Set<number>();
+  for (let c = 0; c < 9; c++) {
+    const v = board[row]![c]!.value;
+    if (v !== null) used.add(v);
+  }
+  for (let r = 0; r < 9; r++) {
+    const v = board[r]![col]!.value;
+    if (v !== null) used.add(v);
+  }
+  const { boxRow, boxCol } = boxOrigin(row, col);
+  for (let r = boxRow; r < boxRow + 3; r++) {
+    for (let c = boxCol; c < boxCol + 3; c++) {
+      const v = board[r]![c]!.value;
+      if (v !== null) used.add(v);
+    }
+  }
+  const candidates = new Set<number>();
+  for (let d = 1; d <= 9; d++) {
+    if (!used.has(d)) candidates.add(d);
+  }
+  return candidates;
+}
+
 /**
  * Get all conflicting cell positions as a Set of numeric keys (row*9+col).
  * A conflict = same non-null value in the same row, column, or 3x3 box.
@@ -110,8 +150,7 @@ export function getConflicts(board: Board): Set<number> {
         }
       }
 
-      const boxRow = Math.floor(row / 3) * 3;
-      const boxCol = Math.floor(col / 3) * 3;
+      const { boxRow, boxCol } = boxOrigin(row, col);
       for (let r = boxRow; r < boxRow + 3; r++) {
         for (let c = boxCol; c < boxCol + 3; c++) {
           if ((r !== row || c !== col) && board[r]![c]!.value === value) {

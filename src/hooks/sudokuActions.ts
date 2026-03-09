@@ -1,4 +1,4 @@
-import { getConflicts, isBoardComplete } from "../lib/sudoku.ts";
+import { boxOrigin, getConflicts, isBoardComplete } from "../lib/sudoku.ts";
 import type { Board, ClearedNote, MoveAction, Position } from "../lib/types.ts";
 import type { State } from "./sudokuReducer.ts";
 
@@ -18,8 +18,7 @@ function clearPeerNotes(
   value: number,
 ): ClearedNote[] {
   const clearedNotes: ClearedNote[] = [];
-  const boxRow = Math.floor(row / 3) * 3;
-  const boxCol = Math.floor(col / 3) * 3;
+  const { boxRow, boxCol } = boxOrigin(row, col);
   for (let i = 0; i < 9; i++) {
     if (i !== col && board[row]![i]!.notes.has(value)) {
       board[row]![i]!.notes.delete(value);

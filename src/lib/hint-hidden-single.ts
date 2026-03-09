@@ -1,30 +1,6 @@
 import type { HintExplanation } from "./hint-engine.ts";
+import { boxOrigin, getCandidates } from "./sudoku.ts";
 import type { Board, Position } from "./types.ts";
-
-function getCandidates(board: Board, row: number, col: number): Set<number> {
-  const used = new Set<number>();
-  for (let c = 0; c < 9; c++) {
-    const v = board[row]![c]!.value;
-    if (v !== null) used.add(v);
-  }
-  for (let r = 0; r < 9; r++) {
-    const v = board[r]![col]!.value;
-    if (v !== null) used.add(v);
-  }
-  const boxRow = Math.floor(row / 3) * 3;
-  const boxCol = Math.floor(col / 3) * 3;
-  for (let r = boxRow; r < boxRow + 3; r++) {
-    for (let c = boxCol; c < boxCol + 3; c++) {
-      const v = board[r]![c]!.value;
-      if (v !== null) used.add(v);
-    }
-  }
-  const candidates = new Set<number>();
-  for (let d = 1; d <= 9; d++) {
-    if (!used.has(d)) candidates.add(d);
-  }
-  return candidates;
-}
 
 function groupName(type: "row" | "col" | "box", index: number): string {
   if (type === "row") return `row ${index + 1}`;
@@ -55,10 +31,9 @@ function findEliminatorsForDigit(
       }
     }
   }
+  const { boxRow, boxCol } = boxOrigin(row, col);
   const boxIndex = Math.floor(row / 3) * 3 + Math.floor(col / 3);
   if (excludeGroupType !== "box" || excludeGroupIndex !== boxIndex) {
-    const boxRow = Math.floor(row / 3) * 3;
-    const boxCol = Math.floor(col / 3) * 3;
     for (let r = boxRow; r < boxRow + 3; r++) {
       for (let c = boxCol; c < boxCol + 3; c++) {
         if ((r !== row || c !== col) && board[r]![c]!.value === digit) {
