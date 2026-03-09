@@ -6,10 +6,10 @@ import { getStats, getStatsForDifficulty } from "../lib/stats.ts";
 import type { Difficulty } from "../lib/types.ts";
 
 const DIFFICULTY_COLORS: Record<Difficulty, string> = {
-  easy: "text-emerald-600 dark:text-emerald-400",
-  medium: "text-amber-600 dark:text-amber-400",
-  hard: "text-orange-600 dark:text-orange-400",
-  expert: "text-rose-600 dark:text-rose-400",
+  easy: "text-difficulty-easy",
+  medium: "text-difficulty-medium",
+  hard: "text-difficulty-hard",
+  expert: "text-difficulty-expert",
 };
 
 type StatsProps = {
