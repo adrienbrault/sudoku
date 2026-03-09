@@ -29,7 +29,7 @@ export function NumPad({
 
   const buttonClass = isGrid
     ? "numpad-grid-btn aspect-square"
-    : `lg:h-10 lg:w-14 ${isVertical ? "h-11 w-12" : "h-14 flex-1 max-w-14"}`;
+    : `lg:h-10 lg:w-14 ${isVertical ? "h-11 w-12" : "h-12 flex-1 max-w-14"}`;
 
   return (
     <div className={containerClass} role="group" aria-label="Number pad">
