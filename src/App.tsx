@@ -18,15 +18,15 @@ import {
   getFriends,
   removeFriend as removeFriendFromStorage,
 } from "./lib/friends.ts";
-import { getPlayerId, getPlayerName } from "./lib/player-identity.ts";
+import {
+  generateId,
+  getPlayerId,
+  getPlayerName,
+} from "./lib/player-identity.ts";
 import { generateRoomCode } from "./lib/room-code.ts";
 import { getSoundEnabled, setSoundEnabled } from "./lib/sounds.ts";
 import type { AssistLevel, Difficulty } from "./lib/types.ts";
 import "./index.css";
-
-function generateId() {
-  return Math.random().toString(36).slice(2, 10);
-}
 
 type Screen =
   | { name: "landing" }
