@@ -367,6 +367,18 @@ body {
   animation: fade-in 0.15s ease-out;
 }
 
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+.animate-slide-up {
+  animation: slide-up 0.25s ease-out;
+}
+
 /* ─── Portrait: compact layout to fit above browser toolbar ─── */
 @media (orientation: portrait) and (max-width: 768px) {
   /* Shorter numpad grid cells: 3 rows must fit below board + controls */
