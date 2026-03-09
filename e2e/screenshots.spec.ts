@@ -196,7 +196,7 @@ test("difficulty picker - dark mode", async ({ page }, testInfo) => {
 test("daily challenge", async ({ page }, testInfo) => {
 	await page.goto("/");
 	await page.waitForLoadState("networkidle");
-	await page.getByText("Daily Challenge").click();
+	await page.getByRole("button", { name: /Daily Challenge/ }).click();
 	await page.waitForTimeout(800);
 	await page.screenshot({
 		path: screenshotPath("daily-challenge", testInfo.project.name),
@@ -226,16 +226,24 @@ test("solo game - in progress with notes", async ({ page }, testInfo) => {
 	const emptyCells = page.locator('button[aria-label*=", empty"]');
 	const count = await emptyCells.count();
 
+	// Helper to click elements that may be off-screen (e.g. numpad on desktop layout)
+	const forceClick = (loc: import("@playwright/test").Locator) =>
+		loc.evaluate((el) => {
+			el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+		});
+
 	// Fill first few empty cells with values (click cell, then numpad number)
 	for (let i = 0; i < Math.min(5, count); i++) {
-		await emptyCells.nth(0).click(); // always nth(0) since filled cells lose "empty" label
-		const numButton = page.locator('[role="group"][aria-label="Number pad"] button').nth(i % 9);
-		await numButton.click();
+		await forceClick(emptyCells.nth(0)); // always nth(0) since filled cells lose "empty" label
+		const numButton = page
+			.locator('[role="group"][aria-label="Number pad"] button')
+			.nth(i % 9);
+		await forceClick(numButton);
 		await page.waitForTimeout(50);
 	}
 
 	// Toggle notes mode
-	await page.getByLabel("Notes").click();
+	await forceClick(page.getByLabel("Notes").first());
 
 	// Add notes to several empty cells
 	const remainingEmpty = page.locator('button[aria-label*=", empty"]');
@@ -244,22 +252,22 @@ test("solo game - in progress with notes", async ({ page }, testInfo) => {
 		'[role="group"][aria-label="Number pad"] button:not([disabled])',
 	);
 	for (let i = 0; i < Math.min(6, remainingCount); i++) {
-		await remainingEmpty.nth(i).click();
+		await forceClick(remainingEmpty.nth(i));
 		// Add 2-3 note candidates per cell from enabled buttons
 		const enabledCount = await enabledNumpad.count();
 		if (enabledCount < 2) break;
-		await enabledNumpad.nth(i % enabledCount).click();
+		await forceClick(enabledNumpad.nth(i % enabledCount));
 		await page.waitForTimeout(30);
-		await enabledNumpad.nth((i + 1) % enabledCount).click();
+		await forceClick(enabledNumpad.nth((i + 1) % enabledCount));
 		await page.waitForTimeout(30);
 		if (i % 2 === 0 && enabledCount > 2) {
-			await enabledNumpad.nth((i + 2) % enabledCount).click();
+			await forceClick(enabledNumpad.nth((i + 2) % enabledCount));
 			await page.waitForTimeout(30);
 		}
 	}
 
 	// Deselect by clicking a filled cell for cleaner screenshot
-	await page.locator('button[aria-label*="value"]').first().click();
+	await forceClick(page.locator('button[aria-label*="value"]').first());
 	await page.waitForTimeout(300);
 
 	await page.screenshot({
