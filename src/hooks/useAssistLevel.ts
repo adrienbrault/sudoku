@@ -1,31 +1,18 @@
-import { useCallback, useState } from "react";
 import type { AssistLevel } from "../lib/types.ts";
+import { useLocalStorage } from "./useLocalStorage.ts";
 
-const STORAGE_KEY = "sudoku_assist_level";
+const VALID_LEVELS: AssistLevel[] = ["paper", "standard", "full"];
 
-function getInitial(): AssistLevel {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "paper" || stored === "standard" || stored === "full") {
-      return stored;
-    }
-  } catch {
-    // localStorage not available
-  }
-  return "standard";
+function isAssistLevel(v: string): v is AssistLevel {
+  return VALID_LEVELS.includes(v as AssistLevel);
 }
 
 export function useAssistLevel() {
-  const [level, setLevelState] = useState<AssistLevel>(getInitial);
-
-  const setLevel = useCallback((l: AssistLevel) => {
-    setLevelState(l);
-    try {
-      localStorage.setItem(STORAGE_KEY, l);
-    } catch {
-      // localStorage not available
-    }
-  }, []);
+  const [level, setLevel] = useLocalStorage<AssistLevel>(
+    "sudoku_assist_level",
+    "standard",
+    isAssistLevel,
+  );
 
   return { level, setLevel };
 }

@@ -1,31 +1,24 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
+import { useLocalStorage } from "./useLocalStorage.ts";
 
-const STORAGE_KEY = "sudoku-opponent-progress-visible";
+type BoolStr = "true" | "false";
 
-function getInitial(): boolean {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "false") return false;
-  } catch {
-    // localStorage not available
-  }
-  return true;
+function isBoolStr(v: string): v is BoolStr {
+  return v === "true" || v === "false";
 }
 
 export function useOpponentProgressVisible() {
-  const [visible, setVisible] = useState<boolean>(getInitial);
+  const [raw, setRaw] = useLocalStorage<BoolStr>(
+    "sudoku-opponent-progress-visible",
+    "true",
+    isBoolStr,
+  );
+
+  const visible = raw !== "false";
 
   const toggle = useCallback(() => {
-    setVisible((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem(STORAGE_KEY, String(next));
-      } catch {
-        // localStorage not available
-      }
-      return next;
-    });
-  }, []);
+    setRaw(visible ? "false" : "true");
+  }, [visible, setRaw]);
 
   return { visible, toggle };
 }
