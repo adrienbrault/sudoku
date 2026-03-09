@@ -44,35 +44,6 @@ async function gotoSoloGame(page: Page) {
   await waitForBoard(page);
 }
 
-async function injectProgressBars(page: Page) {
-  await page.evaluate(() => {
-    const header = document.querySelector(
-      ".flex.items-center.justify-between.w-full",
-    );
-    if (!header) return;
-    const bars = document.createElement("div");
-    bars.className =
-      "w-full max-w-[min(100vw-2rem,28rem)] mb-3 flex flex-col gap-1.5 mx-auto";
-    bars.innerHTML = `
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-text-secondary w-24 truncate">You</span>
-        <div class="flex-1 h-2 rounded-full bg-bg-raised overflow-hidden">
-          <div class="h-full rounded-full bg-accent transition-all duration-300" style="width: 42%"></div>
-        </div>
-        <span class="text-xs text-text-secondary font-mono tabular-nums w-8 text-right">42%</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span class="text-xs text-text-secondary w-24 truncate">Opponent</span>
-        <div class="flex-1 h-2 rounded-full bg-bg-raised overflow-hidden">
-          <div class="h-full rounded-full bg-rose-400 transition-all duration-300" style="width: 67%"></div>
-        </div>
-        <span class="text-xs text-text-secondary font-mono tabular-nums w-8 text-right">67%</span>
-      </div>
-    `;
-    header.after(bars);
-  });
-}
-
 // --- Tests ---
 
 test("landing page", async ({ page }, testInfo) => {
@@ -82,65 +53,10 @@ test("landing page", async ({ page }, testInfo) => {
   });
 });
 
-test("landing page - with friends", async ({ page }, testInfo) => {
-  await setLocalStorage(page, [
-    ["sudoku_player_id", "me123abc"],
-    [
-      "sudoku_friends",
-      JSON.stringify([
-        {
-          playerId: "friend01",
-          name: "Bold Lion",
-          addedAt: "2026-03-07T10:00:00Z",
-        },
-        {
-          playerId: "friend02",
-          name: "Clever Fox",
-          addedAt: "2026-03-06T10:00:00Z",
-        },
-      ]),
-    ],
-    // Also set some stats so we get returning-user view
-    [
-      "sudoku_stats",
-      JSON.stringify([
-        {
-          difficulty: "easy",
-          time: 120,
-          date: "2026-03-07",
-          won: true,
-          hintsUsed: 0,
-        },
-      ]),
-    ],
-  ]);
-  await gotoLanding(page);
-  await page.screenshot({
-    path: screenshotPath("landing-friends", testInfo.project.name),
-    fullPage: true,
-  });
-});
-
 test("solo game", async ({ page }, testInfo) => {
   await gotoSoloGame(page);
   await page.screenshot({
     path: screenshotPath("solo-game", testInfo.project.name),
-  });
-});
-
-test("solo game - numpad left", async ({ page }, testInfo) => {
-  await setLocalStorage(page, [["sudoku-numpad-position", "left"]]);
-  await gotoSoloGame(page);
-  await page.screenshot({
-    path: screenshotPath("solo-numpad-left", testInfo.project.name),
-  });
-});
-
-test("solo game - numpad right", async ({ page }, testInfo) => {
-  await setLocalStorage(page, [["sudoku-numpad-position", "right"]]);
-  await gotoSoloGame(page);
-  await page.screenshot({
-    path: screenshotPath("solo-numpad-right", testInfo.project.name),
   });
 });
 
@@ -164,25 +80,6 @@ test("multiplayer lobby", async ({ page }, testInfo) => {
   });
 });
 
-test("about page", async ({ page }, testInfo) => {
-  await page.goto("/about");
-  await page.waitForLoadState("domcontentloaded");
-  await page.screenshot({
-    path: screenshotPath("about", testInfo.project.name),
-    fullPage: true,
-  });
-});
-
-test("about page - dark mode", async ({ page }, testInfo) => {
-  await setLocalStorage(page, [["sudoku_theme", "dark"]]);
-  await page.goto("/about");
-  await page.waitForLoadState("domcontentloaded");
-  await page.screenshot({
-    path: screenshotPath("about-dark", testInfo.project.name),
-    fullPage: true,
-  });
-});
-
 // --- Dark mode variants ---
 
 test("landing page - dark mode", async ({ page }, testInfo) => {
@@ -201,17 +98,7 @@ test("solo game - dark mode", async ({ page }, testInfo) => {
   });
 });
 
-test("difficulty picker - dark mode", async ({ page }, testInfo) => {
-  await setLocalStorage(page, [["sudoku_theme", "dark"]]);
-  await gotoLanding(page);
-  await page.getByText("Start Solo").click();
-  await page.getByText("Easy").waitFor();
-  await page.screenshot({
-    path: screenshotPath("difficulty-dark", testInfo.project.name),
-  });
-});
-
-// --- Missing screens ---
+// --- Additional screens ---
 
 test("daily challenge", async ({ page }, testInfo) => {
   await gotoLanding(page);
@@ -329,58 +216,3 @@ test("solo game - win modal", async ({ page }, testInfo) => {
   });
 });
 
-// --- Multiplayer progress bar mockups ---
-
-test("multiplayer - dual progress bars", async ({ page }, testInfo) => {
-  await gotoSoloGame(page);
-
-  // Inject dual progress bars above the board to simulate multiplayer view
-  await injectProgressBars(page);
-
-  await page.locator("text=42%").waitFor();
-  await page.screenshot({
-    path: screenshotPath("multiplayer-progress-bars", testInfo.project.name),
-  });
-});
-
-test("multiplayer - dual progress bars (dark mode)", async ({
-  page,
-}, testInfo) => {
-  await setLocalStorage(page, [["sudoku_theme", "dark"]]);
-  await gotoSoloGame(page);
-
-  // Inject dual progress bars
-  await injectProgressBars(page);
-
-  await page.locator("text=42%").waitFor();
-  await page.screenshot({
-    path: screenshotPath(
-      "multiplayer-progress-bars-dark",
-      testInfo.project.name,
-    ),
-  });
-});
-
-test("multiplayer - progress bars hidden", async ({ page }, testInfo) => {
-  await gotoSoloGame(page);
-
-  // No progress bars injected — this represents the "hidden" state
-  await page.screenshot({
-    path: screenshotPath(
-      "multiplayer-progress-hidden",
-      testInfo.project.name,
-    ),
-  });
-});
-
-test("solo game - assist level popover", async ({ page }, testInfo) => {
-  await gotoSoloGame(page);
-
-  // Open assist level setting popover
-  await page.getByLabel("Assist level").click();
-  await page.getByRole("radiogroup", { name: "Assistance level" }).waitFor();
-
-  await page.screenshot({
-    path: screenshotPath("solo-assist-popover", testInfo.project.name),
-  });
-});
