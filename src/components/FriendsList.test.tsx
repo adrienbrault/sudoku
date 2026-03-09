@@ -29,15 +29,67 @@ const defaultProps = {
   onJoinInvite: jest.fn(),
 };
 
+function expandFriendsList() {
+  fireEvent.click(screen.getByLabelText("Toggle friends list"));
+}
+
 describe("FriendsList", () => {
-  it("renders the player's friend code", () => {
+  it("renders the player's friend code in copy button", () => {
     render(<FriendsList {...defaultProps} />);
     expect(screen.getByText("me123")).toBeInTheDocument();
+  });
+
+  it("shows copy button with code", () => {
+    render(<FriendsList {...defaultProps} />);
+    expect(screen.getByLabelText("Copy friend code")).toBeInTheDocument();
+  });
+
+  it("shows friends count button", () => {
+    const friends = [makeFriend("friend1", "Bold Lion")];
+    render(<FriendsList {...defaultProps} friends={friends} />);
+    expect(screen.getByText("1 Friend")).toBeInTheDocument();
+  });
+
+  it("shows plural friends count", () => {
+    const friends = [
+      makeFriend("friend1", "Bold Lion"),
+      makeFriend("friend2", "Clever Fox"),
+    ];
+    render(<FriendsList {...defaultProps} friends={friends} />);
+    expect(screen.getByText("2 Friends")).toBeInTheDocument();
+  });
+
+  it("shows 'Add Friend' when no friends", () => {
+    render(<FriendsList {...defaultProps} />);
+    expect(screen.getByText("Add Friend")).toBeInTheDocument();
+  });
+
+  it("shows online count indicator", () => {
+    const friends = [
+      makeFriend("friend1", "Bold Lion"),
+      makeFriend("friend2", "Clever Fox"),
+    ];
+    const onlineFriendIds = new Set(["friend1"]);
+    render(
+      <FriendsList
+        {...defaultProps}
+        friends={friends}
+        onlineFriendIds={onlineFriendIds}
+      />,
+    );
+    expect(screen.getByText("1")).toBeInTheDocument();
+  });
+
+  it("expands to show add friend input", () => {
+    render(<FriendsList {...defaultProps} />);
+    expandFriendsList();
+    expect(screen.getByLabelText("Friend code input")).toBeInTheDocument();
   });
 
   it("adds friend via input", () => {
     const onAddFriend = jest.fn();
     render(<FriendsList {...defaultProps} onAddFriend={onAddFriend} />);
+    expandFriendsList();
 
     const input = screen.getByLabelText("Friend code input");
     fireEvent.change(input, { target: { value: "abc456" } });
@@ -49,6 +101,7 @@ describe("FriendsList", () => {
   it("does not add own code as friend", () => {
     const onAddFriend = jest.fn();
     render(<FriendsList {...defaultProps} onAddFriend={onAddFriend} />);
+    expandFriendsList();
 
     const input = screen.getByLabelText("Friend code input");
     fireEvent.change(input, { target: { value: "me123" } });
@@ -57,7 +110,7 @@ describe("FriendsList", () => {
     expect(addButton).toBeDisabled();
   });
 
-  it("shows friends with online/offline status", () => {
+  it("shows friends with online/offline status when expanded", () => {
     const friends = [
       makeFriend("friend1", "Bold Lion"),
       makeFriend("friend2", "Clever Fox"),
@@ -71,15 +124,14 @@ describe("FriendsList", () => {
         onlineFriendIds={onlineFriendIds}
       />,
     );
+    expandFriendsList();
 
     expect(screen.getByText("Bold Lion")).toBeInTheDocument();
     expect(screen.getByText("Clever Fox")).toBeInTheDocument();
 
-    // Online friend should have green dot
     const onlineDot = screen.getByLabelText("Online");
     expect(onlineDot).toBeInTheDocument();
 
-    // Offline friend should have gray dot
     const offlineDot = screen.getByLabelText("Offline");
     expect(offlineDot).toBeInTheDocument();
   });
@@ -98,6 +150,7 @@ describe("FriendsList", () => {
         onlineFriendIds={onlineFriendIds}
       />,
     );
+    expandFriendsList();
 
     expect(screen.getByLabelText("Invite Bold Lion")).toBeInTheDocument();
     expect(
@@ -118,12 +171,13 @@ describe("FriendsList", () => {
         onInviteFriend={onInviteFriend}
       />,
     );
+    expandFriendsList();
 
     fireEvent.click(screen.getByLabelText("Invite Bold Lion"));
     expect(onInviteFriend).toHaveBeenCalledWith("friend1");
   });
 
-  it("shows pending invites with join button", () => {
+  it("shows pending invites without expanding", () => {
     const invites = [makeInvite("friend1", "Bold Lion")];
 
     render(<FriendsList {...defaultProps} pendingInvites={invites} />);
@@ -160,15 +214,36 @@ describe("FriendsList", () => {
         onRemoveFriend={onRemoveFriend}
       />,
     );
+    expandFriendsList();
 
     fireEvent.click(screen.getByLabelText("Remove Bold Lion"));
     expect(onRemoveFriend).toHaveBeenCalledWith("friend1");
   });
 
-  it("shows empty state when no friends", () => {
+  it("shows empty state when expanded with no friends", () => {
     render(<FriendsList {...defaultProps} />);
+    expandFriendsList();
     expect(
       screen.getByText("Share your code with a friend to get started."),
     ).toBeInTheDocument();
+  });
+
+  it("toggles expanded state on button click", () => {
+    render(<FriendsList {...defaultProps} />);
+
+    // Initially collapsed — no input visible
+    expect(
+      screen.queryByLabelText("Friend code input"),
+    ).not.toBeInTheDocument();
+
+    // Expand
+    expandFriendsList();
+    expect(screen.getByLabelText("Friend code input")).toBeInTheDocument();
+
+    // Collapse
+    expandFriendsList();
+    expect(
+      screen.queryByLabelText("Friend code input"),
+    ).not.toBeInTheDocument();
   });
 });
