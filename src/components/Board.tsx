@@ -12,7 +12,7 @@ type BoardProps = {
   board: BoardType;
   selectedCell: Position | null;
   selectedCells?: Set<number> | undefined;
-  conflicts: Set<number>;
+  conflicts: ReadonlySet<number>;
   hintCells?: Set<number> | undefined;
   onSelectCell: (row: number, col: number) => void;
   onSetSelectedCells?:

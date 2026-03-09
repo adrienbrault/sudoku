@@ -13,6 +13,6 @@ export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
   expert: "Expert",
 };
 
-export const EMPTY_CONFLICTS = new Set<number>();
+export const EMPTY_CONFLICTS: ReadonlySet<number> = new Set<number>();
 
 export const SIGNALING_URL = "wss://signal.dokuel.com";
