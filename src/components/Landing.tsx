@@ -29,7 +29,7 @@ type LandingProps = {
   onStats: () => void;
   onAbout: () => void;
   onQuickPlay?: (() => void) | undefined;
-  lastDifficulty?: string | undefined;
+  lastDifficulty?: import("../lib/types.ts").Difficulty | undefined;
   playerId?: string;
   friends?: Friend[];
   onlineFriendIds?: Set<string>;
@@ -39,13 +39,6 @@ type LandingProps = {
   onInviteFriend?: (friendId: string) => void;
   onJoinInvite?: (invite: Invite) => void;
   friendDailyResults?: FriendDailyResult[] | undefined;
-};
-
-const DIFFICULTY_LABELS: Record<string, string> = {
-  easy: "Easy",
-  medium: "Medium",
-  hard: "Hard",
-  expert: "Expert",
 };
 
 export function Landing({

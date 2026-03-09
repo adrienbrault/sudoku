@@ -1,5 +1,4 @@
-// @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "bun:test";
 import { getLastDifficulty, setLastDifficulty } from "./last-difficulty.ts";
 
 describe("last-difficulty", () => {
