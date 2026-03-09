@@ -18,6 +18,27 @@ type CellProps = {
   revealDelay?: number | undefined;
 };
 
+function getCellBgClass(opts: {
+  isSelected: boolean;
+  isMultiSelected: boolean;
+  isPaper: boolean;
+  isConflict: boolean;
+  isHintRelated?: boolean | undefined;
+  isSameNumber: boolean;
+  isHighlighted: boolean;
+  isSameNumberRowCol?: boolean | undefined;
+}): string {
+  if (opts.isSelected || opts.isMultiSelected) {
+    return opts.isPaper ? "bg-cell-bg" : "bg-cell-selected";
+  }
+  if (opts.isConflict) return "bg-cell-conflict-bg";
+  if (opts.isHintRelated) return "bg-amber-100 dark:bg-amber-900/40";
+  if (opts.isSameNumber) return "bg-cell-same-number";
+  if (opts.isHighlighted) return "bg-cell-highlight";
+  if (opts.isSameNumberRowCol) return "bg-cell-match-row-col";
+  return "bg-cell-bg";
+}
+
 export const Cell = memo(function Cell({
   cell,
   row,
@@ -34,22 +55,16 @@ export const Cell = memo(function Cell({
   revealDelay,
 }: CellProps) {
   const isPaper = assistLevel === "paper";
-  const bgClass =
-    isSelected || isMultiSelected
-      ? isPaper
-        ? "bg-cell-bg"
-        : "bg-cell-selected"
-      : isConflict
-        ? "bg-cell-conflict-bg"
-        : isHintRelated
-          ? "bg-amber-100 dark:bg-amber-900/40"
-          : isSameNumber
-            ? "bg-cell-same-number"
-            : isHighlighted
-              ? "bg-cell-highlight"
-              : isSameNumberRowCol
-                ? "bg-cell-match-row-col"
-                : "bg-cell-bg";
+  const bgClass = getCellBgClass({
+    isSelected,
+    isMultiSelected,
+    isPaper,
+    isConflict,
+    isHintRelated,
+    isSameNumber,
+    isHighlighted,
+    isSameNumberRowCol,
+  });
 
   const textClass = cell.isGiven
     ? "text-cell-given font-bold"
