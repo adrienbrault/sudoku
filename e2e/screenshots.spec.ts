@@ -338,17 +338,6 @@ test("multiplayer - dual progress bars (dark mode)", async ({
   });
 });
 
-test("multiplayer - progress bars hidden", async ({ page }, testInfo) => {
-  await gotoSoloGame(page);
-
-  // No progress bars injected — this represents the "hidden" state
-  await page.screenshot({
-    path: screenshotPath(
-      "multiplayer-progress-hidden",
-      testInfo.project.name,
-    ),
-  });
-});
 
 test("solo game - assist level popover", async ({ page }, testInfo) => {
   await gotoSoloGame(page);
