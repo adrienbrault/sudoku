@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import type { Invite } from "../hooks/usePresence.ts";
+import type { FriendDailyResult, Invite } from "../hooks/usePresence.ts";
 import { DIFFICULTY_LABELS } from "../lib/constants.ts";
 import { getDailyStreak, isDailyCompleted } from "../lib/daily-streak.ts";
 import { formatShortDate, formatTime, getTodayISO } from "../lib/format.ts";
@@ -38,6 +38,7 @@ type LandingProps = {
   onRemoveFriend?: (playerId: string) => void;
   onInviteFriend?: (friendId: string) => void;
   onJoinInvite?: (invite: Invite) => void;
+  friendDailyResults?: FriendDailyResult[] | undefined;
 };
 
 const DIFFICULTY_LABELS: Record<string, string> = {
@@ -65,6 +66,7 @@ export function Landing({
   onRemoveFriend,
   onInviteFriend,
   onJoinInvite,
+  friendDailyResults,
 }: LandingProps) {
   const today = useMemo(() => getTodayISO(), []);
   const completed = useMemo(() => isDailyCompleted(today), [today]);
@@ -149,6 +151,15 @@ export function Landing({
             dateLabel={formatShortDate(today)}
             progress={dailyProgress}
           />
+          {friendDailyResults && friendDailyResults.length > 0 && (
+            <div className="flex flex-wrap gap-2 justify-center">
+              {friendDailyResults.map((r) => (
+                <span key={r.playerId} className="text-xs text-text-muted">
+                  {r.playerName} {formatTime(r.time)}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-3">
           <span className="label">Multiplayer</span>

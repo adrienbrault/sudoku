@@ -13,6 +13,7 @@ import { useDarkMode } from "./hooks/useDarkMode.ts";
 import type { Invite } from "./hooks/usePresence.ts";
 import { usePresence } from "./hooks/usePresence.ts";
 import { DEFAULT_DIFFICULTY, DIFFICULTIES } from "./lib/constants.ts";
+import { getDailyResult } from "./lib/daily-streak.ts";
 import {
   addFriend,
   getFriends,
@@ -139,11 +140,18 @@ function App() {
   const playerName = useMemo(getPlayerName, []);
   const [friends, setFriends] = useState(getFriends);
 
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const dailyResult = useMemo(() => {
+    const time = getDailyResult(today);
+    return time != null ? { date: today, time } : undefined;
+  }, [today]);
+
   const presence = usePresence({
     playerId,
     playerName,
     friends,
     enabled: screen.name === "landing" && friends.length > 0,
+    dailyResult,
   });
 
   const handleAddFriend = useCallback((code: string) => {
@@ -233,6 +241,7 @@ function App() {
             onRemoveFriend={handleRemoveFriend}
             onInviteFriend={handleInviteFriend}
             onJoinInvite={handleJoinInvite}
+            friendDailyResults={presence.friendDailyResults}
           />
         </div>
       );
