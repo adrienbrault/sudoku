@@ -221,19 +221,22 @@ Follow the TDD skill in `.claude/skills/tdd/SKILL.md`. Key rules:
 - Playwright config: `playwright.config.ts`
 - Screenshot tests: `e2e/screenshots.spec.ts`
 - Output directory: `e2e/screenshots/` (gitignored)
-- Devices tested: iPhone SE, iPhone 14, iPad Mini, Desktop (1280x800)
+- Default devices: iPhone SE, iPad Mini, Desktop (1280x800) — 3 devices × 10 tests = 30 PNGs
 
 ### Commands
 ```bash
-bun run screenshots   # Run screenshot tests, saves PNGs to e2e/screenshots/
-bun run e2e           # Run all Playwright tests
+bun run screenshots                                    # All 30 screenshots (10 tests × 3 devices)
+bun run screenshots --grep "landing"                   # Only tests matching "landing"
+bun run screenshots --grep "solo game$"                # Exact match — just "solo game" test
+bun run screenshots --project "Desktop"                # Only Desktop device
+bun run screenshots --grep "landing" --project "Desktop"  # Single screenshot
 ```
 
 ### Workflow for UI Changes
-1. **Before making changes**: run `bun run screenshots` and review the current state using the Read tool on the PNGs
-2. **After making changes**: run `bun run screenshots` again and review the new PNGs
-3. **Compare across viewports**: always check iPhone SE (smallest), iPhone 14, iPad Mini, and Desktop
-4. **Iterate**: if something looks wrong, fix it and re-screenshot until it looks right
+1. **Targeted screenshots first**: run only the relevant screen + device, e.g. `bun run screenshots --grep "solo game" --project "iPhone SE"` — this takes seconds, not minutes
+2. **Iterate fast**: fix → re-screenshot → review the PNG with the Read tool → repeat
+3. **Full suite when done**: run `bun run screenshots` (all 30) as a final check before committing
+4. **Compare across viewports**: check iPhone SE (smallest), iPad Mini (tablet), and Desktop (wide)
 
 ### Adding New Screenshot Tests
 When adding new screens or significant UI features, add a test case to `e2e/screenshots.spec.ts` that navigates to the new screen and captures it. Each test saves PNGs named `{screen}--{device}.png`.
