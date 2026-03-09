@@ -5,6 +5,8 @@ export default defineConfig({
   outputDir: "./e2e/results",
   snapshotPathTemplate: "{testDir}/screenshots/{arg}{ext}",
   fullyParallel: true,
+  // One test per project — set workers to match so all run simultaneously.
+  workers: 9,
   use: {
     baseURL: "http://localhost:5173",
   },
@@ -14,6 +16,7 @@ export default defineConfig({
     reuseExistingServer: true,
   },
   projects: [
+    // Primary: capture all variants including dark mode, with-friends, etc.
     {
       name: "iPhone SE",
       use: {
@@ -22,6 +25,13 @@ export default defineConfig({
         deviceScaleFactor: 1,
       },
     },
+    {
+      name: "Desktop",
+      use: {
+        viewport: { width: 1280, height: 800 },
+      },
+    },
+    // Secondary: layout-critical viewports (dark-mode/with-friends handled in-test)
     {
       name: "iPhone 14",
       use: {
@@ -36,12 +46,6 @@ export default defineConfig({
         ...devices["iPad Mini"],
         defaultBrowserType: "chromium",
         deviceScaleFactor: 1,
-      },
-    },
-    {
-      name: "Desktop",
-      use: {
-        viewport: { width: 1280, height: 800 },
       },
     },
     {
@@ -93,3 +97,4 @@ export default defineConfig({
     },
   ],
 });
+
