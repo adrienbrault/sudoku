@@ -2,6 +2,37 @@ import { memo } from "react";
 import { DIGITS } from "../lib/constants.ts";
 import type { AssistLevel, Cell as CellType } from "../lib/types.ts";
 
+type BgClassFlags = {
+  isSelected: boolean;
+  isMultiSelected: boolean;
+  isPaper: boolean;
+  isConflict: boolean;
+  isHintRelated: boolean | undefined;
+  isSameNumber: boolean;
+  isHighlighted: boolean;
+  isSameNumberRowCol: boolean | undefined;
+};
+
+function getCellBgClass({
+  isSelected,
+  isMultiSelected,
+  isPaper,
+  isConflict,
+  isHintRelated,
+  isSameNumber,
+  isHighlighted,
+  isSameNumberRowCol,
+}: BgClassFlags): string {
+  if (isSelected || isMultiSelected)
+    return isPaper ? "bg-cell-bg" : "bg-cell-selected";
+  if (isConflict) return "bg-cell-conflict-bg";
+  if (isHintRelated) return "bg-amber-100 dark:bg-amber-900/40";
+  if (isSameNumber) return "bg-cell-same-number";
+  if (isHighlighted) return "bg-cell-highlight";
+  if (isSameNumberRowCol) return "bg-cell-match-row-col";
+  return "bg-cell-bg";
+}
+
 type CellProps = {
   cell: CellType;
   row: number;
@@ -34,22 +65,16 @@ export const Cell = memo(function Cell({
   revealDelay,
 }: CellProps) {
   const isPaper = assistLevel === "paper";
-  const bgClass =
-    isSelected || isMultiSelected
-      ? isPaper
-        ? "bg-cell-bg"
-        : "bg-cell-selected"
-      : isConflict
-        ? "bg-cell-conflict-bg"
-        : isHintRelated
-          ? "bg-amber-100 dark:bg-amber-900/40"
-          : isSameNumber
-            ? "bg-cell-same-number"
-            : isHighlighted
-              ? "bg-cell-highlight"
-              : isSameNumberRowCol
-                ? "bg-cell-match-row-col"
-                : "bg-cell-bg";
+  const bgClass = getCellBgClass({
+    isSelected,
+    isMultiSelected,
+    isPaper,
+    isConflict,
+    isHintRelated,
+    isSameNumber,
+    isHighlighted,
+    isSameNumberRowCol,
+  });
 
   const textClass = cell.isGiven
     ? "text-cell-given font-bold"

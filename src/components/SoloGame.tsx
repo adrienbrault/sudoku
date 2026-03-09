@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useGameTimer } from "../hooks/useGameTimer.ts";
 import { useKeyboard } from "../hooks/useKeyboard.ts";
 import { useNumPadLayout } from "../hooks/useNumPadLayout.ts";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
@@ -20,7 +21,7 @@ import { AssistLevelPicker } from "./AssistLevelPicker.tsx";
 import { Board } from "./Board.tsx";
 import { GameControls } from "./GameControls.tsx";
 import { GameLayout } from "./GameLayout.tsx";
-import { GameResult } from "./GameResult.tsx";
+import { SoloGameResult } from "./GameResult.tsx";
 import { HintBanner } from "./HintBanner.tsx";
 import { NumPad } from "./NumPad.tsx";
 import { NumPadPositionToggle } from "./NumPadPositionToggle.tsx";
@@ -74,7 +75,7 @@ export function SoloGame({
   const [assistLevel, setAssistLevel] = useState<AssistLevel>(
     saved?.assistLevel ?? initialAssistLevel,
   );
-  const [paused, setPaused] = useState(false);
+  const { paused, setPaused } = useGameTimer(game.status);
   const [tipDismissed, setTipDismissed] = useState(
     () => localStorage.getItem("sudoku_numpad_tip_dismissed") === "1",
   );
@@ -100,8 +101,11 @@ export function SoloGame({
     saveGame(gameKey, data);
   }, [game.board, gameKey, puzzle, difficulty, assistLevel, game.status]);
 
+  const REVEAL_DELAY_MS = 600;
+  const MODAL_DELAY_MS = 300;
+
   useEffect(() => {
-    const id = setTimeout(() => setRevealed(true), 600);
+    const id = setTimeout(() => setRevealed(true), REVEAL_DELAY_MS);
     return () => clearTimeout(id);
   }, []);
 
@@ -110,7 +114,7 @@ export function SoloGame({
     if (gameKey) deleteGame(gameKey);
     saveGameResult(difficulty, timerSecondsRef.current, true, game.hintsUsed);
     onComplete?.(timerSecondsRef.current);
-    const id = setTimeout(() => setShowResult(true), 300);
+    const id = setTimeout(() => setShowResult(true), MODAL_DELAY_MS);
     return () => clearTimeout(id);
   }, [game.status, difficulty, gameKey, onComplete, game.hintsUsed]);
 
@@ -130,18 +134,6 @@ export function SoloGame({
     }
     onBack();
   };
-
-  // Auto-pause when tab loses visibility
-  useEffect(() => {
-    const handleVisibility = () => {
-      if (document.hidden && game.status === "playing") {
-        setPaused(true);
-      }
-    };
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibility);
-  }, [game.status]);
 
   useKeyboard({
     selectedCell: game.selectedCell,
@@ -278,7 +270,7 @@ export function SoloGame({
       }
       footer={
         showResult ? (
-          <GameResult
+          <SoloGameResult
             isWinner={true}
             time={formatTime(timerSecondsRef.current)}
             timeSeconds={timerSecondsRef.current}

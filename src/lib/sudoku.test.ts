@@ -1,7 +1,9 @@
 import { describe, expect, it } from "bun:test";
 import {
+  boxOrigin,
   cellKey,
   generatePuzzle,
+  getCandidates,
   getConflicts,
   getErrors,
   isBoardComplete,
@@ -15,6 +17,54 @@ const KNOWN_PUZZLE =
   "..4.7...2....89...8...6.9....6...54.7.....3..1............974...2..18.....3..5.6.";
 const KNOWN_SOLUTION =
   "594173682267589134831462957386721549742956318159834276618397425425618793973245861";
+
+describe("boxOrigin", () => {
+  it("returns {0,0} for cells in the top-left box", () => {
+    expect(boxOrigin(0, 0)).toEqual({ boxRow: 0, boxCol: 0 });
+    expect(boxOrigin(2, 2)).toEqual({ boxRow: 0, boxCol: 0 });
+  });
+
+  it("returns correct origin for mid-board cells", () => {
+    expect(boxOrigin(4, 7)).toEqual({ boxRow: 3, boxCol: 6 });
+    expect(boxOrigin(3, 6)).toEqual({ boxRow: 3, boxCol: 6 });
+  });
+
+  it("returns {6,6} for cells in the bottom-right box", () => {
+    expect(boxOrigin(8, 8)).toEqual({ boxRow: 6, boxCol: 6 });
+    expect(boxOrigin(6, 6)).toEqual({ boxRow: 6, boxCol: 6 });
+  });
+});
+
+describe("getCandidates", () => {
+  it("returns all 9 digits for an empty board cell", () => {
+    const board = parsePuzzle(".".repeat(81));
+    expect(getCandidates(board, 0, 0).size).toBe(9);
+  });
+
+  it("excludes values already in the same row", () => {
+    // Row 0: 1,2,3 in cols 0-2; cell at (0,3) cannot be 1, 2, or 3
+    const board = parsePuzzle("123" + ".".repeat(78));
+    const candidates = getCandidates(board, 0, 3);
+    expect(candidates.has(1)).toBe(false);
+    expect(candidates.has(2)).toBe(false);
+    expect(candidates.has(3)).toBe(false);
+    expect(candidates.has(4)).toBe(true);
+  });
+
+  it("excludes values already in the same column", () => {
+    // Col 0: value 7 in row 5; cell at (0,0) cannot be 7
+    const board = parsePuzzle(".".repeat(45) + "7" + ".".repeat(35));
+    const candidates = getCandidates(board, 0, 0);
+    expect(candidates.has(7)).toBe(false);
+  });
+
+  it("excludes values already in the same box", () => {
+    // Cell (2,2) has value 9; cell (0,0) is in the same box
+    const board = parsePuzzle(".".repeat(20) + "9" + ".".repeat(60));
+    const candidates = getCandidates(board, 0, 0);
+    expect(candidates.has(9)).toBe(false);
+  });
+});
 
 describe("generatePuzzle", () => {
   it("returns an 81-character string", () => {

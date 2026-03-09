@@ -10,7 +10,7 @@ import type { AssistLevel } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
 import { GameControls } from "./GameControls.tsx";
 import { GameLayout, type SettingItem } from "./GameLayout.tsx";
-import { GameResult } from "./GameResult.tsx";
+import { MultiplayerGameResult } from "./GameResult.tsx";
 import { NumPad } from "./NumPad.tsx";
 import { NumPadPositionToggle } from "./NumPadPositionToggle.tsx";
 import { NumPadPositionIcon, OpponentBarIcon } from "./SettingIcons.tsx";
@@ -203,11 +203,10 @@ export function MultiplayerBoard({
       }
       footer={
         showResult && gameOver ? (
-          <GameResult
+          <MultiplayerGameResult
             isWinner={gameOver.winnerId === playerId}
             time={formatTime(timerSecondsRef.current)}
             difficulty={difficulty}
-            isMultiplayer
             onNewGame={onBack}
             onRematch={onRematch}
             onAddFriend={onAddFriend}
