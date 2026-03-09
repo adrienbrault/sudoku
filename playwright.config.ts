@@ -1,14 +1,12 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Dark mode and "with friends" tests verify theming/data, not layout.
-// Only run them on the two primary form-factor projects (iPhone SE + Desktop).
-const LAYOUT_ONLY = /dark mode|with friends/;
-
 export default defineConfig({
   testDir: "./e2e",
   outputDir: "./e2e/results",
   snapshotPathTemplate: "{testDir}/screenshots/{arg}{ext}",
   fullyParallel: true,
+  // One test per project — set workers to match so all run simultaneously.
+  workers: 9,
   use: {
     baseURL: "http://localhost:5173",
   },
@@ -18,7 +16,7 @@ export default defineConfig({
     reuseExistingServer: true,
   },
   projects: [
-    // Primary projects: run all tests (including dark mode / with-friends variants)
+    // Primary: capture all variants including dark mode, with-friends, etc.
     {
       name: "iPhone SE",
       use: {
@@ -33,7 +31,7 @@ export default defineConfig({
         viewport: { width: 1280, height: 800 },
       },
     },
-    // Secondary projects: layout-critical viewports — skip theming-only variants
+    // Secondary: layout-critical viewports (dark-mode/with-friends handled in-test)
     {
       name: "iPhone 14",
       use: {
@@ -41,7 +39,6 @@ export default defineConfig({
         defaultBrowserType: "chromium",
         deviceScaleFactor: 1,
       },
-      grepInvert: LAYOUT_ONLY,
     },
     {
       name: "iPad Mini",
@@ -50,7 +47,6 @@ export default defineConfig({
         defaultBrowserType: "chromium",
         deviceScaleFactor: 1,
       },
-      grepInvert: LAYOUT_ONLY,
     },
     {
       name: "iPhone 14 Safari",
@@ -61,7 +57,6 @@ export default defineConfig({
         // Real Safari portrait with status bar + bottom toolbar (~190px lost)
         viewport: { width: 390, height: 654 },
       },
-      grepInvert: LAYOUT_ONLY,
     },
     {
       name: "iPhone 14 Landscape",
@@ -71,7 +66,6 @@ export default defineConfig({
         deviceScaleFactor: 1,
         viewport: { width: 844, height: 390 },
       },
-      grepInvert: LAYOUT_ONLY,
     },
     {
       name: "iPhone SE Landscape",
@@ -81,7 +75,6 @@ export default defineConfig({
         deviceScaleFactor: 1,
         viewport: { width: 667, height: 375 },
       },
-      grepInvert: LAYOUT_ONLY,
     },
     {
       name: "iPhone 14 Landscape Safari",
@@ -92,7 +85,6 @@ export default defineConfig({
         // Real Safari landscape with toolbar visible (~50px lost)
         viewport: { width: 844, height: 340 },
       },
-      grepInvert: LAYOUT_ONLY,
     },
     {
       name: "iPhone SE Landscape Safari",
@@ -102,7 +94,7 @@ export default defineConfig({
         deviceScaleFactor: 1,
         viewport: { width: 667, height: 325 },
       },
-      grepInvert: LAYOUT_ONLY,
     },
   ],
 });
+
