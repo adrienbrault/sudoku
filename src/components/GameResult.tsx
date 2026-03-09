@@ -32,6 +32,43 @@ type GameResultProps = {
   opponentName?: string | undefined;
 };
 
+type SoloResultProps = {
+  isWinner: boolean;
+  time: string;
+  timeSeconds?: number | undefined;
+  difficulty?: Difficulty | undefined;
+  onNewGame: () => void;
+  onRematch?: (() => void) | undefined;
+  stats?: { gamesPlayed: number; bestTime: number; averageTime: number } | null;
+  isNewPB?: boolean | undefined;
+  hintsUsed?: number | undefined;
+  streakInfo?: { currentStreak: number; longestStreak: number } | undefined;
+  isDaily?: boolean | undefined;
+  tip?: string | undefined;
+  onDismissTip?: (() => void) | undefined;
+};
+
+type MultiplayerResultProps = {
+  isWinner: boolean;
+  time: string;
+  difficulty?: Difficulty | undefined;
+  onNewGame: () => void;
+  onRematch?: (() => void) | undefined;
+  onAddFriend?:
+    | ((opponentId: string, opponentName: string) => void)
+    | undefined;
+  opponentId?: string | undefined;
+  opponentName?: string | undefined;
+};
+
+export function SoloGameResult(props: SoloResultProps) {
+  return <GameResult {...props} isMultiplayer={false} />;
+}
+
+export function MultiplayerGameResult(props: MultiplayerResultProps) {
+  return <GameResult {...props} isMultiplayer={true} />;
+}
+
 export function buildShareText({
   difficulty,
   time,

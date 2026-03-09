@@ -21,7 +21,7 @@ import { AssistLevelPicker } from "./AssistLevelPicker.tsx";
 import { Board } from "./Board.tsx";
 import { GameControls } from "./GameControls.tsx";
 import { GameLayout } from "./GameLayout.tsx";
-import { GameResult } from "./GameResult.tsx";
+import { SoloGameResult } from "./GameResult.tsx";
 import { HintBanner } from "./HintBanner.tsx";
 import { NumPad } from "./NumPad.tsx";
 import { NumPadPositionToggle } from "./NumPadPositionToggle.tsx";
@@ -270,7 +270,7 @@ export function SoloGame({
       }
       footer={
         showResult ? (
-          <GameResult
+          <SoloGameResult
             isWinner={true}
             time={formatTime(timerSecondsRef.current)}
             timeSeconds={timerSecondsRef.current}
