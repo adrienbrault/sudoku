@@ -8,7 +8,7 @@ export function FeatureRow({
   return (
     <div className="flex items-center gap-3">
       <span className="text-accent shrink-0">{icon}</span>
-      <span className="text-sm text-text-muted">{text}</span>
+      <span className="text-sm text-text-secondary">{text}</span>
     </div>
   );
 }
