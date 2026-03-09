@@ -2,36 +2,23 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useKeyboard } from "../hooks/useKeyboard.ts";
 import { useNumPadLayout } from "../hooks/useNumPadLayout.ts";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
+import { useSoloGameEffects } from "../hooks/useSoloGameEffects.ts";
 import { useSudoku } from "../hooks/useSudoku.ts";
 import { EMPTY_CONFLICTS } from "../lib/constants.ts";
-import { formatTime } from "../lib/format.ts";
-import {
-  boardToNotes,
-  boardToValues,
-  deleteGame,
-  loadGame,
-  type SavedGame,
-  saveGame,
-} from "../lib/game-storage.ts";
-import {
-  getImprovementDelta,
-  getRecentTimes,
-  getStatsForDifficulty,
-  saveGameResult,
-} from "../lib/stats.ts";
+import { loadGame } from "../lib/game-storage.ts";
+import { getStatsForDifficulty } from "../lib/stats.ts";
 import { cellKey, generatePuzzle, solvePuzzle } from "../lib/sudoku.ts";
 import type { AssistLevel, Difficulty } from "../lib/types.ts";
 import { AssistLevelPicker } from "./AssistLevelPicker.tsx";
 import { Board } from "./Board.tsx";
 import { GameControls } from "./GameControls.tsx";
 import { GameLayout } from "./GameLayout.tsx";
-import { GameResult } from "./GameResult.tsx";
 import { HintBanner } from "./HintBanner.tsx";
 import { NumPad } from "./NumPad.tsx";
 import { NumPadPositionToggle } from "./NumPadPositionToggle.tsx";
-import { ProgressBar } from "./ProgressBar.tsx";
 import { AssistLevelIcon, NumPadPositionIcon } from "./SettingIcons.tsx";
-import { Timer } from "./Timer.tsx";
+import { SoloGameResult } from "./SoloGameResult.tsx";
+import { TimerButton } from "./TimerButton.tsx";
 
 type SoloGameProps = {
   difficulty: Difficulty;
@@ -93,13 +80,11 @@ export function SoloGame({
     game.selectedCell !== null &&
     game.status === "playing";
 
-  // Capture PB before this game's result is saved
   const priorStats = useMemo(
     () => getStatsForDifficulty(difficulty),
     [difficulty],
   );
   const personalBest = priorStats?.bestTime ?? null;
-
   const givenCount = useMemo(
     () => puzzle.split("").filter((c) => c !== ".").length,
     [puzzle],
@@ -111,33 +96,19 @@ export function SoloGame({
     return Math.round((userFilled / userFillable) * 100);
   }, [givenCount, game.cellsRemaining]);
 
-  // Auto-save on every board change
-  useEffect(() => {
-    if (!gameKey || game.status === "completed") return;
-    const data: SavedGame = {
-      puzzle,
-      values: boardToValues(game.board),
-      notes: boardToNotes(game.board),
-      timer: timerSecondsRef.current,
-      difficulty,
-      assistLevel,
-    };
-    saveGame(gameKey, data);
-  }, [game.board, gameKey, puzzle, difficulty, assistLevel, game.status]);
-
-  useEffect(() => {
-    const id = setTimeout(() => setRevealed(true), 600);
-    return () => clearTimeout(id);
-  }, []);
-
-  useEffect(() => {
-    if (game.status !== "completed") return;
-    if (gameKey) deleteGame(gameKey);
-    saveGameResult(difficulty, timerSecondsRef.current, true, game.hintsUsed);
-    onComplete?.(timerSecondsRef.current);
-    const id = setTimeout(() => setShowResult(true), 300);
-    return () => clearTimeout(id);
-  }, [game.status, difficulty, gameKey, onComplete, game.hintsUsed]);
+  useSoloGameEffects({
+    board: game.board,
+    status: game.status,
+    gameKey,
+    puzzle,
+    difficulty,
+    assistLevel,
+    timerRef: timerSecondsRef,
+    hintsUsed: game.hintsUsed,
+    onComplete,
+    setRevealed,
+    setShowResult,
+  });
 
   const handleNumber = (n: number) => {
     if (game.selectedCell || game.selectedCells.size > 0) {
@@ -182,11 +153,19 @@ export function SoloGame({
   const hintCells = useMemo(() => {
     if (!game.activeHint) return undefined;
     const set = new Set<number>();
-    for (const pos of game.activeHint.relatedCells) {
+    for (const pos of game.activeHint.relatedCells)
       set.add(cellKey(pos.row, pos.col));
-    }
     return set;
   }, [game.activeHint]);
+
+  const dismissNotesTooltip = () => {
+    setNotesTooltipDismissed(true);
+    localStorage.setItem("sudoku_notes_tip_dismissed", "1");
+  };
+  const dismissTip = () => {
+    setTipDismissed(true);
+    localStorage.setItem("sudoku_numpad_tip_dismissed", "1");
+  };
 
   return (
     <GameLayout
@@ -214,34 +193,18 @@ export function SoloGame({
         },
       ]}
       timer={
-        <button
-          type="button"
-          className="flex flex-col items-center touch-manipulation"
-          onClick={() => {
-            if (game.status === "playing") setPaused((p) => !p);
+        <TimerButton
+          status={game.status}
+          paused={paused}
+          setPaused={setPaused}
+          revealed={revealed}
+          initialSeconds={saved?.timer}
+          onTick={(s) => {
+            timerSecondsRef.current = s;
           }}
-          aria-label={paused ? "Resume" : "Pause"}
-        >
-          <Timer
-            running={game.status === "playing" && !paused && revealed}
-            initialSeconds={saved?.timer}
-            onTick={(s) => {
-              timerSecondsRef.current = s;
-            }}
-          />
-          {paused ? (
-            <span className="text-xs text-text-muted">Paused</span>
-          ) : (
-            <div className="flex items-center gap-2 w-32">
-              <ProgressBar percent={progressPercent} color="bg-accent" />
-            </div>
-          )}
-          {!paused && personalBest !== null && (
-            <span className="text-xs text-text-muted font-mono tabular-nums">
-              PB {formatTime(personalBest)}
-            </span>
-          )}
-        </button>
+          progressPercent={progressPercent}
+          personalBest={personalBest}
+        />
       }
       numPad={
         <NumPad
@@ -298,47 +261,25 @@ export function SoloGame({
             historyLength={game.historyLength}
             onHint={game.hint}
             showNotesTooltip={showNotesTooltip}
-            onDismissNotesTooltip={() => {
-              setNotesTooltipDismissed(true);
-              localStorage.setItem("sudoku_notes_tip_dismissed", "1");
-            }}
+            onDismissNotesTooltip={dismissNotesTooltip}
           />
         </>
       }
       footer={
         showResult ? (
-          <GameResult
-            isWinner={true}
-            time={formatTime(timerSecondsRef.current)}
+          <SoloGameResult
             timeSeconds={timerSecondsRef.current}
             difficulty={difficulty}
-            onNewGame={onBack}
+            onBack={onBack}
             onRematch={onRematch}
-            stats={
-              priorStats ?? {
-                gamesPlayed: 0,
-                bestTime: timerSecondsRef.current,
-                averageTime: timerSecondsRef.current,
-              }
-            }
-            isNewPB={
-              game.hintsUsed === 0 &&
-              (personalBest === null || timerSecondsRef.current < personalBest)
-            }
+            priorStats={priorStats}
+            personalBest={personalBest}
             hintsUsed={game.hintsUsed}
-            recentTimes={getRecentTimes(difficulty)}
-            improvementDelta={getImprovementDelta(difficulty)}
             streakInfo={streakInfo}
             isDaily={!!streakInfo || !!title?.startsWith("Daily")}
-            tip={
-              !tipDismissed && position === "bottom"
-                ? "Tip: Move the numpad to the side for faster two-finger play! Tap the pad icon to try it."
-                : undefined
-            }
-            onDismissTip={() => {
-              setTipDismissed(true);
-              localStorage.setItem("sudoku_numpad_tip_dismissed", "1");
-            }}
+            position={position}
+            tipDismissed={tipDismissed}
+            onDismissTip={dismissTip}
           />
         ) : undefined
       }
