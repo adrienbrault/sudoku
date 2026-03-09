@@ -1,5 +1,5 @@
 import * as Y from "yjs";
-import { generatePuzzle, solvePuzzle } from "./sudoku.ts";
+import { countFilledCells, generatePuzzle, solvePuzzle } from "./sudoku.ts";
 import type { AssistLevel, Difficulty, Player } from "./types.ts";
 
 const PLAYER_COLORS = [
@@ -67,7 +67,7 @@ export function setAssistLevel(room: P2PRoom, level: AssistLevel): void {
 export function startGame(room: P2PRoom, difficulty: Difficulty): void {
   const puzzle = generatePuzzle(difficulty);
   const solution = solvePuzzle(puzzle);
-  const clueCount = puzzle.split("").filter((c) => c !== ".").length;
+  const clueCount = countFilledCells(puzzle);
 
   room.doc.transact(() => {
     const roomMap = room.doc.getMap("room");

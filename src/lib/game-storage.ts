@@ -1,3 +1,4 @@
+import { countFilledCells } from "./sudoku.ts";
 import type { AssistLevel, Difficulty } from "./types.ts";
 
 export type SavedGame = {
@@ -67,8 +68,8 @@ export function listSavedGames(): SavedGameSummary[] {
       if (key.startsWith("daily-")) continue;
       const game = loadGame(key);
       if (!game) continue;
-      const filledCells = game.values.split("").filter((c) => c !== ".").length;
-      const givenCells = game.puzzle.split("").filter((c) => c !== ".").length;
+      const filledCells = countFilledCells(game.values);
+      const givenCells = countFilledCells(game.puzzle);
       results.push({
         key,
         difficulty: game.difficulty,

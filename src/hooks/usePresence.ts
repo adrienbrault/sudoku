@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { WebrtcProvider } from "y-webrtc";
 import { Doc } from "yjs";
+import { SIGNALING_URL } from "../lib/constants.ts";
 import type { Friend } from "../lib/friends.ts";
 import type { Difficulty } from "../lib/types.ts";
 
@@ -63,7 +64,7 @@ export function usePresence({
 
     const doc = new Doc();
     const provider = new WebrtcProvider(PRESENCE_ROOM, doc, {
-      signaling: ["wss://signal.dokuel.com"],
+      signaling: [SIGNALING_URL],
     });
 
     docRef.current = doc;

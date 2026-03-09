@@ -3,8 +3,9 @@ import { useNumPadLayout } from "../hooks/useNumPadLayout.ts";
 import { useNumPadPosition } from "../hooks/useNumPadPosition.ts";
 import { useOpponentProgressVisible } from "../hooks/useOpponentProgressVisible.ts";
 import { useSudoku } from "../hooks/useSudoku.ts";
+import { EMPTY_CONFLICTS } from "../lib/constants.ts";
 import { formatTime } from "../lib/format.ts";
-import { solvePuzzle } from "../lib/sudoku.ts";
+import { countFilledCells, solvePuzzle } from "../lib/sudoku.ts";
 import type { AssistLevel } from "../lib/types.ts";
 import { Board } from "./Board.tsx";
 import { GameControls } from "./GameControls.tsx";
@@ -13,8 +14,6 @@ import { GameResult } from "./GameResult.tsx";
 import { NumPad } from "./NumPad.tsx";
 import { Timer } from "./Timer.tsx";
 import { ToggleSwitch } from "./ToggleSwitch.tsx";
-
-const EMPTY_CONFLICTS = new Set<number>();
 
 export type MultiplayerBoardProps = {
   puzzle: string;
@@ -66,7 +65,7 @@ export function MultiplayerBoard({
   const [revealed, setRevealed] = useState(false);
 
   const myPercent = useMemo(() => {
-    const total = 81 - puzzle.split("").filter((c) => c !== ".").length;
+    const total = 81 - countFilledCells(puzzle);
     const filled = total - game.cellsRemaining;
     return total > 0 ? Math.round((filled / total) * 100) : 0;
   }, [game.cellsRemaining, puzzle]);
@@ -80,7 +79,7 @@ export function MultiplayerBoard({
   useEffect(() => {
     if (prevCellsRef.current !== game.cellsRemaining) {
       prevCellsRef.current = game.cellsRemaining;
-      const total = 81 - puzzle.split("").filter((c) => c !== ".").length;
+      const total = 81 - countFilledCells(puzzle);
       const filled = total - game.cellsRemaining;
       const percent = total > 0 ? Math.round((filled / total) * 100) : 0;
       onProgress(game.cellsRemaining, percent);
