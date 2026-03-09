@@ -145,7 +145,7 @@ function LandscapeHint() {
   if (dismissed) return null;
 
   return (
-    <div className="game-landscape-hint hidden fixed bottom-2 left-1/2 -translate-x-1/2 items-center gap-2 bg-bg-overlay/95 backdrop-blur border border-border-default rounded-full px-3 py-1.5 shadow-lg z-50 text-xs text-text-secondary animate-fade-in">
+    <div className="game-landscape-hint hidden fixed bottom-2 left-1/2 -translate-x-1/2 items-center gap-2 bg-bg-overlay/80 backdrop-blur border border-border-default rounded-full px-3 py-1.5 shadow-lg z-50 text-xs text-text-secondary animate-fade-in">
       <span>Scroll down to hide the browser toolbar</span>
       <button
         type="button"
