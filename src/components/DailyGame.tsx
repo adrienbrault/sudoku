@@ -1,9 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { getDailyPuzzle } from "../lib/daily.ts";
-import {
-  recordDailyCompletion,
-  saveDailyResult,
-} from "../lib/daily-streak.ts";
+import { recordDailyCompletion, saveDailyResult } from "../lib/daily-streak.ts";
 import { formatShortDate, getTodayISO } from "../lib/format.ts";
 import { SoloGame } from "./SoloGame.tsx";
 
