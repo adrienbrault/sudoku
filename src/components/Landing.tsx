@@ -15,12 +15,9 @@ import { countFilledCells } from "../lib/sudoku.ts";
 import { FriendsList } from "./FriendsList.tsx";
 import {
   ActionButton,
-  CalendarIcon,
-  FeatureRow,
   GitHubIcon,
-  GlobeIcon,
+  MiniBoard,
   StatsIcon,
-  ZapIcon,
 } from "./LandingIcons.tsx";
 
 type LandingProps = {
@@ -90,24 +87,14 @@ export function Landing({
         <h1 className="heading-xl">Dokuel</h1>
         {!isReturningUser && (
           <p className="text-sm text-text-muted">
-            1v1 sudoku duel — no account needed.
+            Race your friends to solve sudoku.
           </p>
         )}
       </div>
       {!isReturningUser && (
-        <div className="flex flex-col gap-1.5 sm:gap-3 w-full">
-          <FeatureRow
-            icon={<ZapIcon />}
-            text="Real-time 1v1 — race a friend peer-to-peer"
-          />
-          <FeatureRow
-            icon={<CalendarIcon />}
-            text="Daily challenge — same puzzle for everyone"
-          />
-          <FeatureRow
-            icon={<GlobeIcon />}
-            text="Mobile & desktop — dark mode, haptics, sounds"
-          />
+        <div className="flex flex-col items-center gap-2 w-full">
+          <MiniBoard />
+          <p className="text-xs text-text-muted">No account needed.</p>
         </div>
       )}
       <div className="flex flex-col gap-3 sm:gap-6 w-full">
