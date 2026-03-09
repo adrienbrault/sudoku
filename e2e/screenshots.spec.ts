@@ -36,11 +36,9 @@ async function gotoLanding(page: Page) {
   await waitForLanding(page);
 }
 
-/** Full flow from landing to a started Easy solo game. */
+/** Navigate directly to a solo Easy game via URL (avoids click-through). */
 async function gotoSoloGame(page: Page) {
-  await gotoLanding(page);
-  await page.getByText("Start Solo").click();
-  await page.getByText("Easy").click();
+  await page.goto("/solo/easy/e2e-screenshot-test");
   await waitForBoard(page);
 }
 
@@ -214,8 +212,7 @@ test("difficulty picker - dark mode", async ({ page }, testInfo) => {
 // --- Missing screens ---
 
 test("daily challenge", async ({ page }, testInfo) => {
-  await gotoLanding(page);
-  await page.getByRole("button", { name: /Daily Challenge/ }).click();
+  await page.goto("/daily");
   await waitForBoard(page);
   await page.screenshot({
     path: screenshotPath("daily-challenge", testInfo.project.name),
@@ -223,8 +220,7 @@ test("daily challenge", async ({ page }, testInfo) => {
 });
 
 test("join game screen", async ({ page }, testInfo) => {
-  await gotoLanding(page);
-  await page.getByText("Join Game").click();
+  await page.goto("/join");
   await page.getByRole("heading", { name: "Join Game" }).waitFor();
   await page.screenshot({
     path: screenshotPath("join-game", testInfo.project.name),
@@ -234,55 +230,36 @@ test("join game screen", async ({ page }, testInfo) => {
 // --- Game states ---
 
 test("solo game - in progress with notes", async ({ page }, testInfo) => {
-  await gotoSoloGame(page);
+  // Inject a pre-built in-progress game state via localStorage so the board
+  // loads directly — no UI interaction needed.
+  // Puzzle: classic easy Sudoku. Values: puzzle givens + 6 user-filled cells.
+  // Notes: pencil marks on several empty cells for a realistic screenshot.
+  const puzzle =
+    "53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79";
+  const values =
+    "534.78...6..19534..98....6.8.9.6...34.68.3..17...2...6.6....28....419..5....8..79";
+  const notes = Array.from({ length: 81 }, (_, i) => {
+    const noteMap: Record<number, number[]> = {
+      3: [4, 6],
+      6: [1, 9],
+      7: [1, 2],
+      21: [3, 4],
+      33: [2, 4],
+      40: [5],
+      46: [1, 3],
+      57: [3, 5],
+    };
+    return noteMap[i] ?? [];
+  });
 
-  // Find empty cells and fill some with values, others with notes
-  const emptyCells = page.locator('button[aria-label*=", empty"]');
-  const count = await emptyCells.count();
-
-  // Helper to click elements that may be off-screen (e.g. numpad on desktop layout)
-  const forceClick = (loc: import("@playwright/test").Locator) =>
-    loc.evaluate((el) => {
-      el.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-    });
-
-  // Fill first few empty cells with values (click cell, then numpad number)
-  for (let i = 0; i < Math.min(5, count); i++) {
-    await forceClick(emptyCells.nth(0)); // always nth(0) since filled cells lose "empty" label
-    const numButton = page
-      .locator('[role="group"][aria-label="Number pad"] button')
-      .nth(i % 9);
-    await forceClick(numButton);
-    await page.waitForTimeout(50);
-  }
-
-  // Toggle notes mode
-  await forceClick(page.getByLabel("Notes").first());
-
-  // Add notes to several empty cells
-  const remainingEmpty = page.locator('button[aria-label*=", empty"]');
-  const remainingCount = await remainingEmpty.count();
-  const enabledNumpad = page.locator(
-    '[role="group"][aria-label="Number pad"] button:not([disabled])',
-  );
-  for (let i = 0; i < Math.min(6, remainingCount); i++) {
-    await forceClick(remainingEmpty.nth(i));
-    // Add 2-3 note candidates per cell from enabled buttons
-    const enabledCount = await enabledNumpad.count();
-    if (enabledCount < 2) break;
-    await forceClick(enabledNumpad.nth(i % enabledCount));
-    await page.waitForTimeout(30);
-    await forceClick(enabledNumpad.nth((i + 1) % enabledCount));
-    await page.waitForTimeout(30);
-    if (i % 2 === 0 && enabledCount > 2) {
-      await forceClick(enabledNumpad.nth((i + 2) % enabledCount));
-      await page.waitForTimeout(30);
-    }
-  }
-
-  // Deselect by clicking a filled cell for cleaner screenshot
-  await forceClick(page.locator('button[aria-label*="value"]').first());
-  await page.waitForTimeout(300);
+  await setLocalStorage(page, [
+    [
+      "sudoku_save_e2e-in-progress",
+      JSON.stringify({ puzzle, values, notes, timer: 187, difficulty: "easy", assistLevel: "standard" }),
+    ],
+  ]);
+  await page.goto("/solo/easy/e2e-in-progress");
+  await waitForBoard(page);
 
   await page.screenshot({
     path: screenshotPath("solo-in-progress", testInfo.project.name),
