@@ -79,6 +79,14 @@ export function SoloGame({
   const [tipDismissed, setTipDismissed] = useState(
     () => localStorage.getItem("sudoku_numpad_tip_dismissed") === "1",
   );
+  const [notesTooltipDismissed, setNotesTooltipDismissed] = useState(
+    () => localStorage.getItem("sudoku_notes_tip_dismissed") === "1",
+  );
+  const showNotesTooltip =
+    !notesTooltipDismissed &&
+    (difficulty === "hard" || difficulty === "expert") &&
+    game.selectedCell !== null &&
+    game.status === "playing";
 
   // Capture PB before this game's result is saved
   const priorStats = useMemo(
@@ -284,6 +292,11 @@ export function SoloGame({
             onUndo={game.undo}
             historyLength={game.historyLength}
             onHint={game.hint}
+            showNotesTooltip={showNotesTooltip}
+            onDismissNotesTooltip={() => {
+              setNotesTooltipDismissed(true);
+              localStorage.setItem("sudoku_notes_tip_dismissed", "1");
+            }}
           />
         </>
       }
