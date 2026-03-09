@@ -28,6 +28,8 @@ type LandingProps = {
   onContinue: (gameKey: string, difficulty: string) => void;
   onStats: () => void;
   onAbout: () => void;
+  onQuickPlay?: (() => void) | undefined;
+  lastDifficulty?: string | undefined;
   playerId?: string;
   friends?: Friend[];
   onlineFriendIds?: Set<string>;
@@ -38,6 +40,13 @@ type LandingProps = {
   onJoinInvite?: (invite: Invite) => void;
 };
 
+const DIFFICULTY_LABELS: Record<string, string> = {
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+  expert: "Expert",
+};
+
 export function Landing({
   onSolo,
   onDaily,
@@ -46,6 +55,8 @@ export function Landing({
   onContinue,
   onStats,
   onAbout,
+  onQuickPlay,
+  lastDifficulty,
   playerId,
   friends,
   onlineFriendIds,
@@ -113,7 +124,24 @@ export function Landing({
         )}
         <div className="flex flex-col gap-3">
           <span className="label">Solo</span>
-          <ActionButton label="Start Solo" onClick={onSolo} primary />
+          {isReturningUser && onQuickPlay ? (
+            <>
+              <ActionButton
+                label={`Play ${DIFFICULTY_LABELS[lastDifficulty ?? "medium"] ?? "Medium"}`}
+                onClick={onQuickPlay}
+                primary
+              />
+              <button
+                type="button"
+                className="text-sm text-text-muted hover:text-accent transition-colors"
+                onClick={onSolo}
+              >
+                Choose difficulty
+              </button>
+            </>
+          ) : (
+            <ActionButton label="Start Solo" onClick={onSolo} primary />
+          )}
           <DailyChallengeButton
             onClick={onDaily}
             completed={completed}

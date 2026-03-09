@@ -18,6 +18,7 @@ import {
   getFriends,
   removeFriend as removeFriendFromStorage,
 } from "./lib/friends.ts";
+import { getLastDifficulty, setLastDifficulty } from "./lib/last-difficulty.ts";
 import {
   generateId,
   getPlayerId,
@@ -199,6 +200,21 @@ function App() {
             onJoin={() => navigate({ name: "join" })}
             onStats={() => navigate({ name: "stats" })}
             onAbout={() => navigate({ name: "about" })}
+            onQuickPlay={() => {
+              const difficulty = getLastDifficulty();
+              const assistLevel =
+                (localStorage.getItem("sudoku_assist_level") as AssistLevel) ??
+                "standard";
+              gameIdRef.current++;
+              navigate({
+                name: "solo",
+                difficulty,
+                gameId: gameIdRef.current,
+                gameKey: generateId(),
+                assistLevel,
+              });
+            }}
+            lastDifficulty={getLastDifficulty()}
             onContinue={(gameKey, difficulty) => {
               gameIdRef.current++;
               navigate({
@@ -226,6 +242,7 @@ function App() {
         <div className="screen">
           <DifficultyPicker
             onSelect={(difficulty, assistLevel) => {
+              setLastDifficulty(difficulty);
               if (screen.mode === "solo") {
                 gameIdRef.current++;
                 navigate({
