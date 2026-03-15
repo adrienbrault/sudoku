@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { WebrtcProvider } from "y-webrtc";
 import * as Y from "yjs";
 import { SIGNALING_URL } from "../lib/constants.ts";
-import { fetchIceServers } from "../lib/turn-credentials.ts";
 import {
   claimWinner,
   createRoomFromDoc,
@@ -17,6 +16,7 @@ import {
   updatePlayerName,
   updateProgress,
 } from "../lib/p2p-room.ts";
+import { fetchIceServers } from "../lib/turn-credentials.ts";
 import type { AssistLevel, Difficulty, RoomState } from "../lib/types.ts";
 
 type UseYjsMultiplayerOptions = {
@@ -102,35 +102,31 @@ export function useYjsMultiplayer({
 
       joinRoom(room, playerId, playerName);
 
+      // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: same logic as before, async wrapper adds nesting
       const updateState = () => {
         const state = deriveRoomState(room);
         setRoomState(state);
+        if (!state) return;
 
-        if (state) {
-          const roomMap = doc.getMap("room");
-          const currentPuzzle = roomMap.get("puzzle") as string | null;
-          const gameNumber = (roomMap.get("gameNumber") as number) || 0;
-          const winnerId = roomMap.get("winnerId") as string | null;
-          const winnerName = roomMap.get("winnerName") as string | null;
+        const roomMap = doc.getMap("room");
+        const gameNumber = (roomMap.get("gameNumber") as number) || 0;
 
-          // Detect new game (start or rematch)
-          if (gameNumber > lastGameNumberRef.current) {
-            lastGameNumberRef.current = gameNumber;
-            setPuzzle(currentPuzzle);
-            setGameOver(null);
-            setOpponentProgress(null);
-          }
+        if (gameNumber > lastGameNumberRef.current) {
+          lastGameNumberRef.current = gameNumber;
+          setPuzzle(roomMap.get("puzzle") as string | null);
+          setGameOver(null);
+          setOpponentProgress(null);
+        }
 
-          // Detect winner
-          if (winnerId && winnerName) {
-            setGameOver({ winnerId, winnerName });
-          }
+        const winnerId = roomMap.get("winnerId") as string | null;
+        const winnerName = roomMap.get("winnerName") as string | null;
+        if (winnerId && winnerName) {
+          setGameOver({ winnerId, winnerName });
+        }
 
-          // Update opponent progress
-          const progress = getOpponentProgress(room, playerId);
-          if (progress) {
-            setOpponentProgress(progress);
-          }
+        const progress = getOpponentProgress(room, playerId);
+        if (progress) {
+          setOpponentProgress(progress);
         }
       };
 
@@ -168,9 +164,7 @@ export function useYjsMultiplayer({
       awareness.on("change", updatePresence);
 
       // Track connection status via provider
-      const onStatus = ({
-        connected: isConnected,
-      }: { connected: boolean }) => {
+      const onStatus = ({ connected: isConnected }: { connected: boolean }) => {
         setConnected(isConnected);
       };
       provider.on("status", onStatus);
@@ -186,7 +180,7 @@ export function useYjsMultiplayer({
       updateState();
     };
 
-    setup();
+    void setup();
 
     return () => {
       disposed = true;
